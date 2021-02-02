@@ -1,0 +1,170 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "mat-dynamic-form": {
+      "projectType": "library",
+      "root": "projects/mat-dynamic-form",
+      "sourceRoot": "projects/mat-dynamic-form/src",
+      "prefix": "mat",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/mat-dynamic-form/tsconfig.lib.json",
+            "project": "projects/mat-dynamic-form/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/mat-dynamic-form/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/mat-dynamic-form/src/test.ts",
+            "tsConfig": "projects/mat-dynamic-form/tsconfig.spec.json",
+            "karmaConfig": "projects/mat-dynamic-form/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/mat-dynamic-form/tsconfig.lib.json",
+              "projects/mat-dynamic-form/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "dynamic-form-sandbox": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/dynamic-form-sandbox",
+      "sourceRoot": "projects/dynamic-form-sandbox/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/dynamic-form-sandbox",
+            "index": "projects/dynamic-form-sandbox/src/index.html",
+            "main": "projects/dynamic-form-sandbox/src/main.ts",
+            "polyfills": "projects/dynamic-form-sandbox/src/polyfills.ts",
+            "tsConfig": "projects/dynamic-form-sandbox/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "projects/dynamic-form-sandbox/src/favicon.ico",
+              "projects/dynamic-form-sandbox/src/assets"
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "projects/dynamic-form-sandbox/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/dynamic-form-sandbox/src/environments/environment.ts",
+                  "with": "projects/dynamic-form-sandbox/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "dynamic-form-sandbox:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "dynamic-form-sandbox:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "dynamic-form-sandbox:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/dynamic-form-sandbox/src/test.ts",
+            "polyfills": "projects/dynamic-form-sandbox/src/polyfills.ts",
+            "tsConfig": "projects/dynamic-form-sandbox/tsconfig.spec.json",
+            "karmaConfig": "projects/dynamic-form-sandbox/karma.conf.js",
+            "assets": [
+              "projects/dynamic-form-sandbox/src/favicon.ico",
+              "projects/dynamic-form-sandbox/src/assets"
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "projects/dynamic-form-sandbox/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/dynamic-form-sandbox/tsconfig.app.json",
+              "projects/dynamic-form-sandbox/tsconfig.spec.json",
+              "projects/dynamic-form-sandbox/e2e/tsconfig.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/dynamic-form-sandbox/e2e/protractor.conf.js",
+            "devServerTarget": "dynamic-form-sandbox:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "dynamic-form-sandbox:serve:production"
+            }
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "mat-dynamic-form"
+}

@@ -1,0 +1,47 @@
+@import "~bootstrap/scss/bootstrap";
+
+button {
+  border-radius: 4px;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: flex-end;
+
+  span {
+    font-size: 20px;
+    display: inline-flex;
+    align-items: flex-start;
+    margin-top: 2px;
+  }
+}
+
+.titulo {
+  text-align: center;
+  height: 40px;
+  display: flex;
+  margin: 0;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+}
+
+.no-arrows {
+  text-align: left;
+}
+
+input.no-arrows::-webkit-outer-spin-button,
+input.no-arrows::-webkit-inner-spin-button {
+  display: none;
+}
+
+input.no-arrows {
+  -moz-appearance: textfield;
+}
+
+mat-icon {
+  color: #757575;
+}
+
+.btn:focus {
+  outline: none !important;
+  box-shadow: none;
+}
