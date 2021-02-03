@@ -3,8 +3,9 @@ import { MatFormFieldAppearance } from "@angular/material/form-field";
 import { ReferenceException } from "../exceptions/Exceptions";
 import { DataSet } from "./DataSet";
 import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator } from "./Node";
+import { ObjectBase } from "./base/ObjectBase";
 
-export class FormStructure {
+export class FormStructure extends ObjectBase {
     title: string;
     nodes: Node[];
     confirmActions: Button[]
@@ -15,6 +16,7 @@ export class FormStructure {
 
     constructor();
     constructor(title?: string, nodes?, confirmActions?: Button[]) {
+        super();
         if (confirmActions?.length > 4)
             throw new Error("No se permiten mas de 4 acciones de confirmación.");
 
@@ -141,7 +143,7 @@ export class FormStructure {
         control.setValidators(validators)
     }
 
-    private remapNodes(){
+    private remapNodes() {
         this.nodes.map(node => {
             this.createFormControl(node);
         })

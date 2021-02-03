@@ -1,27 +1,205 @@
-# DynamicForm
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Charlieras262/DynamicFrom/Node.js%20CI) ![npm (tag)](https://img.shields.io/npm/v/mat-dynamic-form/latest) ![npm bundle size](https://img.shields.io/bundlephobia/min/mat-dynamic-form)  
+# Mat Dynamic Form
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.7.
+  
 
-## Development server
+This is an Angular Material library that was created to make form designing easier and intuitive, you just need to send a json object to generate a fully functional form.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+  
 
-## Code scaffolding
+## Installation
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```
 
-## Build
+npm i mat-dynamic-form
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+```
 
-## Running unit tests
+  
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Dependencies <a id="dependencies"></id>
 
-## Running end-to-end tests
+  
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+#### Angular Material
 
-## Further help
+[Angular Material](https://material.angular.io/guide/getting-started)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```
+
+ng add @angular/material
+
+```
+
+This is necesary to create angular material components.
+
+
+## Usage
+
+  
+
+### AppModule
+
+```typescript
+
+import { NgModule } from '@angular/core';
+import { MatDynamicFormModule } from 'mat-dynamic-form';
+
+@NgModule({
+	imports: [
+		...,
+		MatDynamicFormModule
+	],
+	providers: [],
+	...
+})
+
+export class AppModule {}
+
+```
+
+
+### HTML
+
+```html
+
+<mat-dynamic-form  [structure]="formStructure"></mat-dynamic-form>
+
+```
+
+### TS
+
+This is an example of a full sing up form.
+
+```typescript
+
+import { Component, OnInit } from '@angular/core';
+import { Validators } from '@angular/forms';
+import { Button, Checkbox, DatePicker, Dropdown, FormListener, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'projects/mat-dynamic-form/src/public-api';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent implements OnInit, FormListener {
+
+  formStructure: FormStructure;
+
+  constructor() {
+    this.formStructure = new FormStructure();
+
+    this.formStructure.title = 'Sign Up';
+    this.formStructure.appearance = 'outline';
+    this.formStructure.globalValidators = Validators.required;
+    this.formStructure.nodes = [
+      new Input('name', 'Name').apply({ 
+	      icon: 'person' 
+      }),
+      new Input('tel', 'Phone Number').apply({ 
+	      icon: 'phone' 
+      }),
+      new DatePicker('bDate', 'BirthDate').apply({
+	      action: { callback: this, type: 'change' }
+      }),
+      new Dropdown('cStatus', 'Civil Status', [
+	      new OptionChild('Single', 'SI', true), 
+	      new OptionChild('Maried', 'MR')
+      ]).apply({ 
+	      disabled: true 
+      }),
+      new InputFile('profPic', 'Profile Picture').apply({ 
+	      accept: '.png, .jpg, .jpeg' 
+      }),
+      new RadioGroup('hasPet', 'Has Pet', [
+	      new OptionChild('Yes', 'y'), 
+	      new OptionChild('Not', 'n', true)
+      ]).apply({ 
+	      action: { type: 'change', callback: this } 
+      }),
+      new InputPassword('pass', 'Password'),
+      new TextArea('comments', 'Comments').apply({ 
+	      singleLine: true, 
+	      validator: Validators.maxLength(100), 
+	      maxCharCount: 100 
+      }),
+      new Checkbox(
+	      'terms', 
+	      `Terminos y condiciones, <strong><a href='https://www.google.com'>mas.<a </strong>`
+      ).apply({ 
+	      singleLine: true, 
+	      validator: Validators.requiredTrue 
+      })
+    ];
+    this.formStructure.confirmActions = [
+      new Button('guardar', 'Guardar', { 
+	      callback: this, style: 'primary' 
+      }).apply({ 
+	      validateForm: false 
+      }),
+      new Button('cancelar', 'Cancelar', { 
+	     callback: this, style: 'warn' 
+     })
+    ];
+  }
+
+  ngOnInit(): void {
+  }
+
+  onEvent(id: string, value: any): void {
+    console.log(id, value)
+    if (id == 'hasPet') {
+      const nodes = [
+        new Dropdown('petType', 'Pet Type', [
+	        new  OptionChild('Dog',  'PD'),
+	        new  OptionChild('Cat',  'PC')
+        ]),
+        new Input('raza', 'Raza de la Mascota'),
+        new Input('nombreMascota', 'Nombre de la Mascota')
+      ]
+      if (value == 'y') {
+        this.formStructure.createNodes(6, nodes)
+      } else this.formStructure.removeNodes(nodes)
+    }
+  }
+
+  onClick(actionId: string): void {
+    switch (actionId) {
+      case 'guardar':
+        this.formStructure?.setValue([
+	        { key: 'nombre', value: 'Carlos' }, 
+	        { key: 'tieneMascota', value: 'y' }
+        ]);
+        break;
+      case 'cancelar':
+        this.formStructure?.reset();
+        break;
+    }
+  }
+}
+
+```
+
+### Classes
+
+* [FormStructure](https://github.com/Charlieras262/DynamicFrom/blob/main/projects/mat-dynamic-form/src/lib/models/FormStructure.ts)
+* [Node](https://github.com/Charlieras262/DynamicFrom/blob/main/projects/mat-dynamic-form/src/lib/models/Node.ts)
+* [DataSet](https://github.com/Charlieras262/DynamicFrom/blob/main/projects/mat-dynamic-form/src/lib/models/DataSet.ts)
+* [Action](https://github.com/Charlieras262/DynamicFrom/blob/main/projects/mat-dynamic-form/src/lib/models/Action.ts)
+* [OptionChild](https://github.com/Charlieras262/DynamicFrom/blob/main/projects/mat-dynamic-form/src/lib/models/OptionChild.ts)
+
+### Apply Method
+[ObjectBase.apply](https://github.com/Charlieras262/DynamicFrom/blob/d4ef39f5a12e6670c0378cd72be3de5d7d7a8993/projects/mat-dynamic-form/src/lib/models/base/ObjectBase.ts#L2)
+#### Usage
+
+```typescript
+
+new TextArea('comments', 'Comments').apply({
+	// All the properties of the object you´re using "apply" method.
+	singleLine: true, 
+	validator: Validators.maxLength(100), 
+	maxCharCount: 100 
+}),
+
+```
+> This method can be used in all classes of the lib (like kotlin apply).
