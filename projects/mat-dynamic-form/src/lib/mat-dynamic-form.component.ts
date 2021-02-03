@@ -4,7 +4,7 @@ import { FormStructure } from './models/FormStructure';
 import { Button, Dropdown, RadioGroup } from './models/Node';
 
 @Component({
-  selector: 'mat-mat-dynamic-form',
+  selector: 'mat-dynamic-form',
   templateUrl: 'mat-dynamic-form.component.html',
   styleUrls: ['mat-dynamic-form.component.scss']
 })

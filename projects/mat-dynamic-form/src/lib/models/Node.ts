@@ -1,5 +1,6 @@
 import { ValidatorFn, AbstractControlOptions, AsyncValidatorFn } from "@angular/forms"
 import { Action } from "./Action";
+import { ObjectBase } from "./base/ObjectBase";
 import { OptionChild } from "./OptionChild";
 
 
@@ -13,7 +14,7 @@ type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogr
  * 
  * @param T Es el tipo de evento que se quiere implementar al nodo.
  */
-class NodeBase {
+class NodeBase extends ObjectBase {
     public id: string;
     public placeholder?: string;
     public type?: NodeType;
@@ -22,7 +23,7 @@ class NodeBase {
     public icon?: string;
     public errorMessage?: string;
     public disabled: boolean;
-    public validator?: Validator  | AbstractControlOptions;
+    public validator?: Validator | AbstractControlOptions;
     public asyncValidator?: AsyncValidatorFn;
 
     /**
@@ -37,6 +38,7 @@ class NodeBase {
     * sino se desea utilizar se deberá enviar {@link undefined} en su lugar.
     */
     constructor(id, placeholder, type: NodeType, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action) {
+        super();
         this.id = id;
         this.placeholder = placeholder;
         this.type = type;
@@ -47,18 +49,6 @@ class NodeBase {
         this.validator = validator;
         this.asyncValidator = asyncValidator
         this.action = action;
-    }
-
-    apply<T extends NodeBase>(options): T {
-        return this.applyOption<T>(this, options)
-    };
-
-    private applyOption<T extends NodeBase>(object: NodeBase, options) {
-        const keys = Object.keys(options)
-        keys.map(option => {
-            object[option] = options[option]
-        });
-        return object as T;
     }
 }
 

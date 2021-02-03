@@ -1,4 +1,4 @@
-export class DataSet{
+export class DataSet {
     key: string;
     value: any;
 }
