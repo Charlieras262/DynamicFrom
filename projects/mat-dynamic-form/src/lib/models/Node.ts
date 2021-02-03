@@ -22,7 +22,7 @@ class NodeBase extends ObjectBase {
     public singleLine?: boolean;
     public icon?: string;
     public errorMessage?: string;
-    public disabled: boolean;
+    public disabled?: boolean;
     public validator?: Validator | AbstractControlOptions;
     public asyncValidator?: AsyncValidatorFn;
 

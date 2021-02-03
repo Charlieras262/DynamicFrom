@@ -1,13 +1,9 @@
-export class ObjectBase{
-    apply<T extends ObjectBase>(options): T {
-        return this.applyOption<T>(this, options)
-    };
-
-    private applyOption<T extends ObjectBase>(object: ObjectBase, options) {
+export class ObjectBase {
+    apply(options: this | {}): this {
         const keys = Object.keys(options)
         keys.map(option => {
-            object[option] = options[option]
+            this[option] = options[option]
         });
-        return object as T;
+        return this;
     }
 }
