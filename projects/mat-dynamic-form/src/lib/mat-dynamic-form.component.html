@@ -150,7 +150,7 @@
         <div class="container col-12">
             <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
                 <div class="row float-right mr-0">
-                    <button *ngFor="let confirmAction of structure.confirmActions" id="{{confirmAction.id}}"
+                    <button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
                         mat-stroked-button type="button" class="ml-2" color="{{confirmAction.action.style}}"
                         (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
                         [disabled]="structure.isInalid() && confirmAction.validateForm">
@@ -162,7 +162,7 @@
             </ng-container>
             <ng-template #elseTemplate>
                 <div class="row float-right mr-0">
-                    <button *ngFor="let confirmAction of structure.confirmActions" id="{{confirmAction.id}}"
+                    <button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
                         mat-raised-button type="button" class="ml-2" color="{{confirmAction?.action?.style}}"
                         (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
                         [disabled]="structure.isInalid() && confirmAction.validateForm">

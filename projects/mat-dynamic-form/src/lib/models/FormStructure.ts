@@ -8,22 +8,22 @@ import { ObjectBase } from "./base/ObjectBase";
 export class FormStructure extends ObjectBase {
     title: string;
     nodes: Node[];
-    confirmActions: Button[]
+    validateActions: Button[]
     appearance?: MatFormFieldAppearance = 'standard'
     showTittle?: boolean = true
     private formGroup?: FormGroup;
     globalValidators?: ValidatorFn | ValidatorFn[] | null;
 
     constructor();
-    constructor(title?: string, nodes?, confirmActions?: Button[]) {
+    constructor(title?: string, nodes?, validateActions?: Button[]) {
         super();
-        if (confirmActions?.length > 4)
+        if (validateActions?.length > 4)
             throw new Error("No se permiten mas de 4 acciones de confirmación.");
 
         this.showTittle = true;
         this.title = title;
         this.nodes = nodes;
-        this.confirmActions = confirmActions;
+        this.validateActions = validateActions;
     }
 
     setFromGroup(formGroup: FormGroup): void {
