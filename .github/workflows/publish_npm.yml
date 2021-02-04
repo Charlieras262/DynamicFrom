@@ -22,9 +22,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
         
     - run: npm i @angular/cli -d
-    - run: cd ./projects/mat-dynamic-form/
     - run: npm i
-    - run: ng build --prod mat-dynamic-form 
+    - run: npm run build
     - run: cd ../../dist/mat-dynamic-form
     - name: NPM Publish
       uses: JS-DevTools/npm-publish@v1
