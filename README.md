@@ -126,8 +126,8 @@ export class AppComponent implements OnInit, FormListener {
         maxCharCount: 100
       }),
       new Checkbox(
-        'terminos',
-        `Terminos y condiciones, <strong><a href='https://www.google.com'>mas.<a </strong>`
+        'agreement',
+        `I have read and agree to the terms of DynamicForm License Agreement, <strong><a href='https://www.google.com'>Read the license here.<a </strong>`
       ).apply({
         singleLine: true,
         validator: Validators.requiredTrue
