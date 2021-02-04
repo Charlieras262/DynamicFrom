@@ -23,7 +23,7 @@ npm i mat-dynamic-form
 
 #### Angular Material
 
-[Angular Material](https://material.angular.io/guide/getting-started)
+[Angular Material Documentation](https://material.angular.io/guide/getting-started)
 
 ```
 
@@ -103,9 +103,10 @@ export class AppComponent implements OnInit, FormListener {
         action: { callback: this, type: 'change' }
       }),
       new Dropdown('cStatus', 'Civil Status', [
-        new OptionChild('Single', 'SI', true),
+        new OptionChild('Single', 'SI',),
         new OptionChild('Maried', 'MR')
       ]).apply({
+        selectedValue: 'SI',
         disabled: true
       }),
       new InputFile('profPic', 'Profile Picture').apply({
@@ -113,8 +114,9 @@ export class AppComponent implements OnInit, FormListener {
       }),
       new RadioGroup('hasPet', 'Has Pet', [
         new OptionChild('Yes', 'y'),
-        new OptionChild('Not', 'n', true)
+        new OptionChild('Not', 'n')
       ]).apply({
+        selectedValue: 'n',
         action: { type: 'change', callback: this }
       }),
       new InputPassword('pass', 'Password'),
@@ -124,7 +126,7 @@ export class AppComponent implements OnInit, FormListener {
         maxCharCount: 100
       }),
       new Checkbox(
-        'terms',
+        'terminos',
         `Terminos y condiciones, <strong><a href='https://www.google.com'>mas.<a </strong>`
       ).apply({
         singleLine: true,
@@ -179,6 +181,19 @@ export class AppComponent implements OnInit, FormListener {
 }
 
 ```
+
+### [Node Types](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L10)
+
+* [Checkbox](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L66)
+* [Input](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L75)
+* [InputFile](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L88)
+* [InputPassword](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L99)
+* [InputNumber](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L114)
+* [TextArea](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L107)
+* [Radiogroup](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L121)
+* [Dropdown](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L129)
+* [DatePicker](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L137)
+* [Button](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L147)
 
 ### Classes
 

@@ -61,7 +61,7 @@
                     <p *ngSwitchCase="'checkbox'">
                         <mat-checkbox id="{{node.id}}" class="col-12" formControlName="{{node.id}}" color="primary"
                             [checked]="node.value">
-                            <a [innerHtml]="node.placeholder"></a>
+                            <div class="e2e-inner-html-bound" [innerHTML]="node.placeholder"></div>
                         </mat-checkbox>
                         <mat-error
                             *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched"
@@ -86,9 +86,9 @@
                         <mat-label class="col-12" style="color: #757575; font-size: 11px;">{{node.placeholder}}:
                         </mat-label>
                         <br>
-                        <mat-radio-group [id]="node.id" class="col-12" formControlName="{{node.id}}">
+                        <mat-radio-group [id]="node.id" class="col-12" formControlName="{{node.id}}" [value]="node.selectedValue">
                             <mat-radio-button *ngFor="let child of node.value" class="mr-4 mt-2" color="primary"
-                                [value]="child.value ? child.value : child.title" [checked]="child.selected">
+                                [value]="child.value ? child.value : child.title">
                                 {{child.title}}
                             </mat-radio-button>
                         </mat-radio-group>

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { FormStructure } from './models/FormStructure';
-import { Button, Dropdown, RadioGroup } from './models/Node';
+import { Button, Dropdown, Node, RadioGroup } from './models/Node';
 
 @Component({
   selector: 'mat-dynamic-form',
@@ -27,9 +27,9 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
   ngOnInit(): void {
     this.formGroup = this._formBuilder.group({})
-    this.structure.setFromGroup(this.formGroup)
+    this.structure.setFromGroup(this.formGroup);
   }
-  
+
   ngDoCheck() {
     const change = this.differ.diff(this.structure.nodes);
     if (change) {
@@ -69,17 +69,6 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
     this.viewInitialized = true
   }
 
-  processEvent(node, value: any) {
-    if (node instanceof RadioGroup || node instanceof Dropdown) {
-      node.value?.map(item => {
-        item.selected = value ? item.value == value || item.title == value : false;
-      });
-      node.action?.callback?.onEvent(node.id, value);
-    } else {
-      if (node.value != value) node.action?.callback?.onEvent(node.id, value);
-    }
-  }
-
   addEvents() {
     this.structure.nodes.forEach(node => {
       if (node instanceof Button) return
@@ -88,11 +77,12 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
       if (node.action?.type == 'change') {
         this.structure?.getControlById(node.id)?.valueChanges?.subscribe(value => {
-          this.processEvent(node, value);
+          if (node.value != value) node.action?.callback?.onEvent(node.id, value);
         })
       } else {
         item?.addEventListener(node.action?.type?.toString(), () => {
-          this.processEvent(node, this.structure?.getControlById(node.id).value);
+          const value = this.structure?.getControlById(node.id).value;
+          if (node.value != value) node.action?.callback?.onEvent(node.id, value);
         })
       }
     });

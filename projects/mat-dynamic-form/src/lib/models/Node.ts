@@ -54,12 +54,12 @@ class NodeBase extends ObjectBase {
 
 class SelectableNode extends NodeBase {
     public value?: OptionChild[];
-    public selected?: boolean;
+    public selectedValue?: string;
 
-    constructor(id, placeholder, value, selected, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action) {
+    constructor(id, placeholder, value, selectedValue, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action) {
         super(id, placeholder, 'button', singleLine, icon, errorMessage, validator, disabled, asyncValidator, action);
         this.value = value
-        this.selected = selected
+        this.selectedValue = selectedValue
     }
 }
 
