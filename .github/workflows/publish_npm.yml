@@ -25,11 +25,9 @@ jobs:
     - run: npm i
     - run: npm run build
     - run: cd ./dist/mat-dynamic-form
-    - name: NPM Publish
-      uses: JS-DevTools/npm-publish@v1
-      with:
-        token: ${{ secrets.NODE_TOKEN }}
-    - if: steps.publish.outputs.type != 'none'
-      run: |
-        echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+    - run: npm config set //registry.npmjs.org/:_authToken ${NODE_TOKEN}
+    - run: npm publish --ignore-scripts
+      env:
+          NPM_TOKEN: ${{ secrets.NODE_TOKEN }}
+
       
