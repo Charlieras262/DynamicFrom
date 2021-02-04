@@ -28,9 +28,10 @@ export class AppComponent implements OnInit, FormListener {
         action: { callback: this, type: 'change' }
       }),
       new Dropdown('cStatus', 'Civil Status', [
-        new OptionChild('Single', 'SI', true),
+        new OptionChild('Single', 'SI',),
         new OptionChild('Maried', 'MR')
       ]).apply({
+        selectedValue: 'SI',
         disabled: true
       }),
       new InputFile('profPic', 'Profile Picture').apply({
@@ -38,8 +39,9 @@ export class AppComponent implements OnInit, FormListener {
       }),
       new RadioGroup('hasPet', 'Has Pet', [
         new OptionChild('Yes', 'y'),
-        new OptionChild('Not', 'n', true)
+        new OptionChild('Not', 'n')
       ]).apply({
+        selectedValue: 'n',
         action: { type: 'change', callback: this }
       }),
       new InputPassword('pass', 'Password'),
@@ -49,7 +51,7 @@ export class AppComponent implements OnInit, FormListener {
         maxCharCount: 100
       }),
       new Checkbox(
-        'terms',
+        'terminos',
         `Terminos y condiciones, <strong><a href='https://www.google.com'>mas.<a </strong>`
       ).apply({
         singleLine: true,
@@ -72,8 +74,8 @@ export class AppComponent implements OnInit, FormListener {
   }
 
   onEvent(id: string, value: any): void {
-    console.log(id, value)
     if (id == 'hasPet') {
+      console.log(id)
       const nodes = [
         new Dropdown('petType', 'Pet Type', [
           new OptionChild('Dog', 'PD'),
@@ -97,6 +99,7 @@ export class AppComponent implements OnInit, FormListener {
         ]);
         break;
       case 'cancel':
+        console.log(this.formStructure)
         this.formStructure?.reset();
         break;
     }
