@@ -46,12 +46,12 @@ import { NgModule } from '@angular/core';
 import { MatDynamicFormModule } from 'mat-dynamic-form';
 
 @NgModule({
-	imports: [
-		...,
-		MatDynamicFormModule
-	],
-	providers: [],
-	...
+  imports: [
+    ...,
+    MatDynamicFormModule
+  ],
+  providers: [],
+  ...
 })
 
 export class AppModule {}
