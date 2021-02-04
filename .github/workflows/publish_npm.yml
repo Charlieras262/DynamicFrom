@@ -24,7 +24,7 @@ jobs:
     - run: npm i @angular/cli -d
     - run: npm i
     - run: npm run build
-    - run: cd ../../dist/mat-dynamic-form
+    - run: cd ./dist/mat-dynamic-form
     - name: NPM Publish
       uses: JS-DevTools/npm-publish@v1
       with:
