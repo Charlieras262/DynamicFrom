@@ -16,6 +16,10 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
     ReactiveFormsModule,
     MaterialFileInputModule
   ],
-  exports: [MatDynamicFormComponent]
+  exports: [
+    MaterialFileInputModule,
+    MatDynamicFormComponent,
+    MaterialModule
+  ]
 })
 export class MatDynamicFormModule { }
