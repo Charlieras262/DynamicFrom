@@ -21,6 +21,7 @@ export class AppComponent implements OnInit, FormListener {
       new Input('name', 'Name').apply({
         icon: 'person'
       }),
+      new Button('find', 'Buscar', {callback: this, style: 'primary'}),
       new Input('tel', 'Phone Number').apply({
         icon: 'phone'
       }),
