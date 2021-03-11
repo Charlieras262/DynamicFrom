@@ -45,23 +45,31 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
   groupNodesByPair() {
     const nodes = this.structure.nodes;
+    console.log(nodes)
     this.nodeGroupedByPair = new Array<Array<Node>>(nodes.length)
     let pair = [];
 
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
-      if (node.singleLine) {
-        this.nodeGroupedByPair[i] = [node]
+      if (node.singleLine && !(node instanceof Button)) {
+        console.log("Sinlge Not Button")
+        this.pushPair(this.nodeGroupedByPair, [node])
       } else {
         pair.push(node)
         if (pair.length == 2) {
-          this.nodeGroupedByPair[i] = pair
+          console.log("Pair complete")
+          this.pushPair(this.nodeGroupedByPair, pair)
           pair = []
-        } else if (pair.length > 0 && i == nodes.length - 1 || pair.length == 1 && nodes[i + 1 >= nodes.length ? i : i + 1].singleLine) {
-          this.nodeGroupedByPair[i] = pair
+        } else if (pair.length > 0 && i == nodes.length - 1 || nodes[i + 1 >= nodes.length ? i : i + 1].singleLine) {
+          console.log("")
+          this.pushPair(this.nodeGroupedByPair, pair)
         }
       }
     }
+  }
+
+  pushPair(array, item) {
+    if(!array.includes(item)) array.push(item)
   }
 
   ngAfterViewInit(): void {

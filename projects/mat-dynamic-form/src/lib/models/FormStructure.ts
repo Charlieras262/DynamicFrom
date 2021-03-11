@@ -124,7 +124,7 @@ export class FormStructure extends ObjectBase {
      */
     createNodes(from: number, nodes: Node[]) {
         nodes.map(node => {
-            this.createNode(from++, node)
+            this.createNode(from, node)
         });
     }
 

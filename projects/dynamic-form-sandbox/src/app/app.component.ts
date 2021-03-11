@@ -21,7 +21,10 @@ export class AppComponent implements OnInit, FormListener {
       new Input('name', 'Name').apply({
         icon: 'person'
       }),
-      new Button('find', 'Buscar', {callback: this, style: 'primary'}),
+      new Button('find', 'Find', {callback: this, style: 'primary'}).apply({
+        icon: "search",
+        singleLine: true
+      }),
       new Input('tel', 'Phone Number').apply({
         icon: 'phone'
       }),
@@ -86,7 +89,7 @@ export class AppComponent implements OnInit, FormListener {
         new Input('petName', 'Pet Name')
       ]
       if (value == 'y') {
-        this.formStructure.createNodes(6, nodes)
+        this.formStructure.createNodes(7, nodes)
       } else this.formStructure.removeNodes(nodes)
     }
   }
@@ -98,6 +101,7 @@ export class AppComponent implements OnInit, FormListener {
           { key: 'name', value: 'Carlos' },
           { key: 'hasPet', value: 'y' }
         ]);
+        console.log(this.formStructure.getValue())
         break;
       case 'cancel':
         console.log(this.formStructure)

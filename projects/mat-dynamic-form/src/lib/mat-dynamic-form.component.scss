@@ -2,9 +2,10 @@
 
 button {
   border-radius: 4px;
-  padding: 8px 16px;
+  padding: 9px 18px;
   display: inline-flex;
   align-items: flex-end;
+  margin-top: 3.5px;
 
   span {
     font-size: 20px;
@@ -41,7 +42,18 @@ mat-icon {
   color: #757575;
 }
 
-.btn:focus {
-  outline: none !important;
-  box-shadow: none;
+.btn-form{
+  margin-right: 15px;
+  padding-top: 2px;
+}
+
+$tablet-width: 320px;
+$desktop-width: 1024px;
+
+@media (min-width: #{$tablet-width}) and (max-width: #{$desktop-width - 1px}) {
+  .btn-form{
+    margin-top: -15px;
+    margin-left: 15px;
+    margin-bottom: 30px;
+  }
 }

@@ -4,7 +4,7 @@
 <div class="container col-6">
     <form [formGroup]="formGroup" class="create-account-form">
         <div class="row" *ngFor="let pair of nodeGroupedByPair">
-            <div *ngFor="let node of pair" class="{{node.singleLine ? 'col-12' : 'col-6'}}">
+            <div *ngFor="let node of pair" class="{{node.type == 'button' ? 'es Boton' : node.singleLine ? 'col-12' : 'col'}}">
                 <span [ngSwitch]="node.type.toString()">
                     <p *ngSwitchCase="'input'">
                         <mat-form-field class="col-12" [appearance]="structure.appearance">
@@ -37,19 +37,19 @@
                             </mat-error>
                         </mat-form-field>
                     </p>
-                    <p *ngSwitchCase="'button'">
+                    <p *ngSwitchCase="'button'" class="col btn-form text-left">
                         <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
-                            <button id="{{node.id}}" mat-stroked-button type="button" class="ml-3 mt-2"
-                                color="{{node?.action?.style}}" (click)="node.action?.callback?.onClick(node.id)"
+                            <button id="{{node.id}}" mat-stroked-button type="button" color="{{node?.action?.style}}"
+                                (click)="node.action?.callback?.onClick(node.id)"
                                 [disabled]="structure.isInalid() && node.validateForm">
                                 <span class="mat-icon notranslate material-icons mat-icon-no-color"
                                     *ngIf="node.icon">{{node.icon}}</span>
                                 {{node.placeholder}}
                             </button>
                         </ng-container>
-                        <ng-template #elseTemplate>
-                            <button id="{{node.id}}" mat-raised-button type="button" class="ml-3 mt-2"
-                                color="{{node?.action?.style}}" (click)="node.action?.callback?.onClick(node.id)"
+                        <ng-template #elseTemplate class="col">
+                            <button id="{{node.id}}" mat-raised-button type="button" color="{{node?.action?.style}}"
+                                (click)="node.action?.callback?.onClick(node.id)"
                                 [disabled]="structure.isInalid() && node.validateForm">
                                 <span class="mat-icon notranslate material-icons mat-icon-no-color"
                                     *ngIf="node.icon">{{node.icon}}</span>
