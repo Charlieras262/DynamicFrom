@@ -38,10 +38,24 @@
                         </mat-form-field>
                     </p>
                     <p *ngSwitchCase="'button'">
-                        <button id="{{node.id}}" mat-raised-button type="button" color="{{node.action.style}}"
-                            class="col-12 ml-2" (click)="node.action.callback.onEvent(node.id, node.value)">
-                            {{node.placeholder}} [disabled]="formGroup.invalid"
-                        </button>
+                        <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
+                            <button id="{{node.id}}" mat-stroked-button type="button" class="ml-3 mt-2"
+                                color="{{node?.action?.style}}" (click)="node.action?.callback?.onClick(node.id)"
+                                [disabled]="structure.isInalid() && node.validateForm">
+                                <span class="mat-icon notranslate material-icons mat-icon-no-color"
+                                    *ngIf="node.icon">{{node.icon}}</span>
+                                {{node.placeholder}}
+                            </button>
+                        </ng-container>
+                        <ng-template #elseTemplate>
+                            <button id="{{node.id}}" mat-raised-button type="button" class="ml-3 mt-2"
+                                color="{{node?.action?.style}}" (click)="node.action?.callback?.onClick(node.id)"
+                                [disabled]="structure.isInalid() && node.validateForm">
+                                <span class="mat-icon notranslate material-icons mat-icon-no-color"
+                                    *ngIf="node.icon">{{node.icon}}</span>
+                                {{node.placeholder}}
+                            </button>
+                        </ng-template>
                     </p>
                     <p *ngSwitchCase="'dropdown'">
                         <mat-form-field class="col-12" [appearance]="structure.appearance">
@@ -86,7 +100,8 @@
                         <mat-label class="col-12" style="color: #757575; font-size: 11px;">{{node.placeholder}}:
                         </mat-label>
                         <br>
-                        <mat-radio-group [id]="node.id" class="col-12" formControlName="{{node.id}}" [value]="node.selectedValue">
+                        <mat-radio-group [id]="node.id" class="col-12" formControlName="{{node.id}}"
+                            [value]="node.selectedValue">
                             <mat-radio-button *ngFor="let child of node.value" class="mr-4 mt-2" color="primary"
                                 [value]="child.value ? child.value : child.title">
                                 {{child.title}}
