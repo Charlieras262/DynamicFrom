@@ -12,7 +12,6 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
   @Input()
   structure: FormStructure;
-  nodeGroupedByPair: Array<Array<any>>;
   viewInitialized = false;
   formGroup: FormGroup;
   hide = true;
@@ -37,39 +36,8 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
         change.forEachAddedItem(item => {
           this.structure?.createFormControl(item.currentValue)
         });
-
-      this.groupNodesByPair();
       if (this.viewInitialized) this.addEvents()
     }
-  }
-
-  groupNodesByPair() {
-    const nodes = this.structure.nodes;
-    console.log(nodes)
-    this.nodeGroupedByPair = new Array<Array<Node>>(nodes.length)
-    let pair = [];
-
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-      if (node.singleLine && !(node instanceof Button)) {
-        console.log("Sinlge Not Button")
-        this.pushPair(this.nodeGroupedByPair, [node])
-      } else {
-        pair.push(node)
-        if (pair.length == 2) {
-          console.log("Pair complete")
-          this.pushPair(this.nodeGroupedByPair, pair)
-          pair = []
-        } else if (pair.length > 0 && i == nodes.length - 1 || nodes[i + 1 >= nodes.length ? i : i + 1].singleLine) {
-          console.log("")
-          this.pushPair(this.nodeGroupedByPair, pair)
-        }
-      }
-    }
-  }
-
-  pushPair(array, item) {
-    if (!array.includes(item)) array.push(item)
   }
 
   ngAfterViewInit(): void {

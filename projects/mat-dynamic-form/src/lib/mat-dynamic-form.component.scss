@@ -1,21 +1,27 @@
 @import "~bootstrap/scss/bootstrap";
 
-button {
-  border-radius: 4px;
-  padding: 10px 20px;
-  display: inline-flex;
-  align-items: flex-end;
-  margin-top: 3.5px;
+.btn-container {
+  display: inline-flex !important;
+  align-items: flex-end !important;
+  border-radius: 100px !important;
+  padding: 8px 20px;
+  max-height: 40px !important;
 
-  span {
-    font-size: 20px;
-    display: inline-flex;
-    align-items: flex-start;
-    margin-top: 2px;
+  i {
+    font-size: 24px !important;
+    margin-right: 4px !important;
+    display: inline-flex !important;
+    align-items: flex-start !important;
+  }
+
+  mat-icon {
+    font-size: 22px !important;
+    display: inline-flex !important;
+    align-items: flex-start !important;
   }
 }
 
-.titulo {
+.title {
   text-align: center;
   height: 40px;
   display: flex;
@@ -38,22 +44,38 @@ input.no-arrows {
   -moz-appearance: textfield;
 }
 
-mat-icon {
-  color: #757575;
+mat-form-field {
+  mat-icon {
+    color: #757575;
+  }
 }
 
-.btn-form{
-  margin-right: 15px;
-  padding-top: 3px;
+.btn-form {
+  .mat-button {
+    margin-left: 30px !important;
+    margin-top: 10px !important;
+  }
+
+  .mat-stroked-button {
+    margin-left: 30px !important;
+    margin-top: 10px !important;
+  }
 }
 
 $tablet-width: 320px;
 $desktop-width: 1024px;
 
-@media (min-width: #{$tablet-width}) and (max-width: #{$desktop-width - 1px}) {
-  .btn-form{
-    margin-top: -15px;
-    margin-left: 15px;
-    margin-bottom: 30px;
+@media (min-width: #{$tablet-width}) {
+  .btn-form {
+    .mat-button {
+      margin-top: -15px;
+      margin-left: 15px;
+    }
+
+    .mat-stroked-button {
+      margin-top: 0px;
+      margin-left: 15px;
+      margin-bottom: 5px;
+    }
   }
 }

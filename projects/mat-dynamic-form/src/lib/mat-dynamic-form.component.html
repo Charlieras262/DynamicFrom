@@ -1,192 +1,188 @@
-<div class="card-body" *ngIf="structure.showTittle">
-    <mat-card-title class="titulo" color="primary">{{structure.title}}</mat-card-title>
+<div class="card-body" *ngIf="structure.showTitle">
+  <mat-card-title class="title" color="primary">{{structure.title}}</mat-card-title>
 </div>
-<div class="container col-6">
-    <form [formGroup]="formGroup" class="create-account-form">
-        <div class="row" *ngFor="let pair of nodeGroupedByPair">
-            <div *ngFor="let node of pair" class="{{node.type == 'button' ? 'es Boton' : node.singleLine ? 'col-12' : 'col'}}">
-                <span [ngSwitch]="node.type.toString()">
-                    <p *ngSwitchCase="'input'">
-                        <mat-form-field class="col-12" [appearance]="structure.appearance">
-                            <mat-label>{{node.placeholder}}</mat-label>
-                            <input id="{{node.id}}" matInput formControlName="{{node.id}}" [readonly]="node.readOnly" />
-                            <mat-icon *ngIf="node.icon" matSuffix>{{node.icon}}</mat-icon>
-                            <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
-                                {{node.maxCharCount}}</mat-hint>
-                            <mat-error
-                                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                                <a [innerHtml]="node.errorMessage"></a>
-                            </mat-error>
-                        </mat-form-field>
-                    </p>
-                    <p *ngSwitchCase="'password'">
-                        <mat-form-field [appearance]="structure.appearance" class="col-12">
-                            <mat-label>{{node.placeholder}}</mat-label>
-                            <input id="{{node.id}}" matInput [type]="hide ? 'password' : 'text'"
-                                formControlName="{{node.id}}" [readonly]="node.readOnly" />
-                            <button mat-icon-button matSuffix (click)="hide = !hide"
-                                [attr.aria-label]="'Ocultar Contraseña'" [attr.aria-pressed]="hide">
-                                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                            </button>
-                            <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
-                                {{node.maxCharCount}}
-                            </mat-hint>
-                            <mat-error
-                                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                                <a [innerHtml]="node.errorMessage"></a>
-                            </mat-error>
-                        </mat-form-field>
-                    </p>
-                    <p *ngSwitchCase="'button'" class="col btn-form text-left">
-                        <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
-                            <button id="{{node.id}}" mat-stroked-button type="button" color="{{node?.action?.style}}"
-                                (click)="node.action?.callback?.onClick(node.id)"
-                                [disabled]="structure.isInalid() && node.validateForm">
-                                <span class="mat-icon notranslate material-icons mat-icon-no-color"
-                                    *ngIf="node.icon">{{node.icon}}</span>
-                                {{node.placeholder}}
-                            </button>
-                        </ng-container>
-                        <ng-template #elseTemplate class="col">
-                            <button id="{{node.id}}" mat-raised-button type="button" color="{{node?.action?.style}}"
-                                (click)="node.action?.callback?.onClick(node.id)"
-                                [disabled]="structure.isInalid() && node.validateForm">
-                                <span class="mat-icon notranslate material-icons mat-icon-no-color"
-                                    *ngIf="node.icon">{{node.icon}}</span>
-                                {{node.placeholder}}
-                            </button>
-                        </ng-template>
-                    </p>
-                    <p *ngSwitchCase="'dropdown'">
-                        <mat-form-field class="col-12" [appearance]="structure.appearance">
-                            <mat-label>{{node.placeholder}}</mat-label>
-                            <mat-select id="{{node.id}}" formControlName="{{node.id}}">
-                                <mat-option *ngFor="let child of node.value"
-                                    [value]="child.value ? child.value : child.id">
-                                    {{child.title}}
-                                </mat-option>
-                            </mat-select>
-                            <mat-error
-                                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                                <a [innerHtml]="node.errorMessage"></a>
-                            </mat-error>
-                        </mat-form-field>
-                    </p>
-                    <p *ngSwitchCase="'checkbox'">
-                        <mat-checkbox id="{{node.id}}" class="col-12" formControlName="{{node.id}}" color="primary"
-                            [checked]="node.value">
-                            <div class="e2e-inner-html-bound" [innerHTML]="node.placeholder"></div>
-                        </mat-checkbox>
-                        <mat-error
-                            *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched"
-                            class="col-12">
-                            <a [innerHtml]="node.errorMessage"></a>
-                        </mat-error>
-                    </p>
-                    <p *ngSwitchCase="'date'">
-                        <mat-form-field class="col-12" [appearance]="structure.appearance">
-                            <mat-label>{{node.placeholder}}</mat-label>
-                            <input id="{{node.id}}" matInput [matDatepicker]="datePicker" formControlName="{{node.id}}"
-                                [readonly]="node.readOnly" />
-                            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-                            <mat-datepicker #datePicker color="primary" class="col-12"></mat-datepicker>
-                            <mat-error
-                                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                                <a [innerHtml]="node.errorMessage"></a>
-                            </mat-error>
-                        </mat-form-field>
-                    </p>
-                    <p *ngSwitchCase="'radiogroup'">
-                        <mat-label class="col-12" style="color: #757575; font-size: 11px;">{{node.placeholder}}:
-                        </mat-label>
-                        <br>
-                        <mat-radio-group [id]="node.id" class="col-12" formControlName="{{node.id}}"
-                            [value]="node.selectedValue">
-                            <mat-radio-button *ngFor="let child of node.value" class="mr-4 mt-2" color="primary"
-                                [value]="child.value ? child.value : child.title">
-                                {{child.title}}
-                            </mat-radio-button>
-                        </mat-radio-group>
-                        <mat-error
-                            *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                            <a [innerHtml]="node.errorMessage"></a>
-                        </mat-error>
-                    </p>
-                    <p *ngSwitchCase="'textarea'">
-                        <mat-form-field class="col-12" [appearance]="structure.appearance">
-                            <mat-label>{{node.placeholder}}</mat-label>
-                            <textarea [id]="node.id" formControlName="{{node.id}}" #textArea matInput
-                                [readonly]="node.readOnly"></textarea>
-                            <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
-                                {{node.maxCharCount}}
-                            </mat-hint>
-                            <mat-error
-                                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                                <a [innerHtml]="node.errorMessage"></a>
-                            </mat-error>
-                        </mat-form-field>
-                    </p>
-                    <p *ngSwitchCase="'file'">
-                        <mat-form-field [appearance]="structure.appearance" class="col-12">
-                            <mat-label>{{node.placeholder}}</mat-label>
-                            <ngx-mat-file-input [id]="node.id" formControlName="{{node.id}}" [accept]="node.accept">
-                            </ngx-mat-file-input>
-                            <mat-icon matSuffix style="cursor: pointer;">{{node.icon ? node.icon : 'folder'}}</mat-icon>
-                            <mat-error
-                                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                                <a [innerHtml]="node.errorMessage"></a>
-                            </mat-error>
-                        </mat-form-field>
-                    </p>
-
-                    <p *ngSwitchCase="'number'">
-                        <mat-form-field [appearance]="structure.appearance" class="col-12">
-                            <mat-label>{{node.placeholder}}</mat-label>
-                            <input [id]="node.id" matInput type="number" class="no-arrows" formControlName="{{node.id}}"
-                                [readonly]="node.readOnly">
-                            <mat-icon matSuffix>payments</mat-icon>
-                            <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
-                                {{node.maxCharCount}}
-                            </mat-hint>
-                            <mat-error
-                                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                                <a [innerHtml]="node.errorMessage"></a>
-                            </mat-error>
-                        </mat-form-field>
-                    </p>
-                    <p *ngSwitchDefault>
-                        Tipo de Nodo no soportado
-                    </p>
-                </span>
-            </div>
-        </div>
-
-        <!-- Creación de los botones de confirmación -->
-        <div class="container col-12">
-            <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
-                <div class="row float-right mr-0">
-                    <button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
-                        mat-stroked-button type="button" class="ml-2" color="{{confirmAction.action.style}}"
-                        (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
-                        [disabled]="structure.isInalid() && confirmAction.validateForm">
-                        <span class="mat-icon notranslate material-icons mat-icon-no-color"
-                            *ngIf="confirmAction.icon">{{confirmAction.icon}}</span>
-                        {{confirmAction.placeholder}}
-                    </button>
-                </div>
+<div class="col-12">
+  <form [formGroup]="formGroup" class="create-account-form">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-12">
+        <div class="row mt-2">
+          <span *ngFor="let node of structure.nodes" [ngSwitch]="node.type.toString()"
+            class="{{node.type == 'button' ? 'btn-form' : node.singleLine ? 'col-sm-12' : 'col-sm-6'}}">
+            <ng-container *ngSwitchCase="'input'">
+              <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
+                <mat-label>{{node.placeholder}}</mat-label>
+                <input id="{{node.id}}" matInput formControlName="{{node.id}}" [readonly]="node.readOnly" />
+                <mat-icon *ngIf="node.icon" matSuffix>{{node.icon}}</mat-icon>
+                <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
+                  {{node.maxCharCount}}</mat-hint>
+                <mat-error
+                  *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
+                  <a [innerHtml]="node.errorMessage"></a>
+                </mat-error>
+              </mat-form-field>
             </ng-container>
-            <ng-template #elseTemplate>
-                <div class="row float-right mr-0">
-                    <button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
-                        mat-raised-button type="button" class="ml-2" color="{{confirmAction?.action?.style}}"
-                        (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
-                        [disabled]="structure.isInalid() && confirmAction.validateForm">
-                        <span class="mat-icon notranslate material-icons mat-icon-no-color"
-                            *ngIf="confirmAction.icon">{{confirmAction.icon}}</span>
-                        {{confirmAction.placeholder}}
-                    </button>
-                </div>
-            </ng-template>
+            <ng-container *ngSwitchCase="'password'">
+              <mat-form-field [appearance]="structure.appearance" class="col-12">
+                <mat-label>{{node.placeholder}}</mat-label>
+                <input id="{{node.id}}" matInput [type]="hide ? 'password' : 'text'" formControlName="{{node.id}}"
+                  [readonly]="node.readOnly" />
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Ocultar Contraseña'"
+                  [attr.aria-pressed]="hide">
+                  <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
+                  {{node.maxCharCount}}
+                </mat-hint>
+                <mat-error
+                  *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
+                  <a [innerHtml]="node.errorMessage"></a>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngSwitchCase="'button'" class="col btn-form text-left btn-container">
+              <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
+                <button id="{{node.id}}" mat-stroked-button color="{{node?.action?.style}}" class="btn-container"
+                  (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
+                  [disabled]="structure.isInalid() && node.validateForm">
+                  <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+                  {{node.placeholder}}
+                </button>
+              </ng-container>
+              <ng-template #elseTemplate class="col">
+                <button id="{{node.id}}" mat-button color="{{node?.action?.style}}" class="btn-container"
+                  (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
+                  [disabled]="structure.isInalid() && node.validateForm">
+                  <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+                  {{node.placeholder}}
+                </button>
+              </ng-template>
+            </ng-container>
+            <ng-container *ngSwitchCase="'dropdown'">
+              <mat-form-field class="col-12" [appearance]="structure.appearance">
+                <mat-label>{{node.placeholder}}</mat-label>
+                <mat-select id="{{node.id}}" formControlName="{{node.id}}">
+                  <mat-option *ngFor="let child of node.value" [value]="child.value ? child.value : child.id">
+                    {{child.title}}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
+                  <a [innerHtml]="node.errorMessage"></a>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngSwitchCase="'checkbox'">
+              <mat-checkbox id="{{node.id}}" class="col-12" formControlName="{{node.id}}" color="primary"
+                [checked]="node.value">
+                <div class="e2e-inner-html-bound" [innerHTML]="node.placeholder"></div>
+              </mat-checkbox>
+              <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched"
+                class="col-12">
+                <a [innerHtml]="node.errorMessage"></a>
+              </mat-error>
+            </ng-container>
+            <ng-container *ngSwitchCase="'date'">
+              <mat-form-field class="col-12" [appearance]="structure.appearance">
+                <mat-label>{{node.placeholder}}</mat-label>
+                <input id="{{node.id}}" matInput [matDatepicker]="datePicker" formControlName="{{node.id}}"
+                  [readonly]="node.readOnly" />
+                <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+                <mat-datepicker #datePicker color="primary" class="col-12"></mat-datepicker>
+                <mat-error
+                  *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
+                  <a [innerHtml]="node.errorMessage"></a>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngSwitchCase="'radiogroup'">
+              <mat-label class="col-12" style="color: #757575; font-size: 11px;">{{node.placeholder}}:
+              </mat-label>
+              <br>
+              <mat-radio-group [id]="node.id" class="col-12" formControlName="{{node.id}}" [value]="node.selectedValue">
+                <mat-radio-button *ngFor="let child of node.value" class="mr-4 mt-2" color="primary"
+                  [value]="child.value ? child.value : child.title">
+                  {{child.title}}
+                </mat-radio-button>
+              </mat-radio-group>
+              <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
+                <a [innerHtml]="node.errorMessage"></a>
+              </mat-error>
+            </ng-container>
+            <ng-container *ngSwitchCase="'textarea'">
+              <mat-form-field class="col-12" [appearance]="structure.appearance">
+                <mat-label>{{node.placeholder}}</mat-label>
+                <textarea [id]="node.id" formControlName="{{node.id}}" #textArea matInput
+                  [readonly]="node.readOnly"></textarea>
+                <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
+                  {{node.maxCharCount}}
+                </mat-hint>
+                <mat-error
+                  *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
+                  <a [innerHtml]="node.errorMessage"></a>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngSwitchCase="'file'">
+              <mat-form-field [appearance]="structure.appearance" class="col-12">
+                <mat-label>{{node.placeholder}}</mat-label>
+                <ngx-mat-file-input [id]="node.id" formControlName="{{node.id}}" [accept]="node.accept">
+                </ngx-mat-file-input>
+                <mat-icon matSuffix style="cursor: pointer;">{{node.icon ? node.icon : 'folder'}}</mat-icon>
+                <mat-error
+                  *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
+                  <a [innerHtml]="node.errorMessage"></a>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'number'">
+              <mat-form-field [appearance]="structure.appearance" class="col-12">
+                <mat-label>{{node.placeholder}}</mat-label>
+                <input [id]="node.id" matInput type="number" class="no-arrows" formControlName="{{node.id}}"
+                  [readonly]="node.readOnly">
+                <mat-icon matSuffix>payments</mat-icon>
+                <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
+                  {{node.maxCharCount}}
+                </mat-hint>
+                <mat-error
+                  *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
+                  <a [innerHtml]="node.errorMessage"></a>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              Tipo de Nodo no soportado
+            </ng-container>
+          </span>
         </div>
-    </form>
+      </div>
+    </div>
+
+    <!-- Creación de los botones de confirmación -->
+    <div class="container col-12">
+      <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
+        <div class="row float-right mr-0">
+          <button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}" mat-stroked-button
+            type="button" class="ml-2 btn-container" color="{{confirmAction.action.style}}"
+            (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
+            [disabled]="structure.isInalid() && confirmAction.validateForm">
+            <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
+            {{confirmAction.placeholder}}
+          </button>
+        </div>
+      </ng-container>
+      <ng-template #elseTemplate>
+        <div class="row float-right mr-0">
+          <button mat-button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
+            class="ml-2 btn-container" color="{{confirmAction?.action?.style}}"
+            type="{{confirmAction.validateForm ? 'submit' : 'button'}}"
+            (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
+            [disabled]="structure.isInalid() && confirmAction.validateForm">
+            <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
+            {{confirmAction.placeholder}}
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </form>
 </div>

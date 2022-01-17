@@ -10,7 +10,7 @@ export class FormStructure extends ObjectBase {
     nodes: Node[];
     validateActions: Button[]
     appearance?: MatFormFieldAppearance = 'standard'
-    showTittle?: boolean = true
+    showTitle?: boolean = true
     private formGroup?: FormGroup;
     globalValidators?: ValidatorFn | ValidatorFn[] | null;
 
@@ -20,7 +20,7 @@ export class FormStructure extends ObjectBase {
         if (validateActions?.length > 4)
             throw new Error("No se permiten mas de 4 acciones de confirmación.");
 
-        this.showTittle = true;
+        this.showTitle = true;
         this.title = title;
         this.nodes = nodes;
         this.validateActions = validateActions;
