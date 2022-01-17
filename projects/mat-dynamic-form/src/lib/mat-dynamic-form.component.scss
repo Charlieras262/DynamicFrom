@@ -52,13 +52,13 @@ mat-form-field {
 
 .btn-form {
   .mat-button {
-    margin-left: 30px !important;
-    margin-top: 10px !important;
+    margin-left: 15px !important;
+    margin-top: 8px !important;
   }
 
   .mat-stroked-button {
-    margin-left: 30px !important;
-    margin-top: 10px !important;
+    margin-left: 15px !important;
+    margin-top: 8px !important;
   }
 }
 
@@ -73,9 +73,8 @@ $desktop-width: 1024px;
     }
 
     .mat-stroked-button {
-      margin-top: 0px;
       margin-left: 15px;
-      margin-bottom: 5px;
+      margin-bottom: 25px;
     }
   }
 }

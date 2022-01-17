@@ -4,10 +4,10 @@
 <div class="col-12">
   <form [formGroup]="formGroup" class="create-account-form">
     <div class="row d-flex justify-content-center">
-      <div class="col-md-12">
+      <div class="col-md-12 m-0 p-0">
         <div class="row mt-2">
           <span *ngFor="let node of structure.nodes" [ngSwitch]="node.type.toString()"
-            class="{{node.type == 'button' ? 'btn-form' : node.singleLine ? 'col-sm-12' : 'col-sm-6'}}">
+            class="{{node.type == 'button' ? 'btn-form' : node.singleLine ? 'col-sm-12' : 'col-sm-6'}} m-0 p-0">
             <ng-container *ngSwitchCase="'input'">
               <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
                 <mat-label>{{node.placeholder}}</mat-label>
@@ -159,7 +159,7 @@
     </div>
 
     <!-- Creación de los botones de confirmación -->
-    <div class="container col-12">
+    <div class="col-12 m-0 p-0">
       <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
         <div class="row float-right mr-0">
           <button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}" mat-stroked-button
