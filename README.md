@@ -87,11 +87,12 @@ export class AppComponent implements OnInit, FormListener {
   formStructure: FormStructure;
 
   constructor() {
-    this.formStructure = new FormStructure();
-
-    this.formStructure.title = 'Sign Up';
-    this.formStructure.appearance = 'outline';
-    this.formStructure.globalValidators = Validators.required;
+    this.formStructure = new FormStructure().apply({
+      title: 'Sign Up',
+      appearance: 'outline',
+      globalValidators: Validators.required,
+    });
+    
     this.formStructure.nodes = [
       new Input('name', 'Name').apply({
         icon: 'person'

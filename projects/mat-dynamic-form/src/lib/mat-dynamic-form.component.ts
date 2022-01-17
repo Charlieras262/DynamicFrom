@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { FormStructure } from './models/FormStructure';
-import { Button, Dropdown, Node, RadioGroup } from './models/Node';
+import { Button, Node } from './models/Node';
 
 @Component({
   selector: 'mat-dynamic-form',
@@ -69,7 +69,7 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
   }
 
   pushPair(array, item) {
-    if(!array.includes(item)) array.push(item)
+    if (!array.includes(item)) array.push(item)
   }
 
   ngAfterViewInit(): void {
