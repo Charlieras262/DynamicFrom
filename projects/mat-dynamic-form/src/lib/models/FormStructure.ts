@@ -70,9 +70,9 @@ export class FormStructure extends ObjectBase {
     /**
      * This method return the `formGroup` value
      * 
-     * @returns {JSON} A `JSON` object represntative of the `formGroup` values. 
+     * @returns {{ [value: string]: any }} A `JSON` object represntative of the `formGroup` values. 
      */
-    getValue(): JSON {
+    getValue(): { [value: string]: any } {
         return this.formGroup?.value;
     }
 
