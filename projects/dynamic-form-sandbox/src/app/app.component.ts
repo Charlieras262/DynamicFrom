@@ -15,13 +15,13 @@ export class AppComponent implements OnInit, FormListener {
     this.formStructure = new FormStructure();
 
     this.formStructure.title = 'Sign Up';
-    this.formStructure.appearance = 'outline';
+    this.formStructure.appearance = 'standard';
     this.formStructure.globalValidators = Validators.required;
     this.formStructure.nodes = [
       new Input('name', 'Name').apply({
         icon: 'person'
       }),
-      new Button('find', 'Find', {callback: this, style: 'primary'}).apply({
+      new Button('find', 'Find', { callback: this, style: 'primary' }).apply({
         icon: "search",
         singleLine: true
       }),
@@ -63,14 +63,18 @@ export class AppComponent implements OnInit, FormListener {
       })
     ];
     this.formStructure.validateActions = [
-      new Button('save', 'Save', {
-        callback: this, style: 'primary'
-      }).apply({
-        validateForm: false
-      }),
+
       new Button('cancel', 'Cancel', {
         callback: this, style: 'warn'
-      })
+      }).apply({
+        icon: 'close'
+      }),
+      new Button('save', 'Save', {
+        callback: this, style: 'primary',
+      }).apply({
+        validateForm: false,
+        icon: 'save'
+      }),
     ];
   }
 

@@ -4,15 +4,8 @@
   display: inline-flex !important;
   align-items: flex-end !important;
   border-radius: 100px !important;
-  padding: 8px 20px;
-  max-height: 40px !important;
-
-  i {
-    font-size: 24px !important;
-    margin-right: 4px !important;
-    display: inline-flex !important;
-    align-items: flex-start !important;
-  }
+  padding: 10px 20px !important;
+  min-height: 40px !important;
 
   mat-icon {
     font-size: 22px !important;
