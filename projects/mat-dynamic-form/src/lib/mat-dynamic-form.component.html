@@ -159,30 +159,31 @@
     </div>
 
     <!-- Creación de los botones de confirmación -->
-    <div class="col-12 m-0 p-0">
-      <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
-        <div class="row float-right mr-0">
-          <button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}" mat-stroked-button
-            type="button" class="ml-2 btn-container" color="{{confirmAction.action.style}}"
+
+    <br>
+    <mat-divider></mat-divider>
+    <div class="d-flex mt-1 pt-3">
+      <div class="ml-auto">
+        <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
+          <button *ngFor="let confirmAction of structure.validateActions; let i = index" id="{{confirmAction.id}}"
+            mat-stroked-button type="button" class="ml-3 btn-container" color="{{confirmAction.action.style}}"
             (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
             [disabled]="structure.isInalid() && confirmAction.validateForm">
             <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
             {{confirmAction.placeholder}}
           </button>
-        </div>
-      </ng-container>
-      <ng-template #elseTemplate>
-        <div class="row float-right mr-0">
+        </ng-container>
+        <ng-template #elseTemplate>
           <button mat-button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
-            class="ml-2 btn-container" color="{{confirmAction?.action?.style}}"
-            type="{{confirmAction.validateForm ? 'submit' : 'button'}}"
-            (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
-            [disabled]="structure.isInalid() && confirmAction.validateForm">
-            <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
-            {{confirmAction.placeholder}}
-          </button>
-        </div>
-      </ng-template>
+              class="ml-3 btn-container" color="{{confirmAction?.action?.style}}"
+              type="{{confirmAction.validateForm ? 'submit' : 'button'}}"
+              (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
+              [disabled]="structure.isInalid() && confirmAction.validateForm">
+              <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
+              {{confirmAction.placeholder}}
+            </button>
+        </ng-template>
+      </div>
     </div>
   </form>
 </div>
