@@ -75,7 +75,7 @@ This is an example of a full sing up form.
 
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { Button, Checkbox, DatePicker, Dropdown, FormListener, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'mat-dynamic-form';
+import { Button, Checkbox, DatePicker, Dropdown, FormListener, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'projects/mat-dynamic-form/src/public-api';
 
 @Component({
   selector: 'app-root',
@@ -87,15 +87,18 @@ export class AppComponent implements OnInit, FormListener {
   formStructure: FormStructure;
 
   constructor() {
-    this.formStructure = new FormStructure().apply({
-      title: 'Sign Up',
-      appearance: 'outline',
-      globalValidators: Validators.required,
-    });
-    
+    this.formStructure = new FormStructure();
+
+    this.formStructure.title = 'Sign Up';
+    this.formStructure.appearance = 'standard';
+    this.formStructure.globalValidators = Validators.required;
     this.formStructure.nodes = [
       new Input('name', 'Name').apply({
         icon: 'person'
+      }),
+      new Button('find', 'Find', { callback: this, style: 'primary' }).apply({
+        icon: "search",
+        singleLine: false
       }),
       new Input('tel', 'Phone Number').apply({
         icon: 'phone'
@@ -115,7 +118,7 @@ export class AppComponent implements OnInit, FormListener {
       }),
       new RadioGroup('hasPet', 'Has Pet', [
         new OptionChild('Yes', 'y'),
-        new OptionChild('Not', 'n')
+        new OptionChild('Not', 'n'),
       ]).apply({
         selectedValue: 'n',
         action: { type: 'change', callback: this }
@@ -135,14 +138,17 @@ export class AppComponent implements OnInit, FormListener {
       })
     ];
     this.formStructure.validateActions = [
-      new Button('save', 'Save', {
-        callback: this, style: 'primary'
-      }).apply({
-        validateForm: false
-      }),
       new Button('cancel', 'Cancel', {
         callback: this, style: 'warn'
-      })
+      }).apply({
+        icon: 'close'
+      }),
+      new Button('save', 'Save', {
+        callback: this, style: 'primary',
+      }).apply({
+        validateForm: true,
+        icon: 'save'
+      }),
     ];
   }
 
@@ -150,8 +156,8 @@ export class AppComponent implements OnInit, FormListener {
   }
 
   onEvent(id: string, value: any): void {
-    console.log(id, value)
     if (id == 'hasPet') {
+      console.log(id)
       const nodes = [
         new Dropdown('petType', 'Pet Type', [
           new OptionChild('Dog', 'PD'),
@@ -161,7 +167,7 @@ export class AppComponent implements OnInit, FormListener {
         new Input('petName', 'Pet Name')
       ]
       if (value == 'y') {
-        this.formStructure.createNodes(6, nodes)
+        this.formStructure.createNodes(7, nodes)
       } else this.formStructure.removeNodes(nodes)
     }
   }
@@ -169,13 +175,12 @@ export class AppComponent implements OnInit, FormListener {
   onClick(actionId: string): void {
     switch (actionId) {
       case 'save':
-        this.formStructure?.setValue([
-          { key: 'name', value: 'Carlos' },
-          { key: 'hasPet', value: 'y' }
-        ]);
+        this.formStructure?.pathValue({ name: 'Carlos', hasPet: 'y' });
         break;
       case 'cancel':
+        console.log(this.formStructure)
         this.formStructure?.reset();
+        this.formStructure?.remapValues();
         break;
     }
   }
