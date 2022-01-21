@@ -23,7 +23,7 @@ export class AppComponent implements OnInit, FormListener {
       }),
       new Button('find', 'Find', { callback: this, style: 'primary' }).apply({
         icon: "search",
-        singleLine: true
+        singleLine: false
       }),
       new Input('tel', 'Phone Number').apply({
         icon: 'phone'
@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, FormListener {
       }),
       new RadioGroup('hasPet', 'Has Pet', [
         new OptionChild('Yes', 'y'),
-        new OptionChild('Not', 'n')
+        new OptionChild('Not', 'n'),
       ]).apply({
         selectedValue: 'n',
         action: { type: 'change', callback: this }
@@ -63,7 +63,6 @@ export class AppComponent implements OnInit, FormListener {
       })
     ];
     this.formStructure.validateActions = [
-
       new Button('cancel', 'Cancel', {
         callback: this, style: 'warn'
       }).apply({
@@ -72,7 +71,7 @@ export class AppComponent implements OnInit, FormListener {
       new Button('save', 'Save', {
         callback: this, style: 'primary',
       }).apply({
-        validateForm: false,
+        validateForm: true,
         icon: 'save'
       }),
     ];
@@ -101,11 +100,7 @@ export class AppComponent implements OnInit, FormListener {
   onClick(actionId: string): void {
     switch (actionId) {
       case 'save':
-        this.formStructure?.setValue([
-          { key: 'name', value: 'Carlos' },
-          { key: 'hasPet', value: 'y' }
-        ]);
-        console.log(this.formStructure.getValue())
+        this.formStructure?.pathValue({ name: 'Carlos', hasPet: 'y' });
         break;
       case 'cancel':
         console.log(this.formStructure)

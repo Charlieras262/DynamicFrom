@@ -1,4 +1,3 @@
-export class DataSet {
-    key: string;
-    value: any;
+export interface DataSet<T> {
+    [key: string]: T
 }
