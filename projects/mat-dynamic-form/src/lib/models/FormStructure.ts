@@ -4,6 +4,7 @@ import { ReferenceException } from "../exceptions/Exceptions";
 import { DataSet } from "./DataSet";
 import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator } from "./Node";
 import { ObjectBase } from "./base/ObjectBase";
+import { KeyValueDiffer, KeyValueDiffers } from "@angular/core";
 
 export class FormStructure extends ObjectBase {
     title: string;
@@ -14,11 +15,10 @@ export class FormStructure extends ObjectBase {
     private formGroup?: FormGroup;
     globalValidators?: ValidatorFn | ValidatorFn[] | null;
 
-    constructor();
     constructor(title?: string, nodes?, validateActions?: Button[]) {
         super();
         if (validateActions?.length > 4)
-            throw new Error("No se permiten mas de 4 acciones de confirmación.");
+            throw new Error("No more than 4 actions are allowed.");
 
         this.showTitle = true;
         this.title = title;
@@ -36,14 +36,26 @@ export class FormStructure extends ObjectBase {
     }
 
     /**
-     * This method returns null if the `controlName` can't be found, otherwise returns
-     * the instances of the control that matches with the `controlName`. 
+     * This method returns null if the `controlId` can't be found, otherwise returns
+     * the instances of the control that matches with the `controlId`. 
      * 
-     * @param controlName The identifier of the control.
-     * @returns {AbstractControl | null} Based on `controlName` parameter.
+     * @param controlId The identifier of the control.
+     * @returns {AbstractControl | null} Based on `controlId` parameter.
      */
-    getControlById(controlName: string): AbstractControl | null {
-        return this.formGroup.get(controlName);
+    getControlById(controlId: string): AbstractControl | null {
+        this.getNodeById
+        return this.formGroup.get(controlId);
+    }
+
+    /**
+     * This method returns null if the `nodeId` can't be found, otherwise returns
+     * the instances of the control that matches with the `nodeId`. 
+     * 
+     * @param nodeId The identifier of the control.
+     * @returns {Node} Based on `nodeId` parameter.
+     */
+    getNodeById<T extends Node>(nodeId: string): T {
+        return this.nodes.find(node => node.id === nodeId) as T;
     }
 
     /**
@@ -70,24 +82,26 @@ export class FormStructure extends ObjectBase {
     /**
      * This method return the `formGroup` value
      * 
-     * @returns {{ [value: string]: any }} A `JSON` object represntative of the `formGroup` values. 
+     * @template T The type of the `formGroup` value.
+     * @returns `T` object represntative of the `formGroup` values. 
      */
-    getValue(): { [value: string]: any } {
+    getValue<T>(): T {
         return this.formGroup?.value;
     }
 
     /**
      * Set to controls of form group the values sent form `newValue`.
      * 
+     * @template T The type of the `newValue` parameter.
      * @param newValue {DataSet} The array of {@link DataSet} objects.
      * @returns If the operation was success returns true, returns false otherwise.
      */
-    setValue(newValue: DataSet[]): boolean {
+    pathValue<T>(newValue: DataSet<T>): boolean {
         if (!this.formGroup) return false;
-        newValue.map(item => {
-            const control = this.getControlById(item.key);
-            if (control) control.setValue(item.value)
-            else throw new ReferenceException(`No se pudo encontrar el identificador: "${item.key}" en el formulario.`);
+        Object.keys(newValue).map(item => {
+            const control = this.getControlById(item);
+            if (control) control.setValue(newValue[item]);
+            else throw new ReferenceException(`Could not find identifier: "${item}" in formgroup.`);
         })
         return true;
     }
@@ -134,7 +148,7 @@ export class FormStructure extends ObjectBase {
      * @param nodes The nodes that will be removed.
      */
     removeNodes(nodes: Node[]) {
-        nodes.map(node => {
+        nodes.forEach(node => {
             this.removeNode(node)
         });
     }
@@ -167,11 +181,12 @@ export class FormStructure extends ObjectBase {
 
 
         if (this.formGroup?.contains(node.id)) {
-            return this.getControlById(node.id).setValue(value ?? '');
+            const control = this.getControlById(node.id);
+            if (node.disabled) control.disable(); else control.enable();
+            return control.setValue(value ?? '');
         }
 
-        const control = new FormControl(value ?? '', node.validator, node.asyncValidator);
-
+        const control = new FormControl({ value: value ?? '', disabled: node.disabled }, node.validator, node.asyncValidator);
 
         this.addControlValidators(control, this.globalValidators);
         this.formGroup?.addControl(node.id, control);

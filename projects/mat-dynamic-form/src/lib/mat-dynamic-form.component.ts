@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
+import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { FormStructure } from './models/FormStructure';
 import { Button, Node } from './models/Node';
@@ -10,16 +10,16 @@ import { Button, Node } from './models/Node';
 })
 export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
-  @Input()
-  structure: FormStructure;
+  @Input('structure') structure: FormStructure;
   viewInitialized = false;
   formGroup: FormGroup;
   hide = true;
 
   differ: KeyValueDiffer<Node[], any>;
+
   constructor(
     private _formBuilder: FormBuilder,
-    private differs: KeyValueDiffers
+    private differs: KeyValueDiffers,
   ) {
     this.differ = this.differs.find({}).create();
   }
@@ -34,9 +34,9 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
     if (change) {
       if (this.structure?.fromGroupSize() == 0)
         change.forEachAddedItem(item => {
-          this.structure?.createFormControl(item.currentValue)
+          this.structure?.createFormControl(item.currentValue);
         });
-      if (this.viewInitialized) this.addEvents()
+      if (this.viewInitialized) this.addEvents();
     }
   }
 

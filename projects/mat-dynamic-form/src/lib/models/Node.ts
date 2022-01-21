@@ -83,6 +83,14 @@ export class Input extends NodeBase {
         this.maxCharCount = maxCharCount;
         this.readOnly = readOnly;
     }
+
+    editable() {
+        this.readOnly = false;
+    }
+
+    readonly() {
+        this.readOnly = true;
+    }
 }
 
 export class InputFile extends NodeBase {
