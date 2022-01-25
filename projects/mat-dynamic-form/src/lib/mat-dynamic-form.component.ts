@@ -1,3 +1,4 @@
+import { ReturnStatement } from '@angular/compiler';
 import { AfterViewInit, Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AdDirective } from './directive/append-component.directive';
@@ -25,8 +26,6 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
     private differs: KeyValueDiffers,
     private resolver: ComponentFactoryResolver
   ) {
-    console.log("constructor");
-
     this.differ = this.differs.find({}).create();
   }
 
@@ -76,22 +75,22 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
   }
 
   createCustomNodes() {
-    console.log(this.containers);
-
     this.containers.forEach(container => {
-      console.log(container.nodeId);
-      console.log(this.structure.nodes);
-
-      const node = this.structure.nodes.find(node => node.id == container.nodeId);
-      if (node instanceof CustomNode) {
-        console.log(node);
-
-        const componentFactory = this.resolver.resolveComponentFactory<typeof node.component>(node.component);
-        const componentRef = container.viewContainerRef.createComponent<typeof node.component>(componentFactory);
-        Object.keys(node.properties).forEach(key => {
-          componentRef.instance[key] = node.properties[key];
-        });
-      }
+      setTimeout(() => {
+        const node = this.structure.nodes.find(node => node.id == container.nodeId);
+        if (node instanceof CustomNode) {
+          const factory = this.resolver.resolveComponentFactory<typeof node.component>(node.component,);
+          const componentRef = container.viewContainerRef.createComponent<typeof node.component>(factory, 0, container.viewContainerRef.injector);
+          if (node.properties) {
+            node.properties.control = this.structure.getControlById(node.id);
+          } else {
+            node.properties = { control: this.structure.getControlById(node.id) };
+          }
+          Object.keys(node.properties).forEach(key => {
+            componentRef.instance[key] = node.properties[key];
+          });
+        }
+      }, 10);
     });
   }
 }

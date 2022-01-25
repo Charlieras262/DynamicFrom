@@ -4,7 +4,6 @@ import { Action } from "./Action";
 import { ObjectBase } from "./base/ObjectBase";
 import { OptionChild } from "./OptionChild";
 
-
 export type Node = Input | Checkbox | RadioGroup | Dropdown | TextArea | DatePicker | InputFile | InputNumber | InputPassword
 export type Validator = ValidatorFn | ValidatorFn[] | null;
 export type AsyncValidator = AsyncValidatorFn | AsyncValidatorFn[] | null;
@@ -55,7 +54,7 @@ class NodeBase extends ObjectBase {
 
 export class CustomNode<T> extends NodeBase {
     public component: Type<T>;
-    public properties: { [key: string]: any }
+    public properties?: { [key: string]: any };
 
     constructor(id, component, properties?, placeholder?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
         super(id, placeholder, 'custom', singleLine, icon, errorMessage, validator, disabled, asyncValidator, action);
