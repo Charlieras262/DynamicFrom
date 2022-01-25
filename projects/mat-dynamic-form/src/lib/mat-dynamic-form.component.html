@@ -144,6 +144,11 @@
               </mat-error>
             </mat-form-field>
           </ng-container>
+          <ng-container *ngSwitchCase="'custom'">
+            <div class="col-12">
+              <ng-template adHost [nodeId]="node.id"></ng-template>
+            </div>
+          </ng-container>
           <ng-container *ngSwitchDefault>
             Tipo de Nodo no soportado
           </ng-container>

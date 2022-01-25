@@ -4,7 +4,6 @@ import { ReferenceException } from "../exceptions/Exceptions";
 import { DataSet } from "./DataSet";
 import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator } from "./Node";
 import { ObjectBase } from "./base/ObjectBase";
-import { KeyValueDiffer, KeyValueDiffers } from "@angular/core";
 
 export class FormStructure extends ObjectBase {
     title: string;

@@ -4,9 +4,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDynamicFormComponent } from './mat-dynamic-form.component';
 import { MaterialModule } from './material-module';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
+import { AdDirective } from './directive/append-component.directive';
 
 @NgModule({
-  declarations: [MatDynamicFormComponent],
+  declarations: [MatDynamicFormComponent, AdDirective],
   imports: [
     CommonModule,
     MaterialModule,
