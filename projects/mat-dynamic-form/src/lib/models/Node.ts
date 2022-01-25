@@ -75,6 +75,7 @@ export class Checkbox extends NodeBase {
 export class Input extends NodeBase {
     public value?: string;
     public maxCharCount?: number;
+    public minCharCount?: number;
     public readOnly: boolean;
 
     constructor(id, placeholder?, value?, maxCharCount?, singleLine?, icon?, errorMessage?, disabled?, readOnly?, validator?, asyncValidator?, action?) {
