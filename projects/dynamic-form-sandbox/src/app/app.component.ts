@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { Button, Checkbox, DatePicker, Dropdown, FormListener, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'projects/mat-dynamic-form/src/public-api';
+import { Button, Checkbox, CustomNode, DatePicker, Dropdown, FormListener, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'projects/mat-dynamic-form/src/public-api';
+import { InputComponent } from './input/input.component';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit, FormListener {
     this.formStructure.globalValidators = Validators.required;
     this.formStructure.nodes = [
       new Input('name', 'Name').apply({
-        icon: 'person'
+        icon: 'person',
+        maxCharCount: 100
       }),
       new Button('find', 'Find', { callback: this, style: 'primary' }).apply({
         icon: "search",
@@ -54,13 +56,16 @@ export class AppComponent implements OnInit, FormListener {
         validator: Validators.maxLength(100),
         maxCharCount: 100
       }),
+      new CustomNode<InputComponent>('custom1', InputComponent, { label: 'Custom 1', placeholder: 'Custom Placeholder 1' }),
+      new CustomNode<InputComponent>('custom2', InputComponent, { label: 'Custom 2', placeholder: 'Custom Placeholder 2' }),
       new Checkbox(
         'agreement',
         `I have read and agree to the terms of DynamicForm License Agreement, <strong><a href='https://www.google.com'>Read the license here.<a </strong>`
       ).apply({
         singleLine: true,
         validator: Validators.requiredTrue
-      })
+      }),
+      new CustomNode<InputComponent>('custom3', InputComponent, { label: 'Custom 3', placeholder: 'Custom Placeholder 2' }),
     ];
     this.formStructure.validateActions = [
       new Button('cancel', 'Cancel', {

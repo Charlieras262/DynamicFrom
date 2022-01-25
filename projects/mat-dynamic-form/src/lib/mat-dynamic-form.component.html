@@ -17,7 +17,7 @@
                 {{getControlLenght(node.id)}} / {{node.maxCharCount}}
               </mat-hint>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                <a [innerHtml]="node.errorMessage"></a>
+                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
               </mat-error>
             </mat-form-field>
           </ng-container>
@@ -34,7 +34,7 @@
                 {{getControlLenght(node.id)}} / {{node.maxCharCount}}
               </mat-hint>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                <a [innerHtml]="node.errorMessage"></a>
+                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
               </mat-error>
             </mat-form-field>
           </ng-container>
@@ -65,18 +65,18 @@
                 </mat-option>
               </mat-select>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                <a [innerHtml]="node.errorMessage"></a>
+                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
               </mat-error>
             </mat-form-field>
           </ng-container>
           <ng-container *ngSwitchCase="'checkbox'">
             <mat-checkbox id="{{node.id}}" class="col-12" formControlName="{{node.id}}" color="primary"
               [checked]="node.value">
-              <div class="e2e-inner-html-bound" [innerHTML]="node.placeholder"></div>
+              <span class="e2e-inner-html-bound" [innerHTML]="node.placeholder | sanitizeHtml"></span>
             </mat-checkbox>
             <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched"
               class="col-12">
-              <a [innerHtml]="node.errorMessage"></a>
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
             </mat-error>
           </ng-container>
           <ng-container *ngSwitchCase="'date'">
@@ -87,7 +87,7 @@
               <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
               <mat-datepicker #datePicker color="primary" class="col-12"></mat-datepicker>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                <a [innerHtml]="node.errorMessage"></a>
+                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
               </mat-error>
             </mat-form-field>
           </ng-container>
@@ -102,7 +102,7 @@
               </mat-radio-button>
             </mat-radio-group>
             <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-              <a [innerHtml]="node.errorMessage"></a>
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
             </mat-error>
           </ng-container>
           <ng-container *ngSwitchCase="'textarea'">
@@ -114,7 +114,7 @@
                 {{getControlLenght(node.id)}} / {{node.maxCharCount}}
               </mat-hint>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                <a [innerHtml]="node.errorMessage"></a>
+                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
               </mat-error>
             </mat-form-field>
           </ng-container>
@@ -125,7 +125,7 @@
               </ngx-mat-file-input>
               <mat-icon matSuffix style="cursor: pointer;">{{node.icon ? node.icon : 'folder'}}</mat-icon>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                <a [innerHtml]="node.errorMessage"></a>
+                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
               </mat-error>
             </mat-form-field>
           </ng-container>
@@ -140,7 +140,7 @@
                 {{node.maxCharCount}}
               </mat-hint>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
-                <a [innerHtml]="node.errorMessage"></a>
+                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
               </mat-error>
             </mat-form-field>
           </ng-container>

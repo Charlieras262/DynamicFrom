@@ -129,13 +129,16 @@ export class AppComponent implements OnInit, FormListener {
         validator: Validators.maxLength(100),
         maxCharCount: 100
       }),
+      new CustomNode<InputComponent>('custom1', InputComponent, { label: 'Custom 1', placeholder: 'Custom Placeholder 1' }),
+      new CustomNode<InputComponent>('custom2', InputComponent, { label: 'Custom 2', placeholder: 'Custom Placeholder 2' }),
       new Checkbox(
         'agreement',
         `I have read and agree to the terms of DynamicForm License Agreement, <strong><a href='https://www.google.com'>Read the license here.<a </strong>`
       ).apply({
         singleLine: true,
         validator: Validators.requiredTrue
-      })
+      }),
+      new CustomNode<InputComponent>('custom3', InputComponent, { label: 'Custom 3', placeholder: 'Custom Placeholder 2' }),
     ];
     this.formStructure.validateActions = [
       new Button('cancel', 'Cancel', {
@@ -187,6 +190,44 @@ export class AppComponent implements OnInit, FormListener {
 }
 
 ```
+
+### Custom Component (TS)
+
+This is an example of a custom componente ts child code.
+
+```typescript
+@Component({
+  selector: 'app-input',
+  templateUrl: './input.component.html',
+  styleUrls: ['./input.component.scss']
+})
+export class InputComponent implements OnInit {
+  control: FormControl; // <-- You must have to add this property
+
+  constructor() { }
+
+  ngOnInit() {
+  }
+}
+
+```
+
+### Custom Component (HTML)
+
+This is an example of a custom componente html child code.
+
+```html
+...
+<mat-form-field class="col-12" appearance="fill">
+  <mat-label>{{label}}</mat-label>
+  <input type="email" matInput placeholder="{{placeholder}}" [formControl]="control"> <!-- You must have to bind control property with your custom component fields -->
+</mat-form-field>
+...
+```
+
+### Resulting Form
+
+![image](https://user-images.githubusercontent.com/44990120/151060579-c03a0cca-1f98-43e0-8b71-48f4c6012c1d.png)
 
 ### [Node Types](https://github.com/Charlieras262/DynamicFrom/blob/9df0525bd140aff183a0507571e1ed63088ce484/projects/mat-dynamic-form/src/lib/models/Node.ts#L10)
 
