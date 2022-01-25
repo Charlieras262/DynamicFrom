@@ -1,12 +1,13 @@
-import { AfterViewInit, ApplicationRef, ChangeDetectorRef, Component, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { AdDirective } from './directive/append-component.directive';
 import { FormStructure } from './models/FormStructure';
-import { Button, Node } from './models/Node';
+import { Button, Node, CustomNode } from './models/Node';
 
 @Component({
   selector: 'mat-dynamic-form',
   templateUrl: 'mat-dynamic-form.component.html',
-  styleUrls: ['mat-dynamic-form.component.scss']
+  styleUrls: ['mat-dynamic-form.component.scss'],
 })
 export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
@@ -17,10 +18,15 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
   differ: KeyValueDiffer<Node[], any>;
 
+  @ViewChildren(AdDirective) containers!: QueryList<AdDirective>
+
   constructor(
     private _formBuilder: FormBuilder,
     private differs: KeyValueDiffers,
+    private resolver: ComponentFactoryResolver
   ) {
+    console.log("constructor");
+
     this.differ = this.differs.find({}).create();
   }
 
@@ -43,6 +49,11 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
   ngAfterViewInit(): void {
     this.addEvents();
     this.viewInitialized = true
+    this.createCustomNodes();
+  }
+
+  getControlLenght(id: string) {
+    return this.structure.getControlById(id)?.value?.length ?? 0;
   }
 
   addEvents() {
@@ -60,6 +71,26 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
           const value = this.structure?.getControlById(node.id).value;
           if (node.value != value) node.action?.callback?.onEvent(node.id, value);
         })
+      }
+    });
+  }
+
+  createCustomNodes() {
+    console.log(this.containers);
+
+    this.containers.forEach(container => {
+      console.log(container.nodeId);
+      console.log(this.structure.nodes);
+
+      const node = this.structure.nodes.find(node => node.id == container.nodeId);
+      if (node instanceof CustomNode) {
+        console.log(node);
+
+        const componentFactory = this.resolver.resolveComponentFactory<typeof node.component>(node.component);
+        const componentRef = container.viewContainerRef.createComponent<typeof node.component>(componentFactory);
+        Object.keys(node.properties).forEach(key => {
+          componentRef.instance[key] = node.properties[key];
+        });
       }
     });
   }

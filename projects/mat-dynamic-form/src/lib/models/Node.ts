@@ -1,3 +1,4 @@
+import { Type } from "@angular/core";
 import { ValidatorFn, AbstractControlOptions, AsyncValidatorFn } from "@angular/forms"
 import { Action } from "./Action";
 import { ObjectBase } from "./base/ObjectBase";
@@ -7,7 +8,7 @@ import { OptionChild } from "./OptionChild";
 export type Node = Input | Checkbox | RadioGroup | Dropdown | TextArea | DatePicker | InputFile | InputNumber | InputPassword
 export type Validator = ValidatorFn | ValidatorFn[] | null;
 export type AsyncValidator = AsyncValidatorFn | AsyncValidatorFn[] | null;
-type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number';
+type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number' | 'custom';
 
 /**
  * @description Esta es la estructura general del nodo que se quiere mostrar en el DOM. 
@@ -28,15 +29,15 @@ class NodeBase extends ObjectBase {
 
     /**
      * @description Crea una instancia de un nodo con los parametros que se le envien.
-    * 
-    * @param id Es el identificador del nodo en el DOM
-    * @param placeholder Es el texto que se muestra como sugerencia.
-    * @param type Es el tipo de nodo ({@link NodeType}) que se creará en el DOM.
-    * @param value Es el valor inicial que tendra el nodo al crearce en el DOM, este parametro es opcional
-    * sino se desea utilizar se deberá enviar {@link undefined} en su lugar.
-    * @param action Es la acción {@link Action} a ejecutar dependiendo del evento asignado, este parametro es opcional
-    * sino se desea utilizar se deberá enviar {@link undefined} en su lugar.
-    */
+     * 
+     * @param id Es el identificador del nodo en el DOM
+     * @param placeholder Es el texto que se muestra como sugerencia.
+     * @param type Es el tipo de nodo ({@link NodeType}) que se creará en el DOM.
+     * @param value Es el valor inicial que tendra el nodo al crearce en el DOM, este parametro es opcional
+     * sino se desea utilizar se deberá enviar {@link undefined} en su lugar.
+     * @param action Es la acción {@link Action} a ejecutar dependiendo del evento asignado, este parametro es opcional
+     * sino se desea utilizar se deberá enviar {@link undefined} en su lugar.
+     */
     constructor(id, placeholder, type: NodeType, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action) {
         super();
         this.id = id;
@@ -49,6 +50,17 @@ class NodeBase extends ObjectBase {
         this.validator = validator;
         this.asyncValidator = asyncValidator
         this.action = action;
+    }
+}
+
+export class CustomNode<T> extends NodeBase {
+    public component: Type<T>;
+    public properties: { [key: string]: any }
+
+    constructor(id, component, properties?, placeholder?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
+        super(id, placeholder, 'custom', singleLine, icon, errorMessage, validator, disabled, asyncValidator, action);
+        this.properties = properties;
+        this.component = component;
     }
 }
 
