@@ -10,10 +10,12 @@
           <ng-container *ngSwitchCase="'input'">
             <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
               <mat-label>{{node.placeholder}}</mat-label>
-              <input id="{{node.id}}" matInput formControlName="{{node.id}}" [readonly]="node.readOnly" />
+              <input id="{{node.id}}" matInput formControlName="{{node.id}}" [readonly]="node.readOnly"
+                [maxlength]="node.maxCharCount" [minlength]="node.minCharCount" />
               <mat-icon *ngIf="node.icon" matSuffix>{{node.icon}}</mat-icon>
-              <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
-                {{node.maxCharCount}}</mat-hint>
+              <mat-hint align="end" *ngIf="node.maxCharCount">
+                {{getControlLenght(node.id)}} / {{node.maxCharCount}}
+              </mat-hint>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
                 <a [innerHtml]="node.errorMessage"></a>
               </mat-error>
@@ -23,13 +25,13 @@
             <mat-form-field [appearance]="structure.appearance" class="col-12">
               <mat-label>{{node.placeholder}}</mat-label>
               <input id="{{node.id}}" matInput [type]="hide ? 'password' : 'text'" formControlName="{{node.id}}"
-                [readonly]="node.readOnly" />
+                [readonly]="node.readOnly" [maxlength]="node.maxCharCount" [minlength]="node.minCharCount" />
               <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Ocultar Contraseña'"
                 [attr.aria-pressed]="hide">
                 <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
-              <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
-                {{node.maxCharCount}}
+              <mat-hint align="end" *ngIf="node.maxCharCount">
+                {{getControlLenght(node.id)}} / {{node.maxCharCount}}
               </mat-hint>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
                 <a [innerHtml]="node.errorMessage"></a>
@@ -106,10 +108,10 @@
           <ng-container *ngSwitchCase="'textarea'">
             <mat-form-field class="col-12" [appearance]="structure.appearance">
               <mat-label>{{node.placeholder}}</mat-label>
-              <textarea [id]="node.id" formControlName="{{node.id}}" #textArea matInput
-                [readonly]="node.readOnly"></textarea>
-              <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
-                {{node.maxCharCount}}
+              <textarea [id]="node.id" formControlName="{{node.id}}" matInput [readonly]="node.readOnly"
+                [maxlength]="node.maxCharCount" [minlength]="node.minCharCount"></textarea>
+              <mat-hint align="end" *ngIf="node.maxCharCount">
+                {{getControlLenght(node.id)}} / {{node.maxCharCount}}
               </mat-hint>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
                 <a [innerHtml]="node.errorMessage"></a>
