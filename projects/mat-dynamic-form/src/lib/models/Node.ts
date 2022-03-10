@@ -54,6 +54,7 @@ class NodeBase extends ObjectBase {
 
 export class CustomNode<T> extends NodeBase {
     public component: Type<T>;
+    public instance: T;
     public properties?: { [key: string]: any };
 
     constructor(id, component, properties?, placeholder?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
