@@ -81,6 +81,7 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
         if (node instanceof CustomNode) {
           const factory = this.resolver.resolveComponentFactory<typeof node.component>(node.component,);
           const componentRef = container.viewContainerRef.createComponent<typeof node.component>(factory, 0, container.viewContainerRef.injector);
+          node.instance = componentRef.instance;
           if (node.properties) {
             node.properties.control = this.structure.getControlById(node.id);
           } else {
