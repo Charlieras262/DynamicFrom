@@ -67,7 +67,7 @@ export class AppComponent implements OnInit, FormListener {
       }),
       new CustomNode<InputComponent>('custom3', InputComponent, { label: 'Custom 3', placeholder: 'Custom Placeholder 2' }),
     ];
-    this.formStructure.validateActions = [
+    this.formStructure.validateActions = [/* 
       new Button('cancel', 'Cancel', {
         callback: this, style: 'warn'
       }).apply({
@@ -78,7 +78,7 @@ export class AppComponent implements OnInit, FormListener {
       }).apply({
         validateForm: true,
         icon: 'save'
-      }),
+      }), */
     ];
   }
 
