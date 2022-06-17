@@ -160,7 +160,7 @@
   <!-- Creación de los botones de confirmación -->
 
   <br>
-  <mat-divider></mat-divider>
+  <mat-divider *ngIf="structure.validateActions.length > 0"></mat-divider>
   <div class="d-flex mt-1 pt-3">
     <div class="ml-auto">
       <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
