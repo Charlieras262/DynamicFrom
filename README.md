@@ -75,14 +75,15 @@ This is an example of a full sing up form.
 
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { Button, Checkbox, DatePicker, Dropdown, FormListener, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'projects/mat-dynamic-form/src/public-api';
+import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'projects/mat-dynamic-form/src/public-api';
+import { InputComponent } from './input/input.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, FormListener {
+export class AppComponent implements OnInit {
 
   formStructure: FormStructure;
 
@@ -94,9 +95,10 @@ export class AppComponent implements OnInit, FormListener {
     this.formStructure.globalValidators = Validators.required;
     this.formStructure.nodes = [
       new Input('name', 'Name').apply({
-        icon: 'person'
+        icon: 'person',
+        maxCharCount: 100
       }),
-      new Button('find', 'Find', { callback: this, style: 'primary' }).apply({
+      new Button('find', 'Find', { style: 'primary' }).apply({
         icon: "search",
         singleLine: false
       }),
@@ -121,7 +123,7 @@ export class AppComponent implements OnInit, FormListener {
         new OptionChild('Not', 'n'),
       ]).apply({
         selectedValue: 'n',
-        action: { type: 'change', callback: this }
+        action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) }
       }),
       new InputPassword('pass', 'Password'),
       new TextArea('comments', 'Comments').apply({
@@ -142,12 +144,16 @@ export class AppComponent implements OnInit, FormListener {
     ];
     this.formStructure.validateActions = [
       new Button('cancel', 'Cancel', {
-        callback: this, style: 'warn'
+        onEvent: (param) => {
+          console.log("asddd", param.structure)
+          param.structure?.reset();
+          param.structure?.remapValues();
+        }, style: 'warn'
       }).apply({
         icon: 'close'
       }),
       new Button('save', 'Save', {
-        callback: this, style: 'primary',
+        onEvent: (param) => param.structure?.patchValue({ name: 'Carlos', hasPet: 'y' }), style: 'primary',
       }).apply({
         validateForm: true,
         icon: 'save'
@@ -158,34 +164,18 @@ export class AppComponent implements OnInit, FormListener {
   ngOnInit(): void {
   }
 
-  onEvent(id: string, value: any): void {
-    if (id == 'hasPet') {
-      console.log(id)
-      const nodes = [
-        new Dropdown('petType', 'Pet Type', [
-          new OptionChild('Dog', 'PD'),
-          new OptionChild('Cat', 'PC')
-        ]),
-        new Input('breed', 'Pet Breed'),
-        new Input('petName', 'Pet Name')
-      ]
-      if (value == 'y') {
-        this.formStructure.createNodes(7, nodes)
-      } else this.formStructure.removeNodes(nodes)
-    }
-  }
-
-  onClick(actionId: string): void {
-    switch (actionId) {
-      case 'save':
-        this.formStructure?.pathValue({ name: 'Carlos', hasPet: 'y' });
-        break;
-      case 'cancel':
-        console.log(this.formStructure)
-        this.formStructure?.reset();
-        this.formStructure?.remapValues();
-        break;
-    }
+  onHasPetValueChange(param: ActionEvent) {
+    const nodes = [
+      new Dropdown('petType', 'Pet Type', [
+        new OptionChild('Dog', 'PD'),
+        new OptionChild('Cat', 'PC')
+      ]),
+      new Input('breed', 'Pet Breed'),
+      new Input('petName', 'Pet Name')
+    ]
+    if (param.event == 'y') {
+      this.formStructure.createNodes(7, nodes)
+    } else this.formStructure.removeNodes(nodes)
   }
 }
 

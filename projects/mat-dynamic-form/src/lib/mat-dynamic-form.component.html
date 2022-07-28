@@ -1,8 +1,8 @@
 <div class="card-body" *ngIf="structure.showTitle">
   <mat-card-title class="title" color="primary" *ngIf="structure.title">{{structure.title}}</mat-card-title>
 </div>
-<form [formGroup]="formGroup" class="create-account-form">
-  <div class="row d-flex justify-content-center">
+<form [formGroup]="formGroup">
+  <div class="row justify-content-center">
     <div class="col-md-12">
       <div class="row mt-2">
         <span *ngFor="let node of structure.nodes" [ngSwitch]="node.type.toString()"
@@ -38,7 +38,7 @@
               </mat-error>
             </mat-form-field>
           </ng-container>
-          <ng-container *ngSwitchCase="'button'" class="col btn-form text-left btn-container">
+          <div *ngSwitchCase="'button'" class="btn-form">
             <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
               <button id="{{node.id}}" mat-stroked-button color="{{node?.action?.style}}" class="btn-container"
                 [disabled]="structure.isInvalid() && node.validateForm">
@@ -46,7 +46,7 @@
                 {{node.placeholder}}
               </button>
             </ng-container>
-            <ng-template #elseTemplate class="col">
+            <ng-template #elseTemplate>
               <button id="{{node.id}}" mat-button color="{{node?.action?.style}}" class="btn-container"
                 (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
                 [disabled]="structure.isInvalid() && node.validateForm">
@@ -54,7 +54,7 @@
                 {{node.placeholder}}
               </button>
             </ng-template>
-          </ng-container>
+          </div>
           <ng-container *ngSwitchCase="'dropdown'">
             <mat-form-field class="col-12" [appearance]="structure.appearance">
               <mat-label>{{node.placeholder}}</mat-label>
