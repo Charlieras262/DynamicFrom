@@ -56,14 +56,24 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
   }
 
   addEvents() {
+    this.structure.validateActions.forEach(node => {
+      const item = document.getElementById(node.id);
+
+      item?.addEventListener(node?.action?.type ?? 'click', event => {
+        /** TODO delete property in version 1.5.0 */
+        node.action?.callback?.onClick?.(node.id);
+        node.action?.onEvent?.({ event, structure: this.structure });
+      });
+    });
     this.structure.nodes.forEach(node => {
 
       const item = document.getElementById(node.id);
 
       if (node instanceof Button) {
-        return item.addEventListener(node?.action?.type, () => {
+        return item?.addEventListener(node?.action?.type ?? 'click', event => {
+          /** TODO delete property in version 1.5.0 */
           node.action?.callback?.onClick?.(node.id);
-          node.action?.onEvent?.({ event, structure: this.structure });
+          node.action?.onEvent?.({ event: node, structure: this.structure });
         });
       }
 
@@ -76,7 +86,7 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
           };
         })
       } else {
-        item?.addEventListener(node.action?.type?.toString(), (event) => {
+        item?.addEventListener(node.action?.type?.toString(), event => {
           const value = this.structure?.getControlById(node.id).value;
           if (node.value != value) {
             /** TODO delete property in version 1.5.0 */
