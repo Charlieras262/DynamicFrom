@@ -50,6 +50,10 @@ class NodeBase extends ObjectBase {
         this.asyncValidator = asyncValidator
         this.action = action;
     }
+
+    getNativeElement() {
+        return document.getElementById(this.id);
+    }
 }
 
 export class CustomNode<T> extends NodeBase {

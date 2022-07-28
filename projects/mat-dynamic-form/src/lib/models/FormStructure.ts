@@ -91,11 +91,30 @@ export class FormStructure extends ObjectBase {
     /**
      * Set to controls of form group the values sent form `newValue`.
      * 
+     * @deprecated Since version 1.4.0. Will be deleted in version 1.5.0. Use {@link FormStructure.patchValue} instead.
+     * 
      * @template T The type of the `newValue` parameter.
      * @param newValue {DataSet} The array of {@link DataSet} objects.
      * @returns If the operation was success returns true, returns false otherwise.
      */
     pathValue<T>(newValue: DataSet<T>): boolean {
+        if (!this.formGroup) return false;
+        Object.keys(newValue).map(item => {
+            const control = this.getControlById(item);
+            if (control) control.setValue(newValue[item]);
+            else throw new ReferenceException(`Could not find identifier: "${item}" in formgroup.`);
+        })
+        return true;
+    }
+
+    /**
+     * Set to controls of form group the values sent form `newValue`.
+     * 
+     * @template T The type of the `newValue` parameter.
+     * @param newValue {DataSet} The array of {@link DataSet} objects.
+     * @returns If the operation was success returns true, returns false otherwise.
+     */
+     patchValue<T>(newValue: DataSet<T>): boolean {
         if (!this.formGroup) return false;
         Object.keys(newValue).map(item => {
             const control = this.getControlById(item);
@@ -120,12 +139,25 @@ export class FormStructure extends ObjectBase {
     /**
      * A control is `invalid` when its `status` is `INVALID`.
      *
+     * @deprecated Since version 1.4.0. Will be deleted in version 1.5.0. Use {@link FormStructure.isInvalid} instead.
      * @see {@link AbstractControl.status}
      *
      * @returns True if this control has failed one or more of its validation checks,
      * false otherwise.
      */
     isInalid(): boolean {
+        return this.formGroup?.invalid
+    }
+
+    /**
+     * A control is `invalid` when its `status` is `INVALID`.
+     *
+     * @see {@link AbstractControl.status}
+     *
+     * @returns True if this control has failed one or more of its validation checks,
+     * false otherwise.
+     */
+     isInvalid(): boolean {
         return this.formGroup?.invalid
     }
 

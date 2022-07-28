@@ -1,5 +1,5 @@
 <div class="card-body" *ngIf="structure.showTitle">
-  <mat-card-title class="title" color="primary">{{structure.title}}</mat-card-title>
+  <mat-card-title class="title" color="primary" *ngIf="structure.title">{{structure.title}}</mat-card-title>
 </div>
 <form [formGroup]="formGroup" class="create-account-form">
   <div class="row d-flex justify-content-center">
@@ -41,8 +41,7 @@
           <ng-container *ngSwitchCase="'button'" class="col btn-form text-left btn-container">
             <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
               <button id="{{node.id}}" mat-stroked-button color="{{node?.action?.style}}" class="btn-container"
-                (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
-                [disabled]="structure.isInalid() && node.validateForm">
+                [disabled]="structure.isInvalid() && node.validateForm">
                 <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
                 {{node.placeholder}}
               </button>
@@ -50,7 +49,7 @@
             <ng-template #elseTemplate class="col">
               <button id="{{node.id}}" mat-button color="{{node?.action?.style}}" class="btn-container"
                 (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
-                [disabled]="structure.isInalid() && node.validateForm">
+                [disabled]="structure.isInvalid() && node.validateForm">
                 <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
                 {{node.placeholder}}
               </button>
@@ -135,7 +134,7 @@
               <mat-label>{{node.placeholder}}</mat-label>
               <input [id]="node.id" matInput type="number" class="no-arrows" formControlName="{{node.id}}"
                 [readonly]="node.readOnly">
-              <mat-icon matSuffix>payments</mat-icon>
+              <mat-icon matSuffix *ngIf="node.icon">{{node.icon}}</mat-icon>
               <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
                 {{node.maxCharCount}}
               </mat-hint>
@@ -160,14 +159,13 @@
   <!-- Creación de los botones de confirmación -->
 
   <br>
-  <mat-divider *ngIf="structure.validateActions.length > 0"></mat-divider>
+  <mat-divider *ngIf="structure.validateActions?.length > 0"></mat-divider>
   <div class="d-flex mt-1 pt-3">
     <div class="ml-auto">
       <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
         <button *ngFor="let confirmAction of structure.validateActions; let i = index" id="{{confirmAction.id}}"
           mat-stroked-button type="button" class="mr-3 btn-container" color="{{confirmAction.action.style}}"
-          (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
-          [disabled]="structure.isInalid() && confirmAction.validateForm">
+          [disabled]="structure.isInvalid() && confirmAction.validateForm">
           <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
           {{confirmAction.placeholder}}
         </button>
@@ -176,8 +174,7 @@
         <button mat-button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
           class="mr-3 btn-container" color="{{confirmAction?.action?.style}}"
           type="{{confirmAction.validateForm ? 'submit' : 'button'}}"
-          (click)="confirmAction.action?.callback?.onClick(confirmAction.id)"
-          [disabled]="structure.isInalid() && confirmAction.validateForm">
+          [disabled]="structure.isInvalid() && confirmAction.validateForm">
           <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
           {{confirmAction.placeholder}}
         </button>

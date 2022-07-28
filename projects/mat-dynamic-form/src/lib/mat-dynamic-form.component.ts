@@ -12,7 +12,7 @@ import { Button, Node, CustomNode } from './models/Node';
 })
 export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
-  @Input('structure') structure: FormStructure;
+  @Input('structure') structure!: FormStructure;
   viewInitialized = false;
   formGroup: FormGroup;
   hide = true;
@@ -57,18 +57,32 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
   addEvents() {
     this.structure.nodes.forEach(node => {
-      if (node instanceof Button) return
 
       const item = document.getElementById(node.id);
 
-      if (node.action?.type == 'change') {
+      if (node instanceof Button) {
+        return item.addEventListener(node?.action?.type, () => {
+          node.action?.callback?.onClick?.(node.id);
+          node.action?.onEvent?.({ event, structure: this.structure });
+        });
+      }
+
+      if (node.action?.type == 'valueChange') {
         this.structure?.getControlById(node.id)?.valueChanges?.subscribe(value => {
-          if (node.value != value) node.action?.callback?.onEvent(node.id, value);
+          if (node.value != value) {
+            /** TODO delete property in version 1.5.0 */
+            node.action?.callback?.onEvent?.(node.id, value);
+            node.action?.onEvent?.({ event: value, structure: this.structure });
+          };
         })
       } else {
-        item?.addEventListener(node.action?.type?.toString(), () => {
+        item?.addEventListener(node.action?.type?.toString(), (event) => {
           const value = this.structure?.getControlById(node.id).value;
-          if (node.value != value) node.action?.callback?.onEvent(node.id, value);
+          if (node.value != value) {
+            /** TODO delete property in version 1.5.0 */
+            node.action?.callback?.onEvent?.(node.id, value);
+            node.action?.onEvent?.({ event, structure: this.structure });
+          };
         })
       }
     });
