@@ -8,6 +8,24 @@ import { ObjectBase } from "./base/ObjectBase";
 export class FormStructure extends ObjectBase {
     title: string;
     nodes: Node[];
+    _nodeGrid: number = 2;
+    set nodeGrid(value: number) {
+        if (value < 1) {
+            this._nodeGrid = 1;
+        } else {
+            this._nodeGrid = value;
+        }
+        if (value > 4) {
+            this._nodeGrid = 4;
+        } else {
+            this._nodeGrid = value;
+        }
+    };
+
+    get nodeGrid() {
+        return this._nodeGrid;
+    };
+
     validateActions: Button[]
     appearance?: MatFormFieldAppearance = 'standard'
     showTitle?: boolean = true
@@ -23,6 +41,7 @@ export class FormStructure extends ObjectBase {
         this.title = title;
         this.nodes = nodes;
         this.validateActions = validateActions;
+
     }
 
     /**
@@ -114,7 +133,7 @@ export class FormStructure extends ObjectBase {
      * @param newValue {DataSet} The array of {@link DataSet} objects.
      * @returns If the operation was success returns true, returns false otherwise.
      */
-     patchValue<T>(newValue: DataSet<T>): boolean {
+    patchValue<T>(newValue: DataSet<T>): boolean {
         if (!this.formGroup) return false;
         Object.keys(newValue).map(item => {
             const control = this.getControlById(item);
@@ -157,7 +176,7 @@ export class FormStructure extends ObjectBase {
      * @returns True if this control has failed one or more of its validation checks,
      * false otherwise.
      */
-     isInvalid(): boolean {
+    isInvalid(): boolean {
         return this.formGroup?.invalid
     }
 

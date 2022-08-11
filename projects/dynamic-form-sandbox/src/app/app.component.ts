@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'projects/mat-dynamic-form/src/public-api';
+import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber } from 'projects/mat-dynamic-form/src/public-api';
 import { InputComponent } from './input/input.component';
 
 @Component({
@@ -51,6 +51,13 @@ export class AppComponent implements OnInit {
         action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) }
       }),
       new InputPassword('pass', 'Password'),
+      new Switch('switch', 'Toggle Switch'),
+      new InputNumber('idNumber', 'Number').apply({
+        min: 0,
+        max: 250000,
+        decimalCount: 0,
+        action: { type: 'change', onEvent: (param) => console.log(param) }
+      }),
       new TextArea('comments', 'Comments').apply({
         singleLine: true,
         validator: Validators.maxLength(100),
@@ -60,10 +67,9 @@ export class AppComponent implements OnInit {
       new CustomNode<InputComponent>('custom2', InputComponent, { label: 'Custom 2', placeholder: 'Custom Placeholder 2' }),
       new Checkbox(
         'agreement',
-        `I have read and agree to the terms of DynamicForm License Agreement, <strong><a href='https://www.google.com'>Read the license here.<a </strong>`
+        `I have read and agree to the terms of DynamicForm License Agreement, <strong><a href='https://www.google.com'>Read the license here.</a></strong>`,
+        false
       ).apply({
-        singleLine: true,
-        validator: Validators.requiredTrue
       }),
       new CustomNode<InputComponent>('custom3', InputComponent, { label: 'Custom 3', placeholder: 'Custom Placeholder 2' }),
     ];
