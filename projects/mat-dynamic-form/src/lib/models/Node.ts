@@ -7,7 +7,7 @@ import { OptionChild } from "./OptionChild";
 export type Node = Input | Checkbox | RadioGroup | Dropdown | TextArea | DatePicker | InputFile | InputNumber | InputPassword
 export type Validator = ValidatorFn | ValidatorFn[] | null;
 export type AsyncValidator = AsyncValidatorFn | AsyncValidatorFn[] | null;
-type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number' | 'custom';
+type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number' | 'switch' | 'custom';
 
 /**
  * @description Esta es la estructura general del nodo que se quiere mostrar en el DOM. 
@@ -88,6 +88,15 @@ export class Checkbox extends NodeBase {
     }
 }
 
+export class Switch extends NodeBase {
+    public value?: boolean;
+
+    constructor(id, placeholder?, value?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
+        super(id, placeholder, 'switch', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
+        this.value = value
+    }
+}
+
 export class Input extends NodeBase {
     public value?: string;
     public maxCharCount?: number;
@@ -137,6 +146,10 @@ export class TextArea extends Input {
 }
 
 export class InputNumber extends Input {
+    min?: number;
+    max?: number;
+    decimalCount?: number;
+
     constructor(id, placeholder?, value?, maxCharCount?, singleLine?, icon?, errorMessage?, disabled?, readOnly?, validator?, asyncValidator?, action?) {
         super(id, placeholder, value, maxCharCount, singleLine, icon, errorMessage, disabled, readOnly, validator, asyncValidator, action);
         this.type = 'number';

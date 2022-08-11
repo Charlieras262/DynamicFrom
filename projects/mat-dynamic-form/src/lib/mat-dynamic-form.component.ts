@@ -1,9 +1,8 @@
-import { ReturnStatement } from '@angular/compiler';
-import { AfterViewInit, Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AdDirective } from './directive/append-component.directive';
 import { FormStructure } from './models/FormStructure';
-import { Button, Node, CustomNode } from './models/Node';
+import { Button, Node, CustomNode, InputNumber } from './models/Node';
 
 @Component({
   selector: 'mat-dynamic-form',
@@ -52,7 +51,7 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
   }
 
   getControlLenght(id: string) {
-    return this.structure.getControlById(id)?.value?.length ?? 0;
+    return this.structure.getControlById(id)?.value?.toString()?.length ?? 0;
   }
 
   addEvents() {
@@ -117,5 +116,46 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
         }
       }, 10);
     });
+  }
+
+  normilizeValue(value: number) {
+    return ~~value;
+  }
+
+  input(event: Event, node: InputNumber) {
+    const input = event.target as HTMLInputElement;
+    const decimalCount = node.decimalCount ?? 2;
+    const regex = new RegExp(`^-?([0-9]+)(\\.[0-9]{1,${decimalCount == 0 ? '' : decimalCount}})?`, 'gi');
+    const test = regex.exec(input.value);
+
+    if (node.maxCharCount != null && input.value.length >= node.maxCharCount) {
+      this.structure.getControlById(node.id).setValue(input.value.slice(0, node.maxCharCount));
+    }
+
+    if (node.max != null && parseFloat(input.value) > node.max) {
+      this.structure.getControlById(node.id).setValue(node.max.toString());
+    }
+
+    if (node.min != null && parseFloat(input.value) < node.min) {
+      this.structure.getControlById(node.id).setValue(node.min.toString());
+    }
+
+    if (node.decimalCount != null && test?.[2]?.length > node.decimalCount) {
+      console.log(test, node.decimalCount != null && test?.[2]?.length > node.decimalCount, node.decimalCount != null, test?.[2]?.length, node.decimalCount);
+      this.structure.getControlById(node.id).setValue(test?.[0] ?? '');
+    }
+
+    if (decimalCount == 0) {
+      this.structure.getControlById(node.id).setValue(this.normilizeValue(parseFloat(input.value)).toString());
+    }
+  }
+
+  change(event: Event, node: InputNumber) {
+    this.input(event, node);
+    const input = event.target as HTMLInputElement;
+    if (node.decimalCount && input.value.length > 0) {
+      const test = new RegExp('^-?([0-9]+)(\\.[0-9]{1,2})?', 'gi').exec(input.value);
+      this.structure.getControlById(node.id).setValue(test?.[0] ?? '');
+    }
   }
 }

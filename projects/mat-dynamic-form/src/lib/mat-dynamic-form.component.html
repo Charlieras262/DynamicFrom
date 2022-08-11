@@ -6,7 +6,7 @@
     <div class="col-md-12">
       <div class="row mt-2">
         <span *ngFor="let node of structure.nodes" [ngSwitch]="node.type.toString()"
-          class="{{node.type == 'button' ? 'btn-form' : node.singleLine ? 'col-sm-12' : 'col-sm-6'}} m-0 p-0">
+          class="{{node.type == 'button' ? 'btn-form' : ''}} {{node.singleLine ? 'col-sm-12' : 'col-sm-' + normilizeValue(12 / structure.nodeGrid)}} m-0 p-0">
           <ng-container *ngSwitchCase="'input'">
             <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
               <mat-label>{{node.placeholder}}</mat-label>
@@ -69,7 +69,7 @@
             </mat-form-field>
           </ng-container>
           <ng-container *ngSwitchCase="'checkbox'">
-            <mat-checkbox id="{{node.id}}" class="col-12" formControlName="{{node.id}}" color="primary"
+            <mat-checkbox id="{{node.id}}" class="col-12 mt-3" formControlName="{{node.id}}" color="primary"
               [checked]="node.value">
               <span class="e2e-inner-html-bound" [innerHTML]="node.placeholder | sanitizeHtml"></span>
             </mat-checkbox>
@@ -132,16 +132,26 @@
           <ng-container *ngSwitchCase="'number'">
             <mat-form-field [appearance]="structure.appearance" class="col-12">
               <mat-label>{{node.placeholder}}</mat-label>
-              <input [id]="node.id" matInput type="number" class="no-arrows" formControlName="{{node.id}}"
-                [readonly]="node.readOnly">
+              <input id="{{node.id}}" matInput formControlName="{{node.id}}" [readonly]="node.readOnly"
+                (input)="input($event, node)" class="no-arrows" (blur)="change($event, node)"
+                [maxlength]="node.maxCharCount" [minlength]="node.minCharCount">
               <mat-icon matSuffix *ngIf="node.icon">{{node.icon}}</mat-icon>
-              <mat-hint align="end" *ngIf="node.maxCharCount">{{textArea.value.length}} /
-                {{node.maxCharCount}}
+              <mat-hint align="end" *ngIf="node.maxCharCount">
+                {{getControlLenght(node.id)}} / {{node.maxCharCount}}
               </mat-hint>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
                 <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
               </mat-error>
             </mat-form-field>
+          </ng-container>
+          <ng-container *ngSwitchCase="'switch'">
+            <mat-slide-toggle id="{{node.id}}" class="col-12 mt-3" formControlName="{{node.id}}" color="primary">
+              {{node.placeholder}}
+            </mat-slide-toggle>
+            <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched"
+              class="col-12">
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+            </mat-error>
           </ng-container>
           <ng-container *ngSwitchCase="'custom'">
             <div class="col-12">
