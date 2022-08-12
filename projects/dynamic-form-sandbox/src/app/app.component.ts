@@ -51,7 +51,9 @@ export class AppComponent implements OnInit {
         action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) }
       }),
       new InputPassword('pass', 'Password'),
-      new Switch('switch', 'Toggle Switch'),
+      new Switch('switch', 'Toggle Switch', false).apply({
+        action: { type: 'valueChange', onEvent: (param) => console.log(param) }
+      }),
       new InputNumber('idNumber', 'Number').apply({
         min: 0,
         max: 250000,

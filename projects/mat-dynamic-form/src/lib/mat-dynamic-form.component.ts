@@ -82,6 +82,7 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
             /** TODO delete property in version 1.5.0 */
             node.action?.callback?.onEvent?.(node.id, value);
             node.action?.onEvent?.({ event: value, structure: this.structure });
+            node.value = value;
           };
         })
       } else {
@@ -91,6 +92,7 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
             /** TODO delete property in version 1.5.0 */
             node.action?.callback?.onEvent?.(node.id, value);
             node.action?.onEvent?.({ event, structure: this.structure });
+            node.value = value;
           };
         })
       }

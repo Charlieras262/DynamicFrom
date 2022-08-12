@@ -229,7 +229,6 @@ export class FormStructure extends ObjectBase {
 
         const value = node instanceof Dropdown || node instanceof RadioGroup ? node.selectedValue : node.value;
 
-
         if (this.formGroup?.contains(node.id)) {
             const control = this.getControlById(node.id);
             if (node.disabled) control.disable(); else control.enable();
