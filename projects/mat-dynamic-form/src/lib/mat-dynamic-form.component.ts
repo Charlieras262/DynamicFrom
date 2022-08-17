@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ComponentFactoryResolver, DoCheck, Input, Key
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AdDirective } from './directive/append-component.directive';
 import { FormStructure } from './models/FormStructure';
-import { Button, Node, CustomNode, InputNumber } from './models/Node';
+import { Button, Node, CustomNode, InputNumber, Dropdown, RadioGroup } from './models/Node';
 
 @Component({
   selector: 'mat-dynamic-form',
@@ -82,6 +82,7 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
             /** TODO delete property in version 1.5.0 */
             node.action?.callback?.onEvent?.(node.id, value);
             node.action?.onEvent?.({ event: value, structure: this.structure });
+            if (node instanceof Dropdown || node instanceof RadioGroup) return;
             node.value = value;
           };
         })
