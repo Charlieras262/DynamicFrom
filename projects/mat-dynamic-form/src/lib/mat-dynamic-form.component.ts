@@ -65,38 +65,39 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
       });
     });
     this.structure.nodes.forEach(node => {
+      setTimeout(() => {
+        const item = document.getElementById(node.id);
 
-      const item = document.getElementById(node.id);
-
-      if (node instanceof Button) {
-        return item?.addEventListener(node?.action?.type ?? 'click', event => {
-          /** TODO delete property in version 1.5.0 */
-          node.action?.callback?.onClick?.(node.id);
-          node.action?.onEvent?.({ event: node, structure: this.structure });
-        });
-      }
-
-      if (node.action?.type == 'valueChange') {
-        this.structure?.getControlById(node.id)?.valueChanges?.subscribe(value => {
-          if (node.value != value) {
+        if (node instanceof Button) {
+          return item?.addEventListener(node?.action?.type ?? 'click', event => {
             /** TODO delete property in version 1.5.0 */
-            node.action?.callback?.onEvent?.(node.id, value);
-            node.action?.onEvent?.({ event: value, structure: this.structure });
-            if (node instanceof Dropdown || node instanceof RadioGroup) return;
-            node.value = value;
-          };
-        })
-      } else {
-        item?.addEventListener(node.action?.type?.toString(), event => {
-          const value = this.structure?.getControlById(node.id).value;
-          if (node.value != value) {
-            /** TODO delete property in version 1.5.0 */
-            node.action?.callback?.onEvent?.(node.id, value);
-            node.action?.onEvent?.({ event, structure: this.structure });
-            node.value = value;
-          };
-        })
-      }
+            node.action?.callback?.onClick?.(node.id);
+            node.action?.onEvent?.({ event: node, structure: this.structure });
+          });
+        }
+
+        if (node.action?.type == 'valueChange') {
+          this.structure?.getControlById(node.id)?.valueChanges?.subscribe(value => {
+            if (node.value != value) {
+              /** TODO delete property in version 1.5.0 */
+              node.action?.callback?.onEvent?.(node.id, value);
+              node.action?.onEvent?.({ event: value, structure: this.structure });
+              if (node instanceof Dropdown || node instanceof RadioGroup) return;
+              node.value = value;
+            };
+          })
+        } else {
+          item?.addEventListener(node.action?.type?.toString(), event => {
+            const value = this.structure?.getControlById(node.id).value;
+            if (node.value != value) {
+              /** TODO delete property in version 1.5.0 */
+              node.action?.callback?.onEvent?.(node.id, value);
+              node.action?.onEvent?.({ event, structure: this.structure });
+              node.value = value;
+            };
+          })
+        }
+      })
     });
   }
 
