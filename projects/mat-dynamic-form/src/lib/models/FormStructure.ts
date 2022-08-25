@@ -54,6 +54,15 @@ export class FormStructure extends ObjectBase {
     }
 
     /**
+     * This method gets the `formGroup` value.
+     * 
+     * @returns The count of the controls that constains the `FormControl`
+     */
+    getFormGroup() {
+        return this.formGroup;
+    }
+
+    /**
      * This method returns null if the `controlId` can't be found, otherwise returns
      * the instances of the control that matches with the `controlId`. 
      * 
