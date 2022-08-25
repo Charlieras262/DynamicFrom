@@ -30,35 +30,25 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
   ngOnInit(): void {
     this.formGroup = this._formBuilder.group({})
     this.structure.setFromGroup(this.formGroup);
+    this.structure.validateActions.forEach(node => this.structure.addNodeEvent(node));
   }
 
   ngDoCheck() {
-    const change = this.differ.diff(this.structure.nodes);
-    if (change) {
+    const nodesChange = this.differ.diff(this.structure.nodes);
+    if (nodesChange) {
       if (this.structure?.fromGroupSize() == 0)
-        change.forEachAddedItem(item => {
+        nodesChange.forEachAddedItem(item => {
           this.structure?.createFormControl(item.currentValue);
-          this.addNodeEvent(item.currentValue);
         });
     }
   }
 
   ngAfterViewInit(): void {
-    this.addEvents();
     this.createCustomNodes();
   }
 
   getControlLenght(id: string) {
     return this.structure.getControlById(id)?.value?.toString()?.length ?? 0;
-  }
-
-  addEvents() {
-    this.structure.validateActions.forEach(node => {
-      setTimeout(() => this.addNodeEvent(node));
-    });
-    this.structure.nodes.forEach(node => {
-      setTimeout(() => this.addNodeEvent(node));
-    });
   }
 
   createCustomNodes() {
@@ -105,7 +95,6 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
     }
 
     if (node.decimalCount != null && test?.[2]?.length > node.decimalCount) {
-      console.log(test, node.decimalCount != null && test?.[2]?.length > node.decimalCount, node.decimalCount != null, test?.[2]?.length, node.decimalCount);
       this.structure.getControlById(node.id).setValue(test?.[0] ?? '');
     }
 
@@ -120,40 +109,6 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
     if (node.decimalCount && input.value.length > 0) {
       const test = new RegExp('^-?([0-9]+)(\\.[0-9]{1,2})?', 'gi').exec(input.value);
       this.structure.getControlById(node.id).setValue(test?.[0] ?? '');
-    }
-  }
-
-  private addNodeEvent(node: Node) {
-    const item = document.getElementById(node.id);
-
-    if (node instanceof Button) {
-      item?.addEventListener(node?.action?.type ?? 'click', event => {
-        /** TODO delete property in version 1.5.0 */
-        node.action?.callback?.onClick?.(node.id);
-        node.action?.onEvent?.({ event: event, structure: this.structure });
-      });
-    }
-
-    if (node.action?.type == 'valueChange') {
-      this.structure?.getControlById(node.id)?.valueChanges?.subscribe(value => {
-        if (node.value != value) {
-          /** TODO delete property in version 1.5.0 */
-          node.action?.callback?.onEvent?.(node.id, value);
-          node.action?.onEvent?.({ event: value, structure: this.structure });
-          if (node instanceof Dropdown || node instanceof RadioGroup) return;
-          node.value = value;
-        };
-      })
-    } else {
-      item?.addEventListener(node.action?.type?.toString(), event => {
-        const value = this.structure?.getControlById(node.id).value;
-        if (node.value != value) {
-          /** TODO delete property in version 1.5.0 */
-          node.action?.callback?.onEvent?.(node.id, value);
-          node.action?.onEvent?.({ event, structure: this.structure });
-          node.value = value;
-        };
-      })
     }
   }
 }

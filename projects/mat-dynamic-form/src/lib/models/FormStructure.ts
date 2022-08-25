@@ -196,7 +196,7 @@ export class FormStructure extends ObjectBase {
      * @param nodes The nodes that will be created.
      */
     createNodes(from: number, nodes: Node[]) {
-        nodes.map(node => {
+        nodes.forEach(node => {
             this.createNode(from, node)
         });
     }
@@ -209,6 +209,29 @@ export class FormStructure extends ObjectBase {
     removeNodes(nodes: Node[]) {
         nodes.forEach(node => {
             this.removeNode(node)
+        });
+    }
+
+    /**
+     * Add to the current node list all the `nodes` in the `from` postion.
+     * 
+     * @param from position where the nodes will be created.
+     * @param nodes The nodes that will be created.
+     */
+    createValidateActions(from: number, nodes: Button[]) {
+        nodes.forEach(node => {
+            this.createValidateAction(from, node)
+        });
+    }
+
+    /**
+     * Removes `nodes` from the current node list..
+     * 
+     * @param nodes The nodes that will be removed.
+     */
+    removeValidateActions(nodes: Button[]) {
+        nodes.forEach(node => {
+            this.removeValidateAction(node)
         });
     }
 
@@ -248,6 +271,8 @@ export class FormStructure extends ObjectBase {
 
         this.addControlValidators(control, this.globalValidators);
         this.formGroup?.addControl(node.id, control);
+
+        this.addNodeEvent(node);
     }
 
     /**
@@ -290,6 +315,48 @@ export class FormStructure extends ObjectBase {
         control.updateValueAndValidity();
     }
 
+
+    /**
+     * Add event to the node.
+     * 
+     * @param node The node instance to add event.
+     */
+    addNodeEvent(node: Node) {
+        setTimeout(() => {
+            const item = document.getElementById(node.id);
+
+            if (node instanceof Button) {
+                item?.addEventListener(node?.action?.type ?? 'click', event => {
+                    /** TODO delete property in version 1.5.0 */
+                    node.action?.callback?.onClick?.(node.id);
+                    node.action?.onEvent?.({ event: event, structure: this });
+                });
+            }
+
+            if (node.action?.type == 'valueChange') {
+                this.getControlById(node.id)?.valueChanges?.subscribe(value => {
+                    if (node.value != value) {
+                        /** TODO delete property in version 1.5.0 */
+                        node.action?.callback?.onEvent?.(node.id, value);
+                        node.action?.onEvent?.({ event: value, structure: this });
+                        if (node instanceof Dropdown || node instanceof RadioGroup) return;
+                        node.value = value;
+                    };
+                })
+            } else {
+                item?.addEventListener(node.action?.type?.toString(), event => {
+                    const value = this.getControlById(node.id).value;
+                    if (node.value != value) {
+                        /** TODO delete property in version 1.5.0 */
+                        node.action?.callback?.onEvent?.(node.id, value);
+                        node.action?.onEvent?.({ event, structure: this });
+                        node.value = value;
+                    };
+                })
+            }
+        });
+    }
+
     private createNode(position: number, node: Node) {
         this.createFormControl(node)
         if (this.nodes.find(item => item.id == node.id)) return;
@@ -303,6 +370,20 @@ export class FormStructure extends ObjectBase {
 
         if (index >= 0)
             this.nodes.splice(index, 1);
+    }
+
+    private createValidateAction(position: number, node: Button) {
+        if (this.validateActions.find(item => item.id == node.id)) return;
+        if (position >= 0)
+            this.validateActions.splice(position, 0, node);
+        this.addNodeEvent(node);
+    }
+
+    private removeValidateAction(node: Button) {
+        const index = this.validateActions.indexOf(this.validateActions.find(item => item.id == node.id));
+
+        if (index >= 0)
+            this.validateActions.splice(index, 1);
     }
 
     private addControlValidators(control: AbstractControl, validators: Validator) {
