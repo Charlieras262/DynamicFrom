@@ -12,7 +12,6 @@ import { Button, Node, CustomNode, InputNumber, Dropdown, RadioGroup } from './m
 export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
   @Input('structure') structure!: FormStructure;
-  viewInitialized = false;
   formGroup: FormGroup;
   hide = true;
 
@@ -39,14 +38,13 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
       if (this.structure?.fromGroupSize() == 0)
         change.forEachAddedItem(item => {
           this.structure?.createFormControl(item.currentValue);
+          this.addNodeEvent(item.currentValue);
         });
-      if (this.viewInitialized) this.addEvents();
     }
   }
 
   ngAfterViewInit(): void {
     this.addEvents();
-    this.viewInitialized = true
     this.createCustomNodes();
   }
 
@@ -56,48 +54,10 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
 
   addEvents() {
     this.structure.validateActions.forEach(node => {
-      const item = document.getElementById(node.id);
-
-      item?.addEventListener(node?.action?.type ?? 'click', event => {
-        /** TODO delete property in version 1.5.0 */
-        node.action?.callback?.onClick?.(node.id);
-        node.action?.onEvent?.({ event, structure: this.structure });
-      });
+      setTimeout(() => this.addNodeEvent(node));
     });
     this.structure.nodes.forEach(node => {
-      setTimeout(() => {
-        const item = document.getElementById(node.id);
-
-        if (node instanceof Button) {
-          return item?.addEventListener(node?.action?.type ?? 'click', event => {
-            /** TODO delete property in version 1.5.0 */
-            node.action?.callback?.onClick?.(node.id);
-            node.action?.onEvent?.({ event: node, structure: this.structure });
-          });
-        }
-
-        if (node.action?.type == 'valueChange') {
-          this.structure?.getControlById(node.id)?.valueChanges?.subscribe(value => {
-            if (node.value != value) {
-              /** TODO delete property in version 1.5.0 */
-              node.action?.callback?.onEvent?.(node.id, value);
-              node.action?.onEvent?.({ event: value, structure: this.structure });
-              if (node instanceof Dropdown || node instanceof RadioGroup) return;
-              node.value = value;
-            };
-          })
-        } else {
-          item?.addEventListener(node.action?.type?.toString(), event => {
-            const value = this.structure?.getControlById(node.id).value;
-            if (node.value != value) {
-              /** TODO delete property in version 1.5.0 */
-              node.action?.callback?.onEvent?.(node.id, value);
-              node.action?.onEvent?.({ event, structure: this.structure });
-              node.value = value;
-            };
-          })
-        }
-      })
+      setTimeout(() => this.addNodeEvent(node));
     });
   }
 
@@ -160,6 +120,40 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
     if (node.decimalCount && input.value.length > 0) {
       const test = new RegExp('^-?([0-9]+)(\\.[0-9]{1,2})?', 'gi').exec(input.value);
       this.structure.getControlById(node.id).setValue(test?.[0] ?? '');
+    }
+  }
+
+  private addNodeEvent(node: Node) {
+    const item = document.getElementById(node.id);
+
+    if (node instanceof Button) {
+      item?.addEventListener(node?.action?.type ?? 'click', event => {
+        /** TODO delete property in version 1.5.0 */
+        node.action?.callback?.onClick?.(node.id);
+        node.action?.onEvent?.({ event: event, structure: this.structure });
+      });
+    }
+
+    if (node.action?.type == 'valueChange') {
+      this.structure?.getControlById(node.id)?.valueChanges?.subscribe(value => {
+        if (node.value != value) {
+          /** TODO delete property in version 1.5.0 */
+          node.action?.callback?.onEvent?.(node.id, value);
+          node.action?.onEvent?.({ event: value, structure: this.structure });
+          if (node instanceof Dropdown || node instanceof RadioGroup) return;
+          node.value = value;
+        };
+      })
+    } else {
+      item?.addEventListener(node.action?.type?.toString(), event => {
+        const value = this.structure?.getControlById(node.id).value;
+        if (node.value != value) {
+          /** TODO delete property in version 1.5.0 */
+          node.action?.callback?.onEvent?.(node.id, value);
+          node.action?.onEvent?.({ event, structure: this.structure });
+          node.value = value;
+        };
+      })
     }
   }
 }
