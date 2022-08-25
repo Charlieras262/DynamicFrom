@@ -145,7 +145,6 @@ export class AppComponent implements OnInit {
     this.formStructure.validateActions = [
       new Button('cancel', 'Cancel', {
         onEvent: (param) => {
-          console.log("asddd", param.structure)
           param.structure?.reset();
           param.structure?.remapValues();
         }, style: 'warn'
