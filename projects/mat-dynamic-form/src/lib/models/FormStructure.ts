@@ -257,7 +257,7 @@ export class FormStructure extends ObjectBase {
      * @param node The node instance to create in the formgroup control collection.
      */
     createFormControl(node: Node) {
-        if (node instanceof Button) return;
+        if (node instanceof Button) return this.addNodeEvent(node);
 
         const value = node instanceof Dropdown || node instanceof RadioGroup ? node.selectedValue : node.value;
 
@@ -324,9 +324,8 @@ export class FormStructure extends ObjectBase {
     addNodeEvent(node: Node) {
         setTimeout(() => {
             const item = document.getElementById(node.id);
-
             if (node instanceof Button) {
-                item?.addEventListener(node?.action?.type ?? 'click', event => {
+                return item?.addEventListener(node?.action?.type ?? 'click', event => {
                     /** TODO delete property in version 1.5.0 */
                     node.action?.callback?.onClick?.(node.id);
                     node.action?.onEvent?.({ event: event, structure: this });

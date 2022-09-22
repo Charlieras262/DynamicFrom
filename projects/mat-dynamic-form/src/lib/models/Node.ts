@@ -165,10 +165,12 @@ export class RadioGroup extends SelectableNode {
 }
 
 export class Dropdown extends SelectableNode {
+    multiple: boolean;
 
-    constructor(id, placeholder?, value?, selected?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
+    constructor(id, placeholder?, value?, selected?, multiple?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
         super(id, placeholder, value, selected, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.type = 'dropdown';
+        this.multiple = multiple ?? false;
     }
 }
 

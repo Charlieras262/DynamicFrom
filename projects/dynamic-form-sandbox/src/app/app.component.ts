@@ -102,7 +102,7 @@ export class AppComponent implements OnInit {
       new Dropdown('petType', 'Pet Type', [
         new OptionChild('Dog', 'PD'),
         new OptionChild('Cat', 'PC')
-      ]),
+      ]).apply({multiple: true}),
       new Input('breed', 'Pet Breed'),
       new Input('petName', 'Pet Name')
     ]

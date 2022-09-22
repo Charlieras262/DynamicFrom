@@ -58,7 +58,7 @@
           <ng-container *ngSwitchCase="'dropdown'">
             <mat-form-field class="col-12" [appearance]="structure.appearance">
               <mat-label>{{node.placeholder}}</mat-label>
-              <mat-select id="{{node.id}}" formControlName="{{node.id}}">
+              <mat-select id="{{node.id}}" formControlName="{{node.id}}" [multiple]="node.multiple">
                 <mat-option *ngFor="let child of node.value" [value]="child.value ? child.value : child.id">
                   {{child.title}}
                 </mat-option>
