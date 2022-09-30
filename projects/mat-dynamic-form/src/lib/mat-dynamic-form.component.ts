@@ -9,15 +9,18 @@ import { Button, Node, CustomNode, InputNumber, Dropdown, RadioGroup } from './m
   templateUrl: 'mat-dynamic-form.component.html',
   styleUrls: ['mat-dynamic-form.component.scss'],
 })
-export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
+export class MatDynamicFormComponent implements OnInit, DoCheck {
 
   @Input('structure') structure!: FormStructure;
-  formGroup: FormGroup;
+  formGroup!: FormGroup;
   hide = true;
 
   differ: KeyValueDiffer<Node[], any>;
 
-  @ViewChildren(AdDirective) containers!: QueryList<AdDirective>
+  @ViewChildren(AdDirective)
+  set containers(value: QueryList<AdDirective>) {
+    this.createCustomNodes(value);
+  }
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -43,33 +46,8 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
     }
   }
 
-  ngAfterViewInit(): void {
-    this.createCustomNodes();
-  }
-
   getControlLenght(id: string) {
     return this.structure.getControlById(id)?.value?.toString()?.length ?? 0;
-  }
-
-  createCustomNodes() {
-    this.containers.forEach(container => {
-      setTimeout(() => {
-        const node = this.structure.nodes.find(node => node.id == container.nodeId);
-        if (node instanceof CustomNode) {
-          const factory = this.resolver.resolveComponentFactory<typeof node.component>(node.component,);
-          const componentRef = container.viewContainerRef.createComponent<typeof node.component>(factory, 0, container.viewContainerRef.injector);
-          node.instance = componentRef.instance;
-          if (node.properties) {
-            node.properties.control = this.structure.getControlById(node.id);
-          } else {
-            node.properties = { control: this.structure.getControlById(node.id) };
-          }
-          Object.keys(node.properties).forEach(key => {
-            componentRef.instance[key] = node.properties[key];
-          });
-        }
-      }, 10);
-    });
   }
 
   normilizeValue(value: number) {
@@ -110,5 +88,26 @@ export class MatDynamicFormComponent implements OnInit, AfterViewInit, DoCheck {
       const test = new RegExp('^-?([0-9]+)(\\.[0-9]{1,2})?', 'gi').exec(input.value);
       this.structure.getControlById(node.id).setValue(test?.[0] ?? '');
     }
+  }
+
+  private createCustomNodes(containers: QueryList<AdDirective>) {
+    containers.forEach(container => {
+      setTimeout(() => {
+        const node = this.structure.nodes.find(node => node.id == container.nodeId);
+        if (node instanceof CustomNode) {
+          const factory = this.resolver.resolveComponentFactory<typeof node.component>(node.component,);
+          const componentRef = container.viewContainerRef.createComponent<typeof node.component>(factory, 0, container.viewContainerRef.injector);
+          node.instance = componentRef.instance;
+          if (node.properties) {
+            node.properties.control = this.structure.getControlById(node.id);
+          } else {
+            node.properties = { control: this.structure.getControlById(node.id) };
+          }
+          Object.keys(node.properties).forEach(key => {
+            componentRef.instance[key] = node.properties[key];
+          });
+        }
+      });
+    });
   }
 }

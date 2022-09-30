@@ -4,6 +4,8 @@ import { ReferenceException } from "../exceptions/Exceptions";
 import { DataSet } from "./DataSet";
 import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator } from "./Node";
 import { ObjectBase } from "./base/ObjectBase";
+import { QueryList } from "@angular/core";
+import { AdDirective } from "../directive/append-component.directive";
 
 export class FormStructure extends ObjectBase {
     title: string;
@@ -29,8 +31,9 @@ export class FormStructure extends ObjectBase {
     validateActions: Button[]
     appearance?: MatFormFieldAppearance = 'standard'
     showTitle?: boolean = true
-    private formGroup?: FormGroup;
     globalValidators?: ValidatorFn | ValidatorFn[] | null;
+    
+    private formGroup?: FormGroup;
 
     constructor(title?: string, nodes?, validateActions?: Button[]) {
         super();
