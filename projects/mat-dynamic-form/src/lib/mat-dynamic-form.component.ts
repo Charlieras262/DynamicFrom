@@ -55,38 +55,50 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
   }
 
   input(event: Event, node: InputNumber) {
-    const input = event.target as HTMLInputElement;
+    const input = node.getNativeElement() as HTMLInputElement;
     const decimalCount = node.decimalCount ?? 2;
-    const regex = new RegExp(`^-?([0-9]+)(\\.[0-9]{1,${decimalCount == 0 ? '' : decimalCount}})?`, 'gi');
+    const regex = new RegExp(`^-?([0-9]+)(\\.[0-9]{0,${decimalCount == 0 ? '' : decimalCount}})?`, 'gi');
     const test = regex.exec(input.value);
+    const control = this.structure.getControlById(node.id);
+
+    if (!(event instanceof InputEvent) || event.inputType == 'deleteContentBackward') return;
+
+    if (test?.[0] != input.value) {
+      control.setValue(test?.[0] ?? '');
+    }
 
     if (node.maxCharCount != null && input.value.length >= node.maxCharCount) {
-      this.structure.getControlById(node.id).setValue(input.value.slice(0, node.maxCharCount));
+      control.setValue(input.value.slice(0, node.maxCharCount));
     }
 
     if (node.max != null && parseFloat(input.value) > node.max) {
-      this.structure.getControlById(node.id).setValue(node.max.toString());
+      control.setValue(node.max.toString());
     }
 
     if (node.min != null && parseFloat(input.value) < node.min) {
-      this.structure.getControlById(node.id).setValue(node.min.toString());
+      control.setValue(node.min.toString());
     }
 
-    if (node.decimalCount != null && test?.[2]?.length > node.decimalCount) {
-      this.structure.getControlById(node.id).setValue(test?.[0] ?? '');
+    if (test?.[2]?.length > decimalCount) {
+      control.setValue(test?.[0] ?? '');
     }
 
     if (decimalCount == 0) {
-      this.structure.getControlById(node.id).setValue(this.normilizeValue(parseFloat(input.value)).toString());
+      control.setValue(this.normilizeValue(parseFloat(input.value)).toString());
     }
   }
 
   change(event: Event, node: InputNumber) {
     this.input(event, node);
-    const input = event.target as HTMLInputElement;
-    if (node.decimalCount && input.value.length > 0) {
-      const test = new RegExp('^-?([0-9]+)(\\.[0-9]{1,2})?', 'gi').exec(input.value);
-      this.structure.getControlById(node.id).setValue(test?.[0] ?? '');
+    const decimalCount = node.decimalCount ?? 2;
+    const regex = new RegExp(`^-?([0-9]+)(\\.[0-9]{0,${decimalCount == 0 ? '' : decimalCount}})?`, 'gi');
+    const input = node.getNativeElement() as HTMLInputElement;
+
+    if (input.value.length > 0) {
+      const test = regex.exec(input.value);
+      if (test[2]?.length == 1) {
+        this.structure.getControlById(node.id).setValue(test?.[0]?.split('.')?.[0] ?? '');
+      }
     }
   }
 
