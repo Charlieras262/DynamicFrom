@@ -55,9 +55,6 @@ export class AppComponent implements OnInit {
         action: { type: 'valueChange', onEvent: (param) => console.log(param) }
       }),
       new InputNumber('idNumber', 'Number').apply({
-        min: 0,
-        max: 250000,
-        decimalCount: 0,
         action: { type: 'change', onEvent: (param) => console.log(param) }
       }),
       new TextArea('comments', 'Comments').apply({
@@ -102,7 +99,7 @@ export class AppComponent implements OnInit {
       new Dropdown('petType', 'Pet Type', [
         new OptionChild('Dog', 'PD'),
         new OptionChild('Cat', 'PC')
-      ]).apply({multiple: true}),
+      ]).apply({ multiple: true }),
       new Input('breed', 'Pet Breed'),
       new Input('petName', 'Pet Name')
     ]
