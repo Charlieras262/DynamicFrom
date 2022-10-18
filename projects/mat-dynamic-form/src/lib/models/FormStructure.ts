@@ -32,7 +32,7 @@ export class FormStructure extends ObjectBase {
     appearance?: MatFormFieldAppearance = 'standard'
     showTitle?: boolean = true
     globalValidators?: ValidatorFn | ValidatorFn[] | null;
-    
+
     private formGroup?: FormGroup;
 
     constructor(title?: string, nodes?, validateActions?: Button[]) {
@@ -375,6 +375,7 @@ export class FormStructure extends ObjectBase {
     }
 
     private createValidateAction(position: number, node: Button) {
+        if (!this.validateActions) this.validateActions = [];
         if (this.validateActions.find(item => item.id == node.id)) return;
         if (position >= 0)
             this.validateActions.splice(position, 0, node);
@@ -382,8 +383,8 @@ export class FormStructure extends ObjectBase {
     }
 
     private removeValidateAction(node: Button) {
+        if (!this.validateActions) return;
         const index = this.validateActions.indexOf(this.validateActions.find(item => item.id == node.id));
-
         if (index >= 0)
             this.validateActions.splice(index, 1);
     }
