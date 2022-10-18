@@ -168,27 +168,29 @@
 
   <!-- Creación de los botones de confirmación -->
 
-  <br>
-  <mat-divider *ngIf="structure.validateActions?.length > 0"></mat-divider>
-  <div class="d-flex mt-1 pt-3">
-    <div class="ml-auto">
-      <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
-        <button *ngFor="let confirmAction of structure.validateActions; let i = index" id="{{confirmAction.id}}"
-          mat-stroked-button type="button" class="mr-3 btn-container" color="{{confirmAction.action.style}}"
-          [disabled]="structure.isInvalid() && confirmAction.validateForm">
-          <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
-          {{confirmAction.placeholder}}
-        </button>
-      </ng-container>
-      <ng-template #elseTemplate>
-        <button mat-button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
-          class="mr-3 btn-container" color="{{confirmAction?.action?.style}}"
-          type="{{confirmAction.validateForm ? 'submit' : 'button'}}"
-          [disabled]="structure.isInvalid() && confirmAction.validateForm">
-          <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
-          {{confirmAction.placeholder}}
-        </button>
-      </ng-template>
+  <div *ngIf="structure.validateActions">
+    <br>
+    <mat-divider></mat-divider>
+    <div class="d-flex mt-1 pt-3">
+      <div class="ml-auto">
+        <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
+          <button *ngFor="let confirmAction of structure.validateActions; let i = index" id="{{confirmAction.id}}"
+            mat-stroked-button type="button" class="mr-3 btn-container" color="{{confirmAction.action.style}}"
+            [disabled]="structure.isInvalid() && confirmAction.validateForm">
+            <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
+            {{confirmAction.placeholder}}
+          </button>
+        </ng-container>
+        <ng-template #elseTemplate>
+          <button mat-button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
+            class="mr-3 btn-container" color="{{confirmAction?.action?.style}}"
+            type="{{confirmAction.validateForm ? 'submit' : 'button'}}"
+            [disabled]="structure.isInvalid() && confirmAction.validateForm">
+            <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
+            {{confirmAction.placeholder}}
+          </button>
+        </ng-template>
+      </div>
     </div>
   </div>
 </form>

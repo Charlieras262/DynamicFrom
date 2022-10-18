@@ -1,8 +1,8 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AdDirective } from './directive/append-component.directive';
 import { FormStructure } from './models/FormStructure';
-import { Button, Node, CustomNode, InputNumber, Dropdown, RadioGroup } from './models/Node';
+import { Node, CustomNode, InputNumber, Dropdown, RadioGroup } from './models/Node';
 
 @Component({
   selector: 'mat-dynamic-form',
@@ -14,7 +14,6 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
   @Input('structure') structure!: FormStructure;
   formGroup!: FormGroup;
   hide = true;
-
   differ: KeyValueDiffer<Node[], any>;
 
   @ViewChildren(AdDirective)
@@ -33,7 +32,7 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
   ngOnInit(): void {
     this.formGroup = this._formBuilder.group({})
     this.structure.setFromGroup(this.formGroup);
-    this.structure.validateActions.forEach(node => this.structure.addNodeEvent(node));
+    this.structure.validateActions?.forEach(node => this.structure.addNodeEvent(node));
   }
 
   ngDoCheck() {
@@ -107,6 +106,7 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
       setTimeout(() => {
         const node = this.structure.nodes.find(node => node.id == container.nodeId);
         if (node instanceof CustomNode) {
+          container.viewContainerRef.clear();
           const factory = this.resolver.resolveComponentFactory<typeof node.component>(node.component,);
           const componentRef = container.viewContainerRef.createComponent<typeof node.component>(factory, 0, container.viewContainerRef.injector);
           node.instance = componentRef.instance;
