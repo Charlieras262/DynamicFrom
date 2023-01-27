@@ -6,7 +6,7 @@ export interface Action {
     type?: ActionType;
     style?: ActionStyle;
     /**
-     * @deprecated Since version 1.4.0. Will be deleted in version 1.5.0. Use {@link Action.onEvent} instead
+     * @deprecated Since version 1.4.0. Will be deleted in version 2.0.0. Use {@link Action.onEvent} instead
      */
     callback?: FormListener;
     onEvent?: (param: ActionEvent) => void;
