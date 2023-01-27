@@ -18,7 +18,7 @@ class NodeBase extends ObjectBase {
     public id: string;
     public placeholder?: string;
     public type?: NodeType;
-    public action?: Action;
+    public action?: Action | Action[];
     public singleLine?: boolean;
     public icon?: string;
     public errorMessage?: string;

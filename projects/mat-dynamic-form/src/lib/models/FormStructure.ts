@@ -4,8 +4,7 @@ import { ReferenceException } from "../exceptions/Exceptions";
 import { DataSet } from "./DataSet";
 import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator } from "./Node";
 import { ObjectBase } from "./base/ObjectBase";
-import { QueryList } from "@angular/core";
-import { AdDirective } from "../directive/append-component.directive";
+import { Action } from "./Action";
 
 export class FormStructure extends ObjectBase {
     title: string;
@@ -85,7 +84,13 @@ export class FormStructure extends ObjectBase {
      * @returns {Node} Based on `nodeId` parameter.
      */
     getNodeById<T extends Node>(nodeId: string): T {
-        return this.nodes.find(node => node.id === nodeId) as T;
+        const node = this.nodes.find(node => node.id === nodeId) as T;
+        if (node instanceof Dropdown || node instanceof RadioGroup) return node;
+        const control = this.getControlById(nodeId);
+        if (control) {
+            node.value = control.value;
+        }
+        return node;
     }
 
     /**
@@ -327,35 +332,38 @@ export class FormStructure extends ObjectBase {
     addNodeEvent(node: Node) {
         setTimeout(() => {
             const item = document.getElementById(node.id);
+            const actions = node.action instanceof Array ? node.action : [node.action];
+
             if (node instanceof Button) {
-                return item?.addEventListener(node?.action?.type ?? 'click', event => {
-                    /** TODO delete property in version 1.5.0 */
-                    node.action?.callback?.onClick?.(node.id);
-                    node.action?.onEvent?.({ event: event, structure: this });
+                return actions.forEach(action => {
+                    item?.addEventListener(action?.type ?? 'click', event => {
+                        /** TODO delete property in version 1.5.0 */
+                        action?.callback?.onClick?.(node.id);
+                        action?.onEvent?.({ event: event, structure: this });
+                    });
                 });
             }
 
-            if (node.action?.type == 'valueChange') {
-                this.getControlById(node.id)?.valueChanges?.subscribe(value => {
-                    if (node.value != value) {
-                        /** TODO delete property in version 1.5.0 */
-                        node.action?.callback?.onEvent?.(node.id, value);
-                        node.action?.onEvent?.({ event: value, structure: this });
-                        if (node instanceof Dropdown || node instanceof RadioGroup) return;
-                        node.value = value;
-                    };
-                })
-            } else {
-                item?.addEventListener(node.action?.type?.toString(), event => {
-                    const value = this.getControlById(node.id).value;
-                    if (node.value != value) {
-                        /** TODO delete property in version 1.5.0 */
-                        node.action?.callback?.onEvent?.(node.id, value);
-                        node.action?.onEvent?.({ event, structure: this });
-                        node.value = value;
-                    };
-                })
-            }
+            actions.forEach(action => {
+                if (action?.type == 'valueChange') {
+                    this.getControlById(node.id)?.valueChanges?.subscribe(value => {
+                        if (node.value != value) {
+                            /** TODO delete property in version 1.5.0 */
+                            action?.callback?.onEvent?.(node.id, value);
+                            action?.onEvent?.({ event: value, structure: this });
+                        };
+                    })
+                } else {
+                    item?.addEventListener(action?.type?.toString(), event => {
+                        const value = this.getControlById(node.id).value;
+                        if (node.value != value) {
+                            /** TODO delete property in version 1.5.0 */
+                            action?.callback?.onEvent?.(node.id, value);
+                            action?.onEvent?.({ event, structure: this });
+                        };
+                    });
+                }
+            });
         });
     }
 
