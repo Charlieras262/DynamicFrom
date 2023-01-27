@@ -72,8 +72,7 @@ export class FormStructure extends ObjectBase {
      * @returns {AbstractControl | null} Based on `controlId` parameter.
      */
     getControlById(controlId: string): AbstractControl | null {
-        this.getNodeById
-        return this.formGroup.get(controlId);
+        return this.formGroup?.get(controlId);
     }
 
     /**
