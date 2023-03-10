@@ -4,7 +4,6 @@ import { ReferenceException } from "../exceptions/Exceptions";
 import { DataSet } from "./DataSet";
 import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator } from "./Node";
 import { ObjectBase } from "./base/ObjectBase";
-import { Action } from "./Action";
 
 export class FormStructure extends ObjectBase {
     title: string;
@@ -31,6 +30,7 @@ export class FormStructure extends ObjectBase {
     appearance?: MatFormFieldAppearance = 'standard'
     showTitle?: boolean = true
     globalValidators?: ValidatorFn | ValidatorFn[] | null;
+    validateEvenDisabled?: boolean = false;
 
     private formGroup?: FormGroup;
 
@@ -93,6 +93,17 @@ export class FormStructure extends ObjectBase {
     }
 
     /**
+     * This method returns null if the `nodeId` can't be found, otherwise returns
+     * the instances of the validate action that matches with the `nodeId`. 
+     * 
+     * @param nodeId The identifier of the validate action.
+     * @returns {Button} Based on `nodeId` parameter.
+     */
+    getActionById<T extends Node>(nodeId: string): Button {
+        return this.validateActions.find(node => node.id === nodeId);
+    }
+
+    /**
      * This method as its name says it resets the values of the form group.
      */
     reset(): boolean {
@@ -121,6 +132,16 @@ export class FormStructure extends ObjectBase {
      */
     getValue<T>(): T {
         return this.formGroup?.value;
+    }
+
+    /**
+     * This method return the `formGroup` value even if the control is disabled.
+     * 
+     * @template T The type of the `formGroup` value.
+     * @returns `T` object represntative of the `formGroup` values. 
+     */
+    getRawValue<T>(): T {
+        return this.formGroup?.getRawValue();
     }
 
     /**

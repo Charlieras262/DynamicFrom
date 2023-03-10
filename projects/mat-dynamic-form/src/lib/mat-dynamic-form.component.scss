@@ -45,14 +45,13 @@ mat-form-field {
 
 .btn-form {
   width: 10px;
-  .mat-button {
+  .mat-button, .mat-stroked-button, .mat-raised-button {
     margin-left: 15px !important;
-    margin-top: 8px !important;
+    margin-top: 6px !important;
   }
 
-  .mat-stroked-button {
-    margin-left: 15px !important;
-    margin-top: 8px !important;
+  .mat-raised-button {
+    margin-top: 3px !important;
   }
 }
 

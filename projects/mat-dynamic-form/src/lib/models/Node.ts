@@ -1,6 +1,6 @@
 import { Type } from "@angular/core";
 import { ValidatorFn, AbstractControlOptions, AsyncValidatorFn } from "@angular/forms"
-import { Action } from "./Action";
+import { Action, ActionEvent } from "./Action";
 import { ObjectBase } from "./base/ObjectBase";
 import { OptionChild } from "./OptionChild";
 
@@ -186,9 +186,11 @@ export class DatePicker extends NodeBase {
 
 export class Button extends NodeBase {
     public validateForm?: boolean;
+    public validation?: (param: ActionEvent) => boolean;
 
-    constructor(id: string, placeholder: string, action: Action, singleLine?: boolean, icon?, diabled?: boolean, validateForm?: boolean) {
+    constructor(id: string, placeholder: string, action: Action, singleLine?: boolean, icon?, diabled?: boolean, validateForm?: boolean, validation?: (param: ActionEvent) => boolean) {
         super(id, placeholder, 'button', singleLine, icon, undefined, diabled, undefined, undefined, action);
         this.validateForm = validateForm;
+        this.validation = validation ?? (() => true);
     }
 }
