@@ -1,6 +1,6 @@
 import { ActionType, ActionStyle } from "../types/ActionEnums";
 import { FormListener } from "../interfaces/FormListener";
-import { FormStructure } from './FormStructure';
+import { FormStructure } from "./FormStructure";
 
 export interface Action {
     type?: ActionType;

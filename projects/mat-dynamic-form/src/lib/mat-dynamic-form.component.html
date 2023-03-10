@@ -1,5 +1,5 @@
-<div class="card-body" *ngIf="structure.showTitle">
-  <mat-card-title class="title" color="primary" *ngIf="structure.title">{{structure.title}}</mat-card-title>
+<div class="card-body" *ngIf="structure.showTitle && structure.title">
+  <mat-card-title class="title" color="primary">{{structure.title}}</mat-card-title>
 </div>
 <form [formGroup]="formGroup">
   <div class="row justify-content-center">
@@ -39,21 +39,30 @@
             </mat-form-field>
           </ng-container>
           <div *ngSwitchCase="'button'" class="btn-form">
-            <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
-              <button id="{{node.id}}" mat-stroked-button color="{{node?.action?.style}}" class="btn-container"
-                [disabled]="structure.isInvalid() && node.validateForm">
-                <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
-                {{node.placeholder}}
-              </button>
-            </ng-container>
-            <ng-template #elseTemplate>
-              <button id="{{node.id}}" mat-button color="{{node?.action?.style}}" class="btn-container"
-                (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
-                [disabled]="structure.isInvalid() && node.validateForm">
-                <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
-                {{node.placeholder}}
-              </button>
-            </ng-template>
+            <span [ngSwitch]="structure.appearance">
+              <p *ngSwitchCase="'outline'">
+                <button id="{{node.id}}" mat-stroked-button color="{{node?.action?.style}}" class="btn-container"
+                  [disabled]="shouldDisable(node)" type="button">
+                  <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+                  {{node.placeholder}}
+                </button>
+              </p>
+              <p *ngSwitchCase="'fill'">
+                <button id="{{node.id}}" mat-raised-button color="{{node?.action?.style}}" class="btn-container"
+                  [disabled]="shouldDisable(node)" type="button">
+                  <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+                  {{node.placeholder}}
+                </button>
+              </p>
+              <p *ngSwitchDefault>
+                <button id="{{node.id}}" mat-button color="{{node?.action?.style}}" class="btn-container"
+                  (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
+                  [disabled]="shouldDisable(node)" type="button">
+                  <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+                  {{node.placeholder}}
+                </button>
+              </p>
+            </span>
           </div>
           <ng-container *ngSwitchCase="'dropdown'">
             <mat-form-field class="col-12" [appearance]="structure.appearance">
@@ -168,28 +177,34 @@
 
   <!-- Creación de los botones de confirmación -->
 
-  <div *ngIf="structure.validateActions">
+  <div *ngIf="structure.validateActions && structure.validateActions.length != 0">
     <br>
     <mat-divider></mat-divider>
     <div class="d-flex mt-1 pt-3">
       <div class="ml-auto">
-        <ng-container *ngIf="structure.appearance == 'outline'; else elseTemplate">
-          <button *ngFor="let confirmAction of structure.validateActions; let i = index" id="{{confirmAction.id}}"
-            mat-stroked-button type="button" class="mr-3 btn-container" color="{{confirmAction.action.style}}"
-            [disabled]="structure.isInvalid() && confirmAction.validateForm">
-            <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
-            {{confirmAction.placeholder}}
-          </button>
-        </ng-container>
-        <ng-template #elseTemplate>
-          <button mat-button *ngFor="let confirmAction of structure.validateActions" id="{{confirmAction.id}}"
-            class="mr-3 btn-container" color="{{confirmAction?.action?.style}}"
-            type="{{confirmAction.validateForm ? 'submit' : 'button'}}"
-            [disabled]="structure.isInvalid() && confirmAction.validateForm">
-            <mat-icon *ngIf="confirmAction.icon">{{confirmAction.icon}}</mat-icon>
-            {{confirmAction.placeholder}}
-          </button>
-        </ng-template>
+        <span [ngSwitch]="structure.appearance">
+          <p *ngSwitchCase="'outline'">
+            <button mat-stroked-button *ngFor="let action of structure.validateActions" id="{{action.id}}" type="button"
+              class="mr-3 btn-container" color="{{action.action.style}}" [disabled]="shouldDisable(action)">
+              <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>
+              {{action.placeholder}}
+            </button>
+          </p>
+          <p *ngSwitchCase="'fill'">
+            <button mat-raised-button *ngFor="let action of structure.validateActions" id="{{action.id}}" type="button"
+              class="mr-3 btn-container" color="{{action.action.style}}" [disabled]="shouldDisable(action)">
+              <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>
+              {{action.placeholder}}
+            </button>
+          </p>
+          <p *ngSwitchDefault>
+            <button mat-button *ngFor="let action of structure.validateActions" id="{{action.id}}" type="button"
+              class="mr-3 btn-container" color="{{action?.action?.style}}" [disabled]="shouldDisable(action)">
+              <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>
+              {{action.placeholder}}
+            </button>
+          </p>
+        </span>
       </div>
     </div>
   </div>

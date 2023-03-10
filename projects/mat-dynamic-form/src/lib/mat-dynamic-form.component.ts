@@ -2,7 +2,7 @@ import { Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, Ke
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AdDirective } from './directive/append-component.directive';
 import { FormStructure } from './models/FormStructure';
-import { Node, CustomNode, InputNumber, Dropdown, RadioGroup } from './models/Node';
+import { Node, CustomNode, InputNumber, Button } from './models/Node';
 
 @Component({
   selector: 'mat-dynamic-form',
@@ -99,6 +99,27 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
         this.structure.getControlById(node.id).setValue(test?.[0]?.split('.')?.[0] ?? '');
       }
     }
+  }
+
+  shouldDisable(action: Button): boolean {
+    const initialVals = this.structure.isInvalid()
+      || !action.validation?.({ event: action, structure: this.structure });
+
+    return (action.validateForm || action.disabled) && initialVals || (action.validateForm && this.structure.validateEvenDisabled && this.hasError());
+  }
+
+  private hasError(): boolean {
+    let valid = false;
+    this.structure.nodes.forEach(node => {
+      const control = this.structure.getControlById(node.id);
+      if (!node.disabled) return;
+      control?.enable();
+      control?.markAsTouched();
+      control?.updateValueAndValidity();
+      valid ||= control?.invalid;
+      control?.disable();
+    });
+    return valid;
   }
 
   private createCustomNodes(containers: QueryList<AdDirective>) {
