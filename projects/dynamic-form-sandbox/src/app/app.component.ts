@@ -30,7 +30,13 @@ export class AppComponent implements OnInit {
       new Input('tel', 'Phone Number').apply({
         icon: 'phone'
       }),
-      new DatePicker('bDate', 'BirthDate').apply({
+      new DatePicker('start', 'Start').apply({
+        action: { onEvent(param) {
+          const end = param.structure.getNodeById<DatePicker>('end');
+          end.minDate = param.event;
+        }, type: 'valueChange' }
+      }),
+      new DatePicker('end', 'End').apply({
         action: { callback: this, type: 'change' }
       }),
       new Dropdown('cStatus', 'Civil Status', [
