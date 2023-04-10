@@ -176,13 +176,16 @@ export class Dropdown extends SelectableNode {
 
 export class DatePicker extends NodeBase {
     public value?: string;
+    public minDate: Date;
+    public maxDate: Date;
 
-    constructor(id, placeholder?, value?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
+    constructor(id, placeholder?, value?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?) {
         super(id, placeholder, 'date', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.value = value;
+        this.minDate = minDate;
+        this.maxDate = maxDate;
     }
 }
-
 
 export class Button extends NodeBase {
     public validateForm?: boolean;

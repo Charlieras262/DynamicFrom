@@ -91,7 +91,7 @@
             <mat-form-field class="col-12" [appearance]="structure.appearance">
               <mat-label>{{node.placeholder}}</mat-label>
               <input id="{{node.id}}" matInput [matDatepicker]="datePicker" formControlName="{{node.id}}"
-                [readonly]="node.readOnly" />
+                [readonly]="node.readOnly" [min]="node.minDate" [max]="node.maxDate" />
               <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
               <mat-datepicker #datePicker color="primary" class="col-12"></mat-datepicker>
               <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
