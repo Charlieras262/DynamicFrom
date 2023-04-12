@@ -34,6 +34,7 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
     this.structure.setFromGroup(this.formGroup);
     this.structure.validateActions?.forEach(node => this.structure.addNodeEvent(node));
     setTimeout(() => this.addInsets())
+    window.addEventListener("resize", (event) => this.addInsets());
   }
 
   ngDoCheck() {
@@ -146,11 +147,15 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
   }
 
   private addInsets() {
-    const titleHeight = document.getElementById('mdf_title')?.clientHeight;
-    const buttonsHeight = document.getElementById('mdf_buttons')?.clientHeight;
+    const titleHeight = document.getElementById('mdf_title')?.clientHeight ?? 0;
+    const buttonsHeight = document.getElementById('mdf_buttons')?.clientHeight ?? 0;
     const content = document.getElementById('mdf_content');
 
-    content.style.maxHeight = `calc(100vh - ${titleHeight + buttonsHeight}px)`;
+    if (!content) return;
+
+    const parentHeight = content.parentElement?.parentElement?.parentElement?.clientHeight ?? 0;
+
+    content.style.maxHeight = `calc(${parentHeight == 0 ? '100vh' : parentHeight} - ${titleHeight + buttonsHeight}px)`;
     content.style.overflowY = 'auto';
     content.style.overflowX = 'hidden'
   }
