@@ -1,9 +1,9 @@
-<div class="card-body" *ngIf="structure.showTitle && structure.title">
+<div id="mdf_title" class="card-body" *ngIf="structure.showTitle && structure.title">
   <mat-card-title class="title" color="primary">{{structure.title}}</mat-card-title>
 </div>
 <form [formGroup]="formGroup">
-  <div class="row justify-content-center">
-    <div class="col-md-12">
+  <div id="mdf_content" class="row justify-content-center  m-0 p-0" style="max-width: 100vw;">
+    <div class="col-md-12 m-0 p-0">
       <div class="row mt-2">
         <span *ngFor="let node of structure.nodes" [ngSwitch]="node.type.toString()"
           class="{{node.type == 'button' ? 'btn-form' : ''}} {{node.singleLine ? 'col-sm-12' : 'col-sm-' + normilizeValue(12 / structure.nodeGrid)}} m-0 p-0">
@@ -78,9 +78,9 @@
             </mat-form-field>
           </ng-container>
           <ng-container *ngSwitchCase="'checkbox'">
-            <mat-checkbox id="{{node.id}}" class="col-12 mt-3" formControlName="{{node.id}}" color="primary"
+            <mat-checkbox id="{{node.id}}" class="col-12" formControlName="{{node.id}}" color="primary"
               [checked]="node.value">
-              <span class="e2e-inner-html-bound" [innerHTML]="node.placeholder | sanitizeHtml"></span>
+              <span class="e2e-inner-html-bound multiline" [innerHTML]="node.placeholder | sanitizeHtml"></span>
             </mat-checkbox>
             <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched"
               class="col-12">
@@ -177,27 +177,27 @@
 
   <!-- Creación de los botones de confirmación -->
 
-  <div *ngIf="structure.validateActions && structure.validateActions.length != 0">
+  <div id="mdf_buttons" *ngIf="structure.validateActions && structure.validateActions.length != 0">
     <br>
     <mat-divider></mat-divider>
     <div class="d-flex mt-1 pt-3">
       <div class="ml-auto">
         <span [ngSwitch]="structure.appearance">
-          <p *ngSwitchCase="'outline'">
+          <p *ngSwitchCase="'outline'" class="mb-0">
             <button mat-stroked-button *ngFor="let action of structure.validateActions" id="{{action.id}}" type="button"
               class="mr-3 btn-container" color="{{action.action.style}}" [disabled]="shouldDisable(action)">
               <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>
               {{action.placeholder}}
             </button>
           </p>
-          <p *ngSwitchCase="'fill'">
+          <p *ngSwitchCase="'fill'" class="mb-0">
             <button mat-raised-button *ngFor="let action of structure.validateActions" id="{{action.id}}" type="button"
               class="mr-3 btn-container" color="{{action.action.style}}" [disabled]="shouldDisable(action)">
               <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>
               {{action.placeholder}}
             </button>
           </p>
-          <p *ngSwitchDefault>
+          <p *ngSwitchDefault class="mb-0">
             <button mat-button *ngFor="let action of structure.validateActions" id="{{action.id}}" type="button"
               class="mr-3 btn-container" color="{{action?.action?.style}}" [disabled]="shouldDisable(action)">
               <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>

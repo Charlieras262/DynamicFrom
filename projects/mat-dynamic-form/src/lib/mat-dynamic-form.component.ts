@@ -1,4 +1,4 @@
-import { Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterContentInit, Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AdDirective } from './directive/append-component.directive';
 import { FormStructure } from './models/FormStructure';
@@ -33,6 +33,7 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
     this.formGroup = this._formBuilder.group({})
     this.structure.setFromGroup(this.formGroup);
     this.structure.validateActions?.forEach(node => this.structure.addNodeEvent(node));
+    setTimeout(() => this.addInsets())
   }
 
   ngDoCheck() {
@@ -142,5 +143,15 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
         }
       });
     });
+  }
+
+  private addInsets() {
+    const titleHeight = document.getElementById('mdf_title')?.clientHeight;
+    const buttonsHeight = document.getElementById('mdf_buttons')?.clientHeight;
+    const content = document.getElementById('mdf_content');
+
+    content.style.maxHeight = `calc(100vh - ${titleHeight + buttonsHeight}px)`;
+    content.style.overflowY = 'auto';
+    content.style.overflowX = 'hidden'
   }
 }

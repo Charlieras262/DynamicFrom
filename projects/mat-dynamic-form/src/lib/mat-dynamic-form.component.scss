@@ -45,7 +45,10 @@ mat-form-field {
 
 .btn-form {
   width: 10px;
-  .mat-button, .mat-stroked-button, .mat-raised-button {
+
+  .mat-button,
+  .mat-stroked-button,
+  .mat-raised-button {
     margin-left: 15px !important;
     margin-top: 6px !important;
   }
@@ -53,6 +56,11 @@ mat-form-field {
   .mat-raised-button {
     margin-top: 3px !important;
   }
+}
+
+.multiline {
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 $tablet-width: 320px;
