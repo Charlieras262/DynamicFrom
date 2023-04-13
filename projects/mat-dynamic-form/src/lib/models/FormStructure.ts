@@ -6,6 +6,8 @@ import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator } from ".
 import { ObjectBase } from "./base/ObjectBase";
 
 export class FormStructure extends ObjectBase {
+    maxParentHeight: string = "100vh";
+    onlyScrollContent: boolean = false;
     title: string;
     nodes: Node[];
     _nodeGrid: number = 2;

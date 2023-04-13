@@ -2,8 +2,8 @@
   <mat-card-title class="title" color="primary">{{structure.title}}</mat-card-title>
 </div>
 <form [formGroup]="formGroup">
-  <div id="mdf_content" class="row justify-content-center  m-0 p-0" style="max-width: 100vw;">
-    <div class="col-md-12 m-0 p-0">
+  <div id="mdf_content" class="row justify-content-center" style="max-width: 100vw;">
+    <div class="col-md-12">
       <div class="row mt-2">
         <span *ngFor="let node of structure.nodes" [ngSwitch]="node.type.toString()"
           class="{{node.type == 'button' ? 'btn-form' : ''}} {{node.singleLine ? 'col-sm-12' : 'col-sm-' + normilizeValue(12 / structure.nodeGrid)}} m-0 p-0">
