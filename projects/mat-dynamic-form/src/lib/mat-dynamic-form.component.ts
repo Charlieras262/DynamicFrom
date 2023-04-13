@@ -147,16 +147,15 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
   }
 
   private addInsets() {
+    if (!this.structure.onlyScrollContent) return;
     const titleHeight = document.getElementById('mdf_title')?.clientHeight ?? 0;
     const buttonsHeight = document.getElementById('mdf_buttons')?.clientHeight ?? 0;
     const content = document.getElementById('mdf_content');
 
     if (!content) return;
 
-    const parentHeight = content.parentElement?.parentElement?.parentElement?.clientHeight ?? 0;
-
-    content.style.maxHeight = `calc(${parentHeight == 0 ? '100vh' : parentHeight} - ${titleHeight + buttonsHeight}px)`;
+    content.style.maxHeight = `calc(${this.structure?.maxParentHeight} - ${titleHeight + buttonsHeight}px)`;
     content.style.overflowY = 'auto';
-    content.style.overflowX = 'hidden'
+    content.style.overflowX = 'hidden';
   }
 }
