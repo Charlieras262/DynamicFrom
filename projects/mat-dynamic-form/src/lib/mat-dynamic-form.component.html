@@ -77,6 +77,21 @@
               </mat-error>
             </mat-form-field>
           </ng-container>
+          <ng-container *ngSwitchCase="'autocomplete'">
+            <mat-form-field class="col-12" [appearance]="structure.appearance">
+              <mat-label>{{node.placeholder}}</mat-label>
+              <input id="{{node.id}}" type="text" [aria-label]="node.placeholder" matInput formControlName="{{node.id}}"
+                [matAutocomplete]="auto">
+              <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn">
+                <mat-option *ngFor="let child of node.filteredOptions | async" [value]="child">
+                  {{child.title}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).touched">
+                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+              </mat-error>
+            </mat-form-field>
+          </ng-container>
           <ng-container *ngSwitchCase="'checkbox'">
             <mat-checkbox id="{{node.id}}" class="col-12" formControlName="{{node.id}}" color="primary"
               [checked]="node.value">

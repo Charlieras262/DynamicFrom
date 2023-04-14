@@ -1,5 +1,6 @@
-import { AfterContentInit, Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { OptionChild } from 'mat-dynamic-form';
 import { AdDirective } from './directive/append-component.directive';
 import { FormStructure } from './models/FormStructure';
 import { Node, CustomNode, InputNumber, Button } from './models/Node';
@@ -34,7 +35,7 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
     this.structure.setFromGroup(this.formGroup);
     this.structure.validateActions?.forEach(node => this.structure.addNodeEvent(node));
     setTimeout(() => this.addInsets())
-    window.addEventListener("resize", (event) => this.addInsets());
+    window.addEventListener("resize", _ => this.addInsets());
   }
 
   ngDoCheck() {
@@ -108,6 +109,10 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
       || !action.validation?.({ event: action, structure: this.structure });
 
     return (action.validateForm || action.disabled) && initialVals || (action.validateForm && this.structure.validateEvenDisabled && this.hasError());
+  }
+
+  displayFn(option?: OptionChild): string {
+    return option && option.title ? option.title : '';
   }
 
   private hasError(): boolean {
