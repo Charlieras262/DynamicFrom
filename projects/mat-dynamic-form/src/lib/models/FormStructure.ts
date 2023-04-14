@@ -2,8 +2,10 @@ import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn, Valida
 import { MatFormFieldAppearance } from "@angular/material/form-field";
 import { ReferenceException } from "../exceptions/Exceptions";
 import { DataSet } from "./DataSet";
-import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator } from "./Node";
+import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator, AutoComplete } from "./Node";
 import { ObjectBase } from "./base/ObjectBase";
+import { OptionChild } from "mat-dynamic-form";
+import { map, startWith } from "rxjs/operators";
 
 export class FormStructure extends ObjectBase {
     maxParentHeight: string = "100vh";
@@ -303,6 +305,16 @@ export class FormStructure extends ObjectBase {
         this.formGroup?.addControl(node.id, control);
 
         this.addNodeEvent(node);
+
+        if (node instanceof AutoComplete) {
+            control.valueChanges.pipe(
+                startWith(''),
+                map(value => {
+                    const title = typeof value === 'string' ? value : value?.title;
+                    return title ? this._filter(node.getOptions(), title as string) : node.getOptions()?.slice();
+                }),
+            ).subscribe(options => node.filteredOptions.next(options));
+        }
     }
 
     /**
@@ -453,5 +465,15 @@ export class FormStructure extends ObjectBase {
                 .map(key => control.controls[key])
                 .reduce((acc, curr) => acc + this.countControls(curr), 0);
         }
+    }
+
+    private _filter(options: OptionChild[], title?: string): OptionChild[] {
+        const filterValue = title.toLowerCase();
+
+        const ops = options.filter(option => option.title.toLowerCase().includes(filterValue));
+
+        console.log(ops);
+        
+        return ops;
     }
 }

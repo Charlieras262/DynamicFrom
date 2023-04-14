@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber } from 'projects/mat-dynamic-form/src/public-api';
+import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber, AutoComplete } from 'projects/mat-dynamic-form/src/public-api';
 import { InputComponent } from './input/input.component';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +15,9 @@ export class AppComponent implements OnInit {
 
   formStructure: FormStructure;
 
-  constructor() {
+  constructor(
+    private http: HttpClient
+  ) {
     this.formStructure = new FormStructure();
 
     this.formStructure.title = 'Sign Up';
@@ -31,10 +36,12 @@ export class AppComponent implements OnInit {
         icon: 'phone'
       }),
       new DatePicker('start', 'Start').apply({
-        action: { onEvent(param) {
-          const end = param.structure.getNodeById<DatePicker>('end');
-          end.minDate = param.event;
-        }, type: 'valueChange' }
+        action: {
+          onEvent(param) {
+            const end = param.structure.getNodeById<DatePicker>('end');
+            end.minDate = param.event;
+          }, type: 'valueChange'
+        }
       }),
       new DatePicker('end', 'End').apply({
         action: { callback: this, type: 'change' }
@@ -43,9 +50,9 @@ export class AppComponent implements OnInit {
         new OptionChild('Single', 'SI',),
         new OptionChild('Maried', 'MR')
       ]).apply({
-        selectedValue: 'SI',
-        disabled: true
+        selectedValue: 'SI'
       }),
+      new AutoComplete('contry', 'Contry', this.getContries()),
       new InputFile('profPic', 'Profile Picture').apply({
         accept: '.png, .jpg, .jpeg'
       }),
@@ -57,9 +64,7 @@ export class AppComponent implements OnInit {
         action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) }
       }),
       new InputPassword('pass', 'Password'),
-      new Switch('switch', 'Toggle Switch', false).apply({
-        action: { type: 'valueChange', onEvent: (param) => console.log(param) }
-      }),
+      new Switch('switch', 'Toggle Switch', false),
       new InputNumber('idNumber', 'Number').apply({
         action: { type: 'change', onEvent: (param) => console.log(param) }
       }),
@@ -111,5 +116,13 @@ export class AppComponent implements OnInit {
     if (param.event == 'y') {
       this.formStructure.createNodes(7, nodes)
     } else this.formStructure.removeNodes(nodes)
+  }
+
+  private getContries(): Observable<OptionChild[]> {
+    return this.http.get<any[]>('https://restcountries.com/v3.1/all').pipe(
+      map(item => {
+        return item.map((i) => new OptionChild(i.name.common, i.cca2))
+      })
+    );
   }
 }

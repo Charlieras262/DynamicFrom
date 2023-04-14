@@ -3,11 +3,12 @@ import { ValidatorFn, AbstractControlOptions, AsyncValidatorFn } from "@angular/
 import { Action, ActionEvent } from "./Action";
 import { ObjectBase } from "./base/ObjectBase";
 import { OptionChild } from "./OptionChild";
+import { Observable, BehaviorSubject } from 'rxjs';
 
 export type Node = Input | Checkbox | RadioGroup | Dropdown | TextArea | DatePicker | InputFile | InputNumber | InputPassword
 export type Validator = ValidatorFn | ValidatorFn[] | null;
 export type AsyncValidator = AsyncValidatorFn | AsyncValidatorFn[] | null;
-type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number' | 'switch' | 'custom';
+type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number' | 'switch' | 'custom' | 'autocomplete';
 
 /**
  * @description Esta es la estructura general del nodo que se quiere mostrar en el DOM. 
@@ -69,13 +70,47 @@ export class CustomNode<T> extends NodeBase {
 }
 
 class SelectableNode extends NodeBase {
-    public value?: OptionChild[];
     public selectedValue?: string;
+    private _value: OptionChild[];
 
     constructor(id, placeholder, value, selectedValue, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action) {
         super(id, placeholder, 'button', singleLine, icon, errorMessage, validator, disabled, asyncValidator, action);
         this.value = value
         this.selectedValue = selectedValue
+    }
+
+    public set value(v: OptionChild[] | Promise<OptionChild[]> | Observable<OptionChild[]>) {
+        if (v instanceof Promise) this.handlePromise(v);
+        else if (v instanceof Observable) this.handleObservable(v);
+        else this.onOptionLoaded(v);
+    }
+
+
+    public get value() {
+        return this._value;
+    }
+
+    getOptions() {
+        return this._value;
+    }
+
+    private handleObservable(value: Observable<OptionChild[]>): OptionChild[] {
+        const obs = value.subscribe(res => {
+            this.onOptionLoaded(res)
+            obs.unsubscribe();
+        });
+
+        return this._value;
+    }
+
+    private handlePromise(value: Promise<OptionChild[]>): OptionChild[] {
+        value.then(this.onOptionLoaded);
+
+        return this._value;
+    }
+
+    protected onOptionLoaded(options: OptionChild[]) {
+        this._value = options;
     }
 }
 
@@ -171,6 +206,23 @@ export class Dropdown extends SelectableNode {
         super(id, placeholder, value, selected, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.type = 'dropdown';
         this.multiple = multiple ?? false;
+    }
+}
+
+export class AutoComplete extends SelectableNode {
+    multiple: boolean;
+    filteredOptions: BehaviorSubject<OptionChild[] | undefined>;
+
+    constructor(id, placeholder?, value?, selected?, multiple?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
+        super(id, placeholder, value, selected, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
+        this.type = 'autocomplete';
+        this.multiple = multiple ?? false;
+        this.filteredOptions = new BehaviorSubject<OptionChild[] | undefined>(this.getOptions())
+    }
+
+    protected onOptionLoaded(options: OptionChild[]): void {
+        super.onOptionLoaded(options);
+        this.filteredOptions.next(options);
     }
 }
 
