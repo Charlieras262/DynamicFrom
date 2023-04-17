@@ -1,6 +1,6 @@
 import { Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { OptionChild } from 'mat-dynamic-form';
+import { OptionChild } from './models/OptionChild';
 import { AdDirective } from './directive/append-component.directive';
 import { FormStructure } from './models/FormStructure';
 import { Node, CustomNode, InputNumber, Button } from './models/Node';

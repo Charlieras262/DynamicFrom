@@ -4,7 +4,7 @@ import { ReferenceException } from "../exceptions/Exceptions";
 import { DataSet } from "./DataSet";
 import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator, AutoComplete } from "./Node";
 import { ObjectBase } from "./base/ObjectBase";
-import { OptionChild } from "mat-dynamic-form";
+import { OptionChild } from "./OptionChild";
 import { map, startWith } from "rxjs/operators";
 
 export class FormStructure extends ObjectBase {
@@ -371,7 +371,7 @@ export class FormStructure extends ObjectBase {
             if (node instanceof Button) {
                 return actions.forEach(action => {
                     item?.addEventListener(action?.type ?? 'click', event => {
-                        /** TODO delete property in version 1.5.0 */
+                        /** TODO delete property in version 2.0.0 */
                         action?.callback?.onClick?.(node.id);
                         action?.onEvent?.({ event: event, structure: this });
                     });
@@ -382,7 +382,7 @@ export class FormStructure extends ObjectBase {
                 if (action?.type == 'valueChange') {
                     this.getControlById(node.id)?.valueChanges?.subscribe(value => {
                         if (node.value != value) {
-                            /** TODO delete property in version 1.5.0 */
+                            /** TODO delete property in version 2.0.0 */
                             action?.callback?.onEvent?.(node.id, value);
                             action?.onEvent?.({ event: value, structure: this });
                         };
@@ -391,7 +391,7 @@ export class FormStructure extends ObjectBase {
                     item?.addEventListener(action?.type?.toString(), event => {
                         const value = this.getControlById(node.id).value;
                         if (node.value != value) {
-                            /** TODO delete property in version 1.5.0 */
+                            /** TODO delete property in version 2.0.0 */
                             action?.callback?.onEvent?.(node.id, value);
                             action?.onEvent?.({ event, structure: this });
                         };
@@ -473,7 +473,7 @@ export class FormStructure extends ObjectBase {
         const ops = options.filter(option => option.title.toLowerCase().includes(filterValue));
 
         console.log(ops);
-        
+
         return ops;
     }
 }
