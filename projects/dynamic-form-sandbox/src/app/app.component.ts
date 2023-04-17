@@ -23,6 +23,7 @@ export class AppComponent implements OnInit {
     this.formStructure.title = 'Sign Up';
     this.formStructure.appearance = 'standard';
     this.formStructure.globalValidators = Validators.required;
+    this.formStructure.onlyScrollContent = true;
     this.formStructure.nodes = [
       new Input('name', 'Name').apply({
         icon: 'person',
