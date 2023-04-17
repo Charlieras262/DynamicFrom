@@ -10,9 +10,7 @@ This is an Angular Material library that was created to make form designing easi
 ## Installation
 
 ```
-
 npm i mat-dynamic-form
-
 ```
 
   
@@ -26,9 +24,7 @@ npm i mat-dynamic-form
 [Angular Material Documentation](https://material.angular.io/guide/getting-started)
 
 ```
-
 ng add @angular/material
-
 ```
 
 This is necesary to create angular material components.
