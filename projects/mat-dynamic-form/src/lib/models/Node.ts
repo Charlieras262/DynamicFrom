@@ -26,6 +26,7 @@ class NodeBase extends ObjectBase {
     public disabled?: boolean;
     public validator?: Validator | AbstractControlOptions;
     public asyncValidator?: AsyncValidatorFn;
+    public hint?: string;
 
     /**
      * @description Crea una instancia de un nodo con los parametros que se le envien.
@@ -104,7 +105,9 @@ class SelectableNode extends NodeBase {
     }
 
     private handlePromise(value: Promise<OptionChild[]>): OptionChild[] {
-        value.then(this.onOptionLoaded);
+        value.then(res => {
+            this.onOptionLoaded(res)
+        });
 
         return this._value;
     }

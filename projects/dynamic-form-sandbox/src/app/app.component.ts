@@ -27,9 +27,15 @@ export class AppComponent implements OnInit {
     this.formStructure.nodes = [
       new Input('name', 'Name').apply({
         icon: 'person',
-        maxCharCount: 100
+        maxCharCount: 100,
+        hint: 'Enter your name',
+        errorMessage: "Error message"
       }),
-      new Button('find', 'Find', { style: 'primary' }).apply({
+      new Button('find', 'Find', {
+        style: 'primary', type: "click", onEvent: param => {
+          param.structure.getControlById('hasPet')?.setErrors({ 'error': true });
+        }
+      }).apply({
         icon: "search",
         singleLine: false
       }),
@@ -51,7 +57,8 @@ export class AppComponent implements OnInit {
         new OptionChild('Single', 'SI',),
         new OptionChild('Maried', 'MR')
       ]).apply({
-        selectedValue: 'SI'
+        selectedValue: 'SI',
+        hint: 'Select your civil status',
       }),
       new AutoComplete('contry', 'Contry', this.getContries()),
       new InputFile('profPic', 'Profile Picture').apply({
@@ -62,7 +69,9 @@ export class AppComponent implements OnInit {
         new OptionChild('Not', 'n'),
       ]).apply({
         selectedValue: 'n',
-        action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) }
+        action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) },
+        hint: 'Do you have a pet?',
+        errorMessage: 'Error message'
       }),
       new InputPassword('pass', 'Password'),
       new Switch('switch', 'Toggle Switch', false),
@@ -116,6 +125,7 @@ export class AppComponent implements OnInit {
     ]
     if (param.event == 'y') {
       this.formStructure.createNodes(7, nodes)
+      param.structure.getControlById('hasPet')?.setErrors({ 'error': true });
     } else this.formStructure.removeNodes(nodes)
   }
 
