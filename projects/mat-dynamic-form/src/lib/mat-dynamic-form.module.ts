@@ -3,18 +3,17 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDynamicFormComponent } from './mat-dynamic-form.component';
 import { MaterialModule } from './material-module';
-import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { AdDirective } from './directive/append-component.directive';
 import { SinitizeHtmlPipe } from './pipes/sinitize-html.pipe';
+import { UploadFileComponent } from './components/upload-file/upload-file.component';
 
 @NgModule({
-  declarations: [MatDynamicFormComponent, AdDirective, SinitizeHtmlPipe],
+  declarations: [MatDynamicFormComponent, AdDirective, SinitizeHtmlPipe, UploadFileComponent],
   imports: [
     CommonModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule,
-    MaterialFileInputModule
+    ReactiveFormsModule
   ],
   exports: [
     MatDynamicFormComponent

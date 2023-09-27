@@ -4,6 +4,7 @@ import { Action, ActionEvent } from "./Action";
 import { ObjectBase } from "./base/ObjectBase";
 import { OptionChild } from "./OptionChild";
 import { Observable, BehaviorSubject } from 'rxjs';
+import { FileChange } from "../interfaces/FileChange.interface";
 
 export type Node = Input | Checkbox | RadioGroup | Dropdown | TextArea | DatePicker | InputFile | InputNumber | InputPassword
 export type Validator = ValidatorFn | ValidatorFn[] | null;
@@ -159,12 +160,17 @@ export class Input extends NodeBase {
 
 export class InputFile extends NodeBase {
     public value?: string;
-    public accept?: string;
+    public accept?: string[];
+    public onStatusChange?: (value: FileChange) => void;
 
     constructor(id, placeholder?, value?, accept?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
         super(id, placeholder, 'file', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.accept = accept;
         this.value = value;
+    }
+
+    executeStatusChange(value: FileChange) {
+        this.onStatusChange?.(value);
     }
 }
 

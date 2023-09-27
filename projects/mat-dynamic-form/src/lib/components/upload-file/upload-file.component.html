@@ -1,0 +1,43 @@
+<form id="{{controlName}}-parent" method="post" action="" enctype="multipart/form-data">
+  <div class="parent" [class.error]="getControl()?.hasError('error')">
+    <div class="d-flex flex-row p-0 mt-2 file-container">
+      <div class="file-icon-container">
+        <img src="assets/img/{{getFileIcon()}}" onerror="this.error=null;this.src='assets/img/file.png'"
+          class="upload-icon-size me-2">
+      </div>
+      <button mat-icon-button class="close" *ngIf="['uploaded', 'error', 'valid'].includes(getState())">
+        <mat-icon (click)="removeFile()" title="Descartar archivo cargado." color="primary">close</mat-icon>
+      </button>
+      <div class="info" mat-line>
+        <div class="cell">
+          <div class="bar col-sm-12">
+            <label class="e2e-inner-html-bound multiline">{{label}} ({{getAcceptedTypes()}})</label>
+          </div>
+        </div>
+        <div mat-line>
+          <div id="retry" type="button" class="btn-container" *ngIf="getState() == 'error'">
+            <mat-icon (click)="saveFile()" title="Reintentar la carga del archivo.">refresh</mat-icon>
+            <span title="Descargar archivo actual" (click)="downloadFile()">{{currentFile?.name}}</span>
+          </div>
+          <div type="button" class="btn-container" *ngIf="['valid'].includes(getState())">
+            <p title="Descargar archivo actual" (click)="downloadFile()">{{currentFile?.name}}</p>
+          </div>
+          <button type="button" class="btn-container" *ngIf="['uploading', 'preparing'].includes(getState())">
+            <mat-spinner diameter="15">
+            </mat-spinner>
+            <span>{{currentFile?.name}}</span>
+          </button>
+          <button type="button" class="btn-container" (click)="file.click()" *ngIf="getState() == 'none'">
+            <mat-icon>file_upload</mat-icon> <span>Seleccionar</span>
+          </button>
+          <input #file [id]="'innerFile' + controlName" type="file" (change)="handleFile($event)" [accept]="getAccept()"
+            class="d-none">
+        </div>
+      </div>
+      <span class="drag-label">
+        Soltar el archivo aquí
+      </span>
+    </div>
+  </div>
+</form>
+<br>

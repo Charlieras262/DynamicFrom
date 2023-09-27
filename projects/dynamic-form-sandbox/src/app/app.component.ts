@@ -62,7 +62,8 @@ export class AppComponent implements OnInit {
       }),
       new AutoComplete('contry', 'Contry', this.getContries()),
       new InputFile('profPic', 'Profile Picture').apply({
-        accept: '.png, .jpg, .jpeg'
+        accept: ['png', 'jpg', 'jpeg', 'docx', 'xlsx', 'gif', 'rar', 'zip'],
+        onStatusChange: (param) => console.log(param),
       }),
       new RadioGroup('hasPet', 'Has Pet', [
         new OptionChild('Yes', 'y'),
