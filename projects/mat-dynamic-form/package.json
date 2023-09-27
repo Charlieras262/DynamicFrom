@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "bootstrap": "^4.6.0",
-    "ngx-material-file-input": "^2.1.1",
     "tslib": "^2.0.0"
   },
   "repository": {

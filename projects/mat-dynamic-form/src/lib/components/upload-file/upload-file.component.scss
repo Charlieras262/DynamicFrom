@@ -1,0 +1,158 @@
+$icon-size: 32px;
+$blue-sat: #14649B;
+
+.parent {
+  outline: 1px dashed #757575;
+  -webkit-border-radius: 10px !important;
+  -moz-border-radius: 10px !important;
+  -ms-border-radius: 10px !important;
+  -o-border-radius: 10px !important;
+  border-radius: 10px !important;
+  padding-left: 4px;
+  padding-right: 4px;
+  transition: 0.2s all ease;
+  border-collapse: separate;
+
+  &:hover {
+    outline: 1px dashed black;
+  }
+}
+
+.error {
+  outline: 1px dashed #F44336;
+
+  .info label {
+    color: #F44336;
+  }
+}
+
+.file-container {
+  position: relative;
+  pointer-events: none;
+
+  &:hover {
+    border-color: $blue-sat;
+  }
+
+  .drag-label {
+    color: white;
+    display: none;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+  }
+
+  .close {
+    position: absolute;
+    right: 0;
+    margin-top: 2px;
+    font-size: 18px !important;
+    pointer-events: all;
+  }
+}
+
+.dragover {
+  outline-color: $blue-sat;
+  background-color: $blue-sat;
+  border-radius: 5px;
+  margin-top: 8px !important;
+  outline-offset: 4px;
+
+  .info,
+  .file-icon-container {
+    display: none;
+  }
+
+  .drag-label {
+    display: inherit;
+  }
+}
+
+.file-icon-container {
+  min-width: $icon-size;
+  min-height: $icon-size;
+  max-width: $icon-size;
+  max-height: $icon-size;
+  margin-right: 5px;
+
+  .upload-icon-size {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+img,
+mat-spinner {
+  margin-top: 6px;
+}
+
+.info {
+  margin-top: -5px;
+}
+
+.btn-container {
+  display: inline-flex !important;
+  align-items: flex-end !important;
+  border-radius: 4px !important;
+  margin-left: -3px !important;
+  padding: 0px 0px !important;
+  background: transparent !important;
+  border: none !important;
+  color: $blue-sat;
+  font-size: 14px;
+  height: 18px;
+  align-items: center;
+  position: relative;
+  pointer-events: all;
+
+  mat-icon {
+    font-size: 18px !important;
+    display: inline-flex !important;
+    align-items: flex-start !important;
+    padding-top: 4px;
+    position: absolute;
+  }
+
+  mat-spinner {
+    display: inline-flex !important;
+    align-items: flex-start !important;
+    padding-top: 19px !important;
+    position: absolute;
+  }
+
+  span {
+    display: inline-flex !important;
+    align-items: flex-start !important;
+    margin-left: 23px;
+    margin-bottom: 0px;
+  }
+
+  p {
+    margin-left: 4px;
+    margin-bottom: 0px;
+  }
+}
+
+.container {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.bar {
+  font-size: 14px;
+  color: #757575;
+  margin-top: 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}

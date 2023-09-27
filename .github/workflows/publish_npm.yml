@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x]
+        node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -24,6 +24,13 @@ jobs:
     - run: npm i @angular/cli -d
     - run: npm i
     - run: npm run build
+    - run: npm run copy-assets
+    - name: Install jq
+      run: sudo apt-get install jq
+    - name: Update version in package.json
+      run: |
+        VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
+        jq ".version = \"$VERSION\"" dist/mat-dynamic-form/package.json > temp.json && mv temp.json dist/mat-dynamic-form/package.json
     - name: NPM Publish
       uses: JS-DevTools/npm-publish@v1
       with:
@@ -32,5 +39,5 @@ jobs:
     - if: steps.publish.outputs.type != 'none'
       run: |
         echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
-
-      
+        echo "Publish type: ${{ steps.publish.outputs.type }}"
+        echo "Process End"
