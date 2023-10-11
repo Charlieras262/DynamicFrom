@@ -39,5 +39,6 @@
       </span>
     </div>
   </div>
+  <mat-hint class="hint" *ngIf="!getControl()?.hasError('error')">{{hint}}</mat-hint>
+  <mat-error class="m-error" *ngIf="getControl()?.hasError('error')">{{error}}</mat-error>
 </form>
-<br>

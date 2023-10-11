@@ -182,7 +182,8 @@
           <ng-container *ngSwitchCase="'file'">
             <div class="col-sm-12">
               <upload-file [id]="node.id" formControlName="{{node.id}}" [label]="node.placeholder"
-                [accept]="node.accept" (onStatusChange)="node?.executeStatusChange($event)">
+                [accept]="node?.accept" (onStatusChange)="node?.executeStatusChange($event)" [filename]="node?.filename"
+                [hint]="node?.hint" [error]="node?.errorMessage">
               </upload-file>
             </div>
           </ng-container>
