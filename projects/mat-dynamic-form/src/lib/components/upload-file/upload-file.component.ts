@@ -26,6 +26,14 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterV
    */
   @Input("label") label: string = "Documento";
   /**
+   * @description Texto que se muestra como nota del input file.
+   */
+  @Input("hint") hint?: string;
+  /**
+   * @description Texto que se muestra cuando existe un error en el input file.
+   */
+  @Input("error") error?: string;
+  /**
    * @description Se ejecuta cuando el estado de la carga cambia.
    */
   @Output() onStatusChange: EventEmitter<FileChange> = new EventEmitter();
@@ -165,6 +173,7 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterV
       return;
     }
 
+    this.getControl().setErrors(null);
     this.fileType = FileUtils.getFileExtension(this.currentFile.type);
     this.fileState = 'valid';
   }

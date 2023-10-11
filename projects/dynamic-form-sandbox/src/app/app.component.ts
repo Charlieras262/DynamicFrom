@@ -3,7 +3,7 @@ import { Validators } from '@angular/forms';
 import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber, AutoComplete } from 'projects/mat-dynamic-form/src/public-api';
 import { InputComponent } from './input/input.component';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -60,12 +60,16 @@ export class AppComponent implements OnInit {
         selectedValue: 'SI',
         hint: 'Select your civil status',
       }),
-      new AutoComplete('contry', 'Contry', this.getContries()),
+      new AutoComplete('contry', 'Contry', this.getContries()).apply({hint: "Este es un hint de prueba"}),
       new InputFile('profPic', 'Profile Picture').apply({
         accept: ['png', 'jpg', 'jpeg', 'docx', 'xlsx', 'gif', 'rar', 'zip'],
         onStatusChange: (param) => console.log(param),
+        filename: 'MyFile',
+        maxSize: 100,
+        hint: 'Select your profile picture',
+        errorMessage: 'File selected is not valid'
       }),
-      new RadioGroup('hasPet', 'Has Pet', [
+      /* new RadioGroup('hasPet', 'Has Pet', [
         new OptionChild('Yes', 'y'),
         new OptionChild('Not', 'n'),
       ]).apply({
@@ -73,9 +77,9 @@ export class AppComponent implements OnInit {
         action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) },
         hint: 'Do you have a pet?',
         errorMessage: 'Error message'
-      }),
+      }) */
       new InputPassword('pass', 'Password'),
-      new Switch('switch', 'Toggle Switch', false),
+      //new Switch('switch', 'Toggle Switch', false),
       new InputNumber('idNumber', 'Number').apply({
         action: { type: 'change', onEvent: (param) => console.log(param) }
       }),

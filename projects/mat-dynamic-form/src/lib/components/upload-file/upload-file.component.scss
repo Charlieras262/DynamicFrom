@@ -12,10 +12,15 @@ $blue-sat: #14649B;
   padding-right: 4px;
   transition: 0.2s all ease;
   border-collapse: separate;
+  margin-bottom: 4px;
 
   &:hover {
     outline: 1px dashed black;
   }
+}
+
+.hint, .m-error {
+  font-size: 75%;
 }
 
 .error {
@@ -23,6 +28,7 @@ $blue-sat: #14649B;
 
   .info label {
     color: #F44336;
+    font-size: 75%;
   }
 }
 

@@ -161,6 +161,8 @@ export class Input extends NodeBase {
 export class InputFile extends NodeBase {
     public value?: string;
     public accept?: string[];
+    public filename?: string;
+    public maxSize?: number;
     public onStatusChange?: (value: FileChange) => void;
 
     constructor(id, placeholder?, value?, accept?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
@@ -220,18 +222,19 @@ export class Dropdown extends SelectableNode {
 
 export class AutoComplete extends SelectableNode {
     multiple: boolean;
-    filteredOptions: BehaviorSubject<OptionChild[] | undefined>;
+    filteredOptions: BehaviorSubject<OptionChild[] | undefined> =  new BehaviorSubject([]);
 
     constructor(id, placeholder?, value?, selected?, multiple?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
         super(id, placeholder, value, selected, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
+        this.filteredOptions
         this.type = 'autocomplete';
         this.multiple = multiple ?? false;
-        this.filteredOptions = new BehaviorSubject<OptionChild[] | undefined>(this.getOptions())
+        super.value = value;
     }
 
     protected onOptionLoaded(options: OptionChild[]): void {
         super.onOptionLoaded(options);
-        this.filteredOptions.next(options);
+        this.filteredOptions?.next(options);
     }
 }
 
