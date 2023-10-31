@@ -16,3 +16,5 @@ export * from './lib/models/Node';
 export * from './lib/models/OptionChild';
 
 export * from './lib/types/ActionEnums';
+
+export * from './lib/utils/file-utils';
