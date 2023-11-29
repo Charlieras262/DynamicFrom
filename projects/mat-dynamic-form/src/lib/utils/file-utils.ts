@@ -125,35 +125,35 @@ export class FileUtils {
         if (!file) return {
             error: 'noFileFound',
             isValid: false,
-            message: 'No se ha seleccionado ningún archivo.',
+            message: 'No file selected',
             status: '404'
         };
 
         if (file.size > (maxFileSize * 1024 * 1024)) return {
             isValid: false,
             error: 'maxFileSize',
-            message: 'El archivo cargado excede el tamaño máximo permitido',
+            message: 'The file size exceeds the maximum allowed',
             status: '400'
         };
 
         if (expectedFileType.length != 0 && !expectedFileType.includes(this.getFileExtension(file.type))) return {
             isValid: false,
             error: 'badFileFormat',
-            message: `El tipo de archivo cargado no se encuetra dendro de la lista de tipos soportados (${expectedFileType.join(', ')}).`,
+            message: `The file type does not match the expected types (${expectedFileType.join(', ')}).`,
             status: '403'
         };
 
         if (expectedFileType.length != 0 && file instanceof File && this.getFileExtension(file.type) != file.name.split(".").pop()?.toLowerCase()) return {
             isValid: false,
             error: 'corruptFileFormat',
-            message: `El tipo del archivo cargado no corresponde a la extención.`,
+            message: `The file type does not match mime type.`,
             status: '403'
         };
 
         return {
             isValid: true,
             error: null,
-            message: 'El archivo cargado es válido',
+            message: 'File is valid',
             status: '200'
         };
     }
@@ -205,7 +205,34 @@ export class FileUtils {
         window.URL.revokeObjectURL(url);
     }
 
+    /**
+     * Downloads the file with the name provided in the `Content-Disposition` header.
+     * 
+     * @param file file to download.
+     * @param headers headers of the response.
+     */
+    public static saveAsHeaders(file: File | Blob, headers: { [key: string]: string }) {
+        const blob = new Blob([file], { type: file.type });
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+
+        anchor.href = url;
+        // Filename from content-disposition no case sentitive
+        anchor.download = headers[
+            Object.keys(headers).find(key => key.toLowerCase() === "content-disposition")
+        ]?.split(';')[1].split('=')[1].replace(/"/g, '');
+
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+    }
+
+    /**
+     * Returns the icon name for the file based on the `extension`.
+     * 
+     * @param extension File extension.
+     * @returns Icon name.
+     */
     public static getFileIcon(extension: string): string {
-        return FILE_ICON_MAP[extension];
+        return FILE_ICON_MAP[extension] ?? 'file.png';
     }
 }

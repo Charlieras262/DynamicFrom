@@ -60,14 +60,17 @@ export class AppComponent implements OnInit {
         selectedValue: 'SI',
         hint: 'Select your civil status',
       }),
-      new AutoComplete('contry', 'Contry', this.getContries()).apply({hint: "Este es un hint de prueba"}),
+      new AutoComplete('contry', 'Contry', this.getContries()).apply({ hint: "Este es un hint de prueba" }),
       new InputFile('profPic', 'Profile Picture').apply({
-        accept: ['png', 'jpg', 'jpeg', 'docx', 'xlsx', 'gif', 'rar', 'zip'],
+        accept: ['png', 'jpg', 'jpeg', 'docx', 'xlsx', 'gif', 'rar'],
         onStatusChange: (param) => console.log(param),
         filename: 'MyFile',
         maxSize: 100,
         hint: 'Select your profile picture',
-        errorMessage: 'File selected is not valid'
+        errorMessage: 'File selected is not valid',
+        dragLabel: 'Arrastre el archivo aquí',
+        downloadHint: 'Descargar el archivo',
+        removeHint: 'Quitar el archivo',
       }),
       /* new RadioGroup('hasPet', 'Has Pet', [
         new OptionChild('Yes', 'y'),
@@ -108,9 +111,11 @@ export class AppComponent implements OnInit {
         icon: 'close'
       }),
       new Button('save', 'Save', {
-        onEvent: (param) => param.structure?.patchValue({ name: 'Carlos', hasPet: 'y' }), style: 'primary',
+        onEvent: (param) => {
+          console.log(param.structure?.getControlById("profPic"));
+        }, style: 'primary',
       }).apply({
-        validateForm: true,
+        validateForm: false,
         icon: 'save'
       }),
     ];

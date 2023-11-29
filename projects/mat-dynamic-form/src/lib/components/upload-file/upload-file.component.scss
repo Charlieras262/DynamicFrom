@@ -1,5 +1,8 @@
+@import '~@angular/material/theming';
+
 $icon-size: 32px;
-$blue-sat: #14649B;
+$enphasis: var(--primary-color);
+$transition: 0.3s all ease-in-out;
 
 .parent {
   outline: 1px dashed #757575;
@@ -10,16 +13,16 @@ $blue-sat: #14649B;
   border-radius: 10px !important;
   padding-left: 4px;
   padding-right: 4px;
-  transition: 0.2s all ease;
-  border-collapse: separate;
   margin-bottom: 4px;
+  transition: $transition;
 
   &:hover {
-    outline: 1px dashed black;
+    outline: 1px dashed $enphasis;
   }
 }
 
-.hint, .m-error {
+.hint,
+.m-error {
   font-size: 75%;
 }
 
@@ -37,7 +40,7 @@ $blue-sat: #14649B;
   pointer-events: none;
 
   &:hover {
-    border-color: $blue-sat;
+    border-color: $enphasis;
   }
 
   .drag-label {
@@ -54,22 +57,36 @@ $blue-sat: #14649B;
   .close {
     position: absolute;
     right: 0;
-    margin-top: 2px;
-    font-size: 18px !important;
+    margin-top: 1px;
     pointer-events: all;
   }
 }
 
 .dragover {
-  outline-color: $blue-sat;
-  background-color: $blue-sat;
+  outline-color: $enphasis;
+  background-color: $enphasis;
   border-radius: 5px;
   margin-top: 8px !important;
   outline-offset: 4px;
+  transition: $transition;
 
-  .info,
   .file-icon-container {
-    display: none;
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .info {
+    .btn-container {
+      display: none;
+      opacity: 0;
+    }
+
+    .cell {
+      visibility: hidden;
+      pointer-events: none;
+      opacity: 0;
+    }
   }
 
   .drag-label {
@@ -83,6 +100,7 @@ $blue-sat: #14649B;
   max-width: $icon-size;
   max-height: $icon-size;
   margin-right: 5px;
+  transition: $transition;
 
   .upload-icon-size {
     width: 100%;
@@ -107,12 +125,13 @@ mat-spinner {
   padding: 0px 0px !important;
   background: transparent !important;
   border: none !important;
-  color: $blue-sat;
+  color: $enphasis;
   font-size: 14px;
   height: 18px;
   align-items: center;
   position: relative;
   pointer-events: all;
+  transition: $transition;
 
   mat-icon {
     font-size: 18px !important;
@@ -151,6 +170,7 @@ mat-spinner {
 .cell {
   display: table-cell;
   vertical-align: middle;
+  transition: $transition;
 }
 
 .bar {

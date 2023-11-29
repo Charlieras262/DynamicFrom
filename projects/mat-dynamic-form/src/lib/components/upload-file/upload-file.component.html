@@ -1,26 +1,32 @@
-<form id="{{controlName}}-parent" method="post" action="" enctype="multipart/form-data">
-  <div class="parent" [class.error]="getControl()?.hasError('error')">
+<form method="post" action="" enctype="multipart/form-data">
+  <div id="{{controlName}}-parent" class="parent" [class.error]="getControl()?.hasError('error')" [title]="data.accept">
     <div class="d-flex flex-row p-0 mt-2 file-container">
       <div class="file-icon-container">
         <img src="assets/img/{{getFileIcon()}}" onerror="this.error=null;this.src='assets/img/file.png'"
           class="upload-icon-size me-2">
       </div>
       <button mat-icon-button class="close" *ngIf="['uploaded', 'error', 'valid'].includes(getState())">
-        <mat-icon (click)="removeFile()" title="Descartar archivo cargado." color="primary">close</mat-icon>
+        <mat-icon (click)="removeFile()" [title]="data.removeHint ? data.removeHint : 'Remove file'" color="warn">
+          close</mat-icon>
       </button>
       <div class="info" mat-line>
         <div class="cell">
           <div class="bar col-sm-12">
-            <label class="e2e-inner-html-bound multiline">{{label}} ({{getAcceptedTypes()}})</label>
+            <label class="e2e-inner-html-bound multiline">{{data.placeholder}} ({{getAcceptedTypes()}})</label>
           </div>
         </div>
-        <div mat-line>
+        <div mat-line class="buttons">
           <div id="retry" type="button" class="btn-container" *ngIf="getState() == 'error'">
-            <mat-icon (click)="saveFile()" title="Reintentar la carga del archivo.">refresh</mat-icon>
-            <span title="Descargar archivo actual" (click)="downloadFile()">{{currentFile?.name}}</span>
+            <mat-icon (click)="saveFile()" [title]="data.retryHint ? data.retryHint : 'Retry loading file'">
+              refresh
+            </mat-icon>
+            <span [title]="data.downloadHint ? data.downloadHint : 'Download current file'"
+              (click)="downloadFile()">{{currentFile?.name}}</span>
           </div>
           <div type="button" class="btn-container" *ngIf="['valid'].includes(getState())">
-            <p title="Descargar archivo actual" (click)="downloadFile()">{{currentFile?.name}}</p>
+            <mat-icon>file_download</mat-icon>
+            <span [title]="data.downloadHint ? data.downloadHint : 'Download current file'" (click)="downloadFile()">
+              {{currentFile?.name}}</span>
           </div>
           <button type="button" class="btn-container" *ngIf="['uploading', 'preparing'].includes(getState())">
             <mat-spinner diameter="15">
@@ -35,10 +41,10 @@
         </div>
       </div>
       <span class="drag-label">
-        Soltar el archivo aquí
+        {{data.dragLabel ? data.dragLabel : 'Drop files here'}}
       </span>
     </div>
   </div>
-  <mat-hint class="hint" *ngIf="!getControl()?.hasError('error')">{{hint}}</mat-hint>
-  <mat-error class="m-error" *ngIf="getControl()?.hasError('error')">{{error}}</mat-error>
+  <mat-hint class="hint" *ngIf="!getControl()?.hasError('error')">{{data.hint}}</mat-hint>
+  <mat-error class="m-error" *ngIf="getControl()?.hasError('error')">{{data.errorMessage}}</mat-error>
 </form>
