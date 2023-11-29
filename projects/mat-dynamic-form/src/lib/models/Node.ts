@@ -163,6 +163,10 @@ export class InputFile extends NodeBase {
     public accept?: string[];
     public filename?: string;
     public maxSize?: number;
+    public dragLabel?: string;
+    public downloadHint?: string;
+    public removeHint?: string;
+    public retryHint?: string;
     public onStatusChange?: (value: FileChange) => void;
 
     constructor(id, placeholder?, value?, accept?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
@@ -222,7 +226,7 @@ export class Dropdown extends SelectableNode {
 
 export class AutoComplete extends SelectableNode {
     multiple: boolean;
-    filteredOptions: BehaviorSubject<OptionChild[] | undefined> =  new BehaviorSubject([]);
+    filteredOptions: BehaviorSubject<OptionChild[] | undefined> = new BehaviorSubject([]);
 
     constructor(id, placeholder?, value?, selected?, multiple?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
         super(id, placeholder, value, selected, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);

@@ -2,6 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Optional, Output
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { FileChange, FileState } from '../../interfaces/FileChange.interface';
 import { FileUtils } from '../../utils/file-utils';
+import { InputFile } from '../../models/Node';
 
 @Component({
   selector: 'upload-file',
@@ -9,30 +10,7 @@ import { FileUtils } from '../../utils/file-utils';
   styleUrls: ['./upload-file.component.scss'],
 })
 export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterViewInit {
-  /**
-   * @description Nombre del archivo sin extensión con el que se cargará y se mostrara en el input (Ej.: Documento).
-   */
-  @Input("filename") filename?: string;
-  /**
-   * @description Extensiones de archivos permitidos para cargar (Ej.: ['pdf', 'doc']) (Requerido).
-   */
-  @Input("accept") accept: string[] = [];
-  /**
-   * @description Tamaño del archivo en megabytes  no mayor a 10.
-   */
-  @Input("maxSize") maxSize: number = 10
-  /**
-   * @description Texto que se muestra como nombre del input file.
-   */
-  @Input("label") label: string = "Documento";
-  /**
-   * @description Texto que se muestra como nota del input file.
-   */
-  @Input("hint") hint?: string;
-  /**
-   * @description Texto que se muestra cuando existe un error en el input file.
-   */
-  @Input("error") error?: string;
+
   /**
    * @description Se ejecuta cuando el estado de la carga cambia.
    */
@@ -41,6 +19,8 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterV
   set emiter(emiter: (value: FileChange) => void) {
     this.onStatusChange.emit = emiter;
   }
+
+  @Input("data") data?: InputFile;
 
   fileType: string = 'upload';
   controlName: string = "file";
@@ -126,12 +106,12 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterV
   }
 
   getAccept(): string {
-    return this.accept.length == 0 ? '*/*' : this.accept.map(item => '.' + item).join(',');
+    return this.data.accept.length == 0 ? '*/*' : this.data.accept.map(item => '.' + item).join(',');
   }
 
   downloadFile() {
     if (this.fileState != 'none') {
-      FileUtils.saveAs(this.currentFile!, this.filename ?? this.currentFile!.name)
+      FileUtils.saveAs(this.currentFile!, this.data.filename ?? this.currentFile!.name)
     }
   }
 
@@ -147,11 +127,11 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterV
   }
 
   getAcceptedTypes(): string {
-    if (!this.accept || this.accept.length == 0) {
-      this.accept = [];
+    if (!this.data.accept || this.data.accept.length == 0) {
+      this.data.accept = [];
       return 'Todos los archivos';
     }
-    const types = this.accept.slice(0, 4);
+    const types = this.data.accept.slice(0, 4);
     return types.map(item => item).join(', ');
   }
 
@@ -161,21 +141,23 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterV
   }
 
   private handleInputFile(file: File) {
-    this.currentFile = FileUtils.changeFileName(file, this.filename);
+    this.currentFile = FileUtils.changeFileName(file, this.data.filename);
     this.fileState = 'preparing';
     this.onStatusChange.emit({ state: this.fileState });
-    const fileStatus = FileUtils.isValidFile(this.currentFile, this.accept, this.maxSize);
+    const fileStatus = FileUtils.isValidFile(this.currentFile, this.data.accept, this.data.maxSize);
     if (!fileStatus.isValid) {
       this.fileState = 'error';
       this.getControl().setValue(null);
       this.getControl().setErrors({ 'error': true });
-      this.onStatusChange.emit({ state: this.fileState, error: fileStatus.error?.toString() });
+      this.onStatusChange.emit({ state: 'error', error: fileStatus.error?.toString(), message: fileStatus.message });
       return;
     }
 
     this.getControl().setErrors(null);
     this.fileType = FileUtils.getFileExtension(this.currentFile.type);
     this.fileState = 'valid';
+    this.control.setValue(this.currentFile);
+    this.onStatusChange.emit({ state: this.fileState, message: fileStatus.message })
   }
 
   private addListener<K extends keyof HTMLElementEventMap>(element: HTMLElement, events: string, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions) {

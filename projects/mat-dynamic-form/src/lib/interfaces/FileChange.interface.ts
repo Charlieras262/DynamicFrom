@@ -5,5 +5,6 @@ export interface FileChange {
         id: string;
         name: string;
     }
+    message?: string;
     error?: string;
 }
