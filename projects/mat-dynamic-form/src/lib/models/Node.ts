@@ -259,8 +259,8 @@ export class Button extends NodeBase {
     public validateForm?: boolean;
     public validation?: (param: ActionEvent) => boolean;
 
-    constructor(id: string, placeholder: string, action: Action, singleLine?: boolean, icon?, diabled?: boolean, validateForm?: boolean, validation?: (param: ActionEvent) => boolean) {
-        super(id, placeholder, 'button', singleLine, icon, undefined, diabled, undefined, undefined, action);
+    constructor(id: string, placeholder: string, action: Action, singleLine?: boolean, icon?, disabled?: boolean, validateForm?: boolean, validation?: (param: ActionEvent) => boolean) {
+        super(id, placeholder, 'button', singleLine, icon, undefined, disabled, undefined, undefined, action);
         this.validateForm = validateForm;
         this.validation = validation ?? (() => true);
     }

@@ -68,7 +68,7 @@
               "projects/dynamic-form-sandbox/src/assets",
               {
                 "glob": "**/*",
-                "input": "./dist/mat-dynamic-form/assets",
+                "input": "projects/mat-dynamic-form/src/assets",
                 "output": "./assets/"
               }
             ],
