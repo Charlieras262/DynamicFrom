@@ -37,7 +37,11 @@ export class AppComponent implements OnInit {
         }
       }).apply({
         icon: "search",
-        singleLine: false
+        disabled: true,
+        validateForm: true,
+        validation: (param) => {
+          return param.structure.getControlById('name')?.value?.length > 0;
+        }
       }),
       new Input('tel', 'Phone Number').apply({
         icon: 'phone'
@@ -72,7 +76,7 @@ export class AppComponent implements OnInit {
         downloadHint: 'Descargar el archivo',
         removeHint: 'Quitar el archivo',
       }),
-      /* new RadioGroup('hasPet', 'Has Pet', [
+      new RadioGroup('hasPet', 'Has Pet', [
         new OptionChild('Yes', 'y'),
         new OptionChild('Not', 'n'),
       ]).apply({
@@ -80,7 +84,7 @@ export class AppComponent implements OnInit {
         action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) },
         hint: 'Do you have a pet?',
         errorMessage: 'Error message'
-      }) */
+      }),
       new InputPassword('pass', 'Password'),
       //new Switch('switch', 'Toggle Switch', false),
       new InputNumber('idNumber', 'Number').apply({
@@ -110,12 +114,28 @@ export class AppComponent implements OnInit {
       }).apply({
         icon: 'close'
       }),
+      new Button('cancel', 'Cancel', {
+        onEvent: (param) => {
+          param.structure?.reset();
+          param.structure?.remapValues();
+        }, style: 'warn'
+      }).apply({
+        icon: 'close'
+      }),
+      new Button('back', 'Back', {
+        onEvent: (param) => {
+          console.log(param.structure?.getControlById("profPic"));
+        }, style: 'primary',
+      }).apply({
+        disabled: true,
+        icon: 'arrow_back'
+      }),
       new Button('save', 'Save', {
         onEvent: (param) => {
           console.log(param.structure?.getControlById("profPic"));
         }, style: 'primary',
       }).apply({
-        validateForm: false,
+        validateForm: true,
         icon: 'save'
       }),
     ];
@@ -134,7 +154,7 @@ export class AppComponent implements OnInit {
       new Input('petName', 'Pet Name')
     ]
     if (param.event == 'y') {
-      this.formStructure.createNodes(7, nodes)
+      this.formStructure.createNodes(9, nodes)
       param.structure.getControlById('hasPet')?.setErrors({ 'error': true });
     } else this.formStructure.removeNodes(nodes)
   }

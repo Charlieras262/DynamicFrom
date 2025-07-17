@@ -105,10 +105,14 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
   }
 
   shouldDisable(action: Button): boolean {
-    const initialVals = this.structure.isInvalid()
-      || !action.validation?.({ event: action, structure: this.structure });
+    const isDisabled = action.disabled;
+    const isInvalidByValidation = !action.validation?.({ event: action, structure: this.structure });
 
-    return (action.validateForm || action.disabled) && initialVals || (action.validateForm && this.structure.validateEvenDisabled && this.hasError());
+    const shouldValidateForm = action.validateForm;
+    const hasStructureErrors = this.structure.isInvalid();
+    const hasDisabledErrors = this.structure.validateEvenDisabled && this.hasError();
+
+    return isDisabled || isInvalidByValidation || (shouldValidateForm && (hasStructureErrors || hasDisabledErrors));
   }
 
   displayFn(option?: OptionChild): string {

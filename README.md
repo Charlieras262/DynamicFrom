@@ -254,3 +254,61 @@ new TextArea('comments', 'Comments').apply({
 
 ```
 > This method can be used in all classes of the lib (like kotlin apply).
+
+## 🐳 Docker Support (for local development)
+
+You can run this library in a Docker container to avoid dependency conflicts (e.g., Angular 11 with Node 14) and isolate it from other Angular projects.
+
+### 🔧 Build Docker Image
+
+Make sure you're in the root folder of the repo:
+
+```bash
+docker build -t angular11-dev -f Dockerfile .
+```
+
+> If you don’t have a `Dockerfile` yet, you can create one like this:
+
+```Dockerfile
+# Usa Node.js 14, compatible con Angular 11
+FROM node:14
+
+# Establece el directorio de trabajo dentro del contenedor
+WORKDIR /app
+
+# Instala Angular CLI versión 11 de forma global
+RUN npm install -g @angular/cli@11
+
+# Copia los archivos de dependencias
+COPY package*.json ./
+
+# Instala las dependencias del proyecto
+RUN npm install
+
+# Copia el resto de archivos del proyecto
+COPY . .
+
+# Expone el puerto 4200 (Angular dev server)
+EXPOSE 4200
+
+# Comando por defecto (puede ser override en docker run)
+CMD ["ng", "serve", "--host", "0.0.0.0"]
+```
+
+---
+
+### 🚀 Run the Project in Docker
+
+To serve the sandbox app locally (port 4200):
+
+```bash
+docker run -it --rm -v "$PWD":/app -w /app -p 4200:4200 --init angular11-dev ng serve --host 0.0.0.0
+```
+
+---
+
+### 📦 Development Notes
+
+- Changes to your local source files will be reflected in the running Docker container automatically, because you're mounting the code with `-v "$PWD":/app`.
+- If you're using symlinks, make sure Git tracks them correctly (`core.symlinks=true`).
+- If other collaborators use the project, recommend them to run the symlink command once after cloning.
