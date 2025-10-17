@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber, AutoComplete } from 'projects/mat-dynamic-form/src/public-api';
+import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber, AutoComplete, SelectableNode } from 'projects/mat-dynamic-form/src/public-api';
 import { InputComponent } from './input/input.component';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -33,15 +33,18 @@ export class AppComponent implements OnInit {
       }),
       new Button('find', 'Find', {
         style: 'primary', type: "click", onEvent: param => {
-          param.structure.getControlById('hasPet')?.setErrors({ 'error': true });
+          console.log(param.structure.getControlById('contry')?.value);
         }
       }).apply({
         icon: "search",
-        disabled: true,
-        validateForm: true,
+        validateForm: false,
+        disabled: false,
         validation: (param) => {
           return param.structure.getControlById('name')?.value?.length > 0;
         }
+      }),
+      new Checkbox('subscribe', 'Subscribe to newsletter', true).apply({
+        hint: 'Select if you want to receive our newsletter'
       }),
       new Input('tel', 'Phone Number').apply({
         icon: 'phone'
@@ -64,7 +67,9 @@ export class AppComponent implements OnInit {
         selectedValue: 'SI',
         hint: 'Select your civil status',
       }),
-      new AutoComplete('contry', 'Contry', this.getContries()).apply({ hint: "Este es un hint de prueba" }),
+      new AutoComplete('contry', 'Contry', this.getContries()).apply({ hint: "This is a hint for the country field", selectedValue: 'gb' }).apply({
+        action: {onEvent: (param) => console.log(param), type: 'valueChange' },
+      }),
       new InputFile('profPic', 'Profile Picture').apply({
         accept: ['png', 'jpg', 'jpeg', 'docx', 'xlsx', 'gif', 'rar'],
         onStatusChange: (param) => console.log(param),
@@ -86,7 +91,7 @@ export class AppComponent implements OnInit {
         errorMessage: 'Error message'
       }),
       new InputPassword('pass', 'Password'),
-      //new Switch('switch', 'Toggle Switch', false),
+      new Switch('switch', 'Toggle Switch', false),
       new InputNumber('idNumber', 'Number').apply({
         action: { type: 'change', onEvent: (param) => console.log(param) }
       }),
@@ -160,7 +165,7 @@ export class AppComponent implements OnInit {
   }
 
   private getContries(): Observable<OptionChild[]> {
-    return this.http.get<any[]>('https://restcountries.com/v3.1/all').pipe(
+    return this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,flags,cca2').pipe(
       map(item => {
         return item.map((i) => new OptionChild(i.name.common, i.cca2))
       })
