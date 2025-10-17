@@ -71,11 +71,28 @@ export class CustomNode<T> extends NodeBase {
     }
 }
 
-class SelectableNode extends NodeBase {
+export class SelectableNode extends NodeBase {
     public selectedValue?: string;
     private _value: OptionChild[];
 
-    constructor(id, placeholder, value, selectedValue, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action) {
+    /**
+     * Creates an instance of a selectable node.
+     * 
+     * Disclaimer: It is not posible to create an instance of this class directly, use one of its subclasses instead.
+     * 
+     * @param id The id of the node in the DOM.
+     * @param placeholder The placeholder text to display.
+     * @param value The options to display in the selectable node. This can be an array of {@link OptionChild}, a Promise that resolves to an array of {@link OptionChild}, or an Observable that emits an array of {@link OptionChild}.
+     * @param selectedValue The initial selected value of the node.
+     * @param singleLine Whether the node should be displayed in a single line.
+     * @param icon The icon to display in the node.
+     * @param errorMessage The error message to display when the node is invalid.
+     * @param disabled Whether the node is disabled.
+     * @param validator The synchronous validators to apply to the node.
+     * @param asyncValidator The asynchronous validators to apply to the node.
+     * @param action The action(s) to execute when an event occurs on the node.
+     */
+    protected constructor(id, placeholder, value, selectedValue, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action) {
         super(id, placeholder, 'button', singleLine, icon, errorMessage, validator, disabled, asyncValidator, action);
         this.value = value
         this.selectedValue = selectedValue
@@ -230,7 +247,6 @@ export class AutoComplete extends SelectableNode {
 
     constructor(id, placeholder?, value?, selected?, multiple?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
         super(id, placeholder, value, selected, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
-        this.filteredOptions
         this.type = 'autocomplete';
         this.multiple = multiple ?? false;
         super.value = value;

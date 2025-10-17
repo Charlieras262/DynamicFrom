@@ -6,6 +6,8 @@ import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator, AutoComp
 import { ObjectBase } from "./base/ObjectBase";
 import { OptionChild } from "./OptionChild";
 import { map, startWith } from "rxjs/operators";
+import { Observable } from "rxjs";
+import { AUTO_COMPLETE_VALUE_DELAY, AUTO_COMPLETE_VALUE_TIMEOUT } from "../utils/constants";
 
 export class FormStructure extends ObjectBase {
     maxParentHeight: string = "100vh";
@@ -291,7 +293,8 @@ export class FormStructure extends ObjectBase {
     createFormControl(node: Node) {
         if (node instanceof Button) return this.addNodeEvent(node);
 
-        const value = node instanceof Dropdown || node instanceof RadioGroup ? node.selectedValue : node.value;
+        const value = node instanceof Dropdown || node instanceof RadioGroup || node instanceof AutoComplete ? node.selectedValue : node.value;
+        this.setAutoCompleteValue(node);
 
         if (this.formGroup?.contains(node.id)) {
             const control = this.getControlById(node.id);
@@ -309,9 +312,10 @@ export class FormStructure extends ObjectBase {
         if (node instanceof AutoComplete) {
             control.valueChanges.pipe(
                 startWith(''),
-                map(value => {
-                    const title = typeof value === 'string' ? value : value?.title;
-                    return title ? this._filter(node.getOptions(), title as string) : node.getOptions()?.slice();
+                map(item => {
+                    const title = typeof item === 'string' ? item : item?.title;
+                    const value = typeof item === 'string' ? item : item?.value;
+                    return title ? this._filter(node.getOptions(), title as string, value as string) : node.getOptions()?.slice();
                 }),
             ).subscribe(options => node.filteredOptions.next(options));
         }
@@ -320,6 +324,9 @@ export class FormStructure extends ObjectBase {
     /**
      * Add the synchronous validators that are active on this control. Calling
      * this method does not overwrite any existing sync validators.
+     * 
+     * @param id The id of the control to add the validators for.
+     * @param validators The validators to add.
      */
     addValidators(id: string, validators: Validator) {
         const control = this.getControlById(id);
@@ -329,6 +336,9 @@ export class FormStructure extends ObjectBase {
     /**
      * Add the asynchronous validators that are active on this control. Calling
      * this method does not overwrite any existing async validators.
+     * 
+     * @param id The id of the control to add the async validators for.
+     * @param validators The async validators to add.
      */
     addAsyncValidators(id: string, validators: AsyncValidator) {
         const control = this.getControlById(id);
@@ -338,6 +348,9 @@ export class FormStructure extends ObjectBase {
     /**
      * Sets the synchronous validators that are active on this control. Calling
      * this method overwrites any existing sync validators.
+     * 
+     * @param id The id of the control to set the validators for.
+     * @param validators The validators to set.
      */
     setValidator(id: string, validators: Validator) {
         const control = this.getControlById(id);
@@ -349,6 +362,9 @@ export class FormStructure extends ObjectBase {
     /**
      * Sets the asynchronous validators that are active on this control. Calling
      * this method overwrites any existing async validators.
+     * 
+     * @param id The id of the control to set the async validators for.
+     * @param validators The async validators to set.
      */
     setAsyncValidator(id: string, validators: AsyncValidator) {
         const control = this.getControlById(id);
@@ -401,6 +417,12 @@ export class FormStructure extends ObjectBase {
         });
     }
 
+    /**
+     * Creates a new node and inserts it into the collection.
+     * 
+     * @param position The position to insert the node.
+     * @param node The node instance to insert.
+     */
     private createNode(position: number, node: Node) {
         this.createFormControl(node)
         if (this.nodes.find(item => item.id == node.id)) return;
@@ -408,6 +430,11 @@ export class FormStructure extends ObjectBase {
             this.nodes.splice(position, 0, node);
     }
 
+    /**
+     * Removes a node from the collection.
+     * 
+     * @param node The node instance to remove from the collection.
+     */
     private removeNode(node: Node) {
         this.removeFormControl(node)
         const index = this.nodes.indexOf(this.nodes.find(item => item.id == node.id));
@@ -416,6 +443,12 @@ export class FormStructure extends ObjectBase {
             this.nodes.splice(index, 1);
     }
 
+    /**
+     * Creates a validation action for a button node.
+     * 
+     * @param position The position to insert the validation action.
+     * @param node The button node to create the validation action for.
+     */
     private createValidateAction(position: number, node: Button) {
         if (!this.validateActions) this.validateActions = [];
         if (this.validateActions.find(item => item.id == node.id)) return;
@@ -424,6 +457,11 @@ export class FormStructure extends ObjectBase {
         this.addNodeEvent(node);
     }
 
+    /**
+     * Removes a validation action from the collection.
+     * 
+     * @param node The node instance to remove from the collection.
+     */
     private removeValidateAction(node: Button) {
         if (!this.validateActions) return;
         const index = this.validateActions.indexOf(this.validateActions.find(item => item.id == node.id));
@@ -431,6 +469,11 @@ export class FormStructure extends ObjectBase {
             this.validateActions.splice(index, 1);
     }
 
+    /**
+     * Adds validators to a form control.
+     * @param control The form control to add validators to.
+     * @param validators The validators to add.
+     */
     private addControlValidators(control: AbstractControl, validators: Validator) {
         const oldValidator = control.validator;
         control.setValidators(validators)
@@ -441,6 +484,12 @@ export class FormStructure extends ObjectBase {
         control.updateValueAndValidity();
     }
 
+    /**
+     * Adds asynchronous validators to a form control.
+     * 
+     * @param control The form control to add validators to.
+     * @param validators The async validators to add.
+     */
     private addAsyncControlValidators(control: AbstractControl, validators: AsyncValidator) {
         const oldValidator = control.asyncValidator;
         control.setAsyncValidators(validators)
@@ -451,6 +500,12 @@ export class FormStructure extends ObjectBase {
         control.updateValueAndValidity()
     }
 
+    /**
+     * Counts the number of controls in a form control, form array, or form group.
+     * 
+     * @param control The control to count its controls.
+     * @returns The number of controls.
+     */
     private countControls(control: AbstractControl): number {
         if (control instanceof FormControl) {
             return 1;
@@ -467,13 +522,52 @@ export class FormStructure extends ObjectBase {
         }
     }
 
-    private _filter(options: OptionChild[], title?: string): OptionChild[] {
-        const filterValue = title.toLowerCase();
+    /**
+     * Filters the options based on the title and value.
+     * 
+     * @param options The options to filter.
+     * @param title The title to filter by.
+     * @param value The value to filter by.
+     * @returns The filtered options.
+     */
+    private _filter(options: OptionChild[], title?: string, value?: string): OptionChild[] {
+        return options.filter(option =>
+            option.title.toLowerCase().includes(title?.toLowerCase())
+            || option.value.toLowerCase().includes(value?.toLowerCase())
+        );
+    }
 
-        const ops = options.filter(option => option.title.toLowerCase().includes(filterValue));
-
-        console.log(ops);
-
-        return ops;
+    /**
+     * Sets the value for an AutoComplete node, as this node is an AutoComplete instance it is 
+     * needed to wait for its value to be resolved.
+     * 
+     * If the node is not an AutoComplete instance the method returns without doing anything.
+     * 
+     * @param node The node instance to set the value.
+     */
+    private setAutoCompleteValue(node: Node) {
+        if (!(node instanceof AutoComplete)) return;
+        new Observable<OptionChild[]>(observer => {
+            let cancelled = false;
+            let counter = 0;
+            (async () => {
+                while (!node.value && !cancelled) {
+                    counter++;
+                    if (counter > AUTO_COMPLETE_VALUE_TIMEOUT) {
+                        observer.error('Timeout waiting for value to be resolved');
+                        return;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, AUTO_COMPLETE_VALUE_DELAY));
+                }
+                if (cancelled) return;
+                observer.next(node.value as OptionChild[]);
+                observer.complete();
+            })().catch(err => observer.error(err));
+            return () => { cancelled = true; };
+        }).subscribe(value => {
+            this.getControlById(node.id)?.setValue(
+                value.find(item => item.value.toLocaleLowerCase() == node.selectedValue.toLocaleLowerCase())
+            );
+        });
     }
 }

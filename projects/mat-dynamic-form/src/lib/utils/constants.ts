@@ -1,0 +1,2 @@
+export const AUTO_COMPLETE_VALUE_TIMEOUT = 10;
+export const AUTO_COMPLETE_VALUE_DELAY = 100;

@@ -116,7 +116,7 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
   }
 
   displayFn(option?: OptionChild): string {
-    return option && option.title ? option.title : '';
+    return option?.title ?? '';
   }
 
   private hasError(): boolean {

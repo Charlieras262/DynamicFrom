@@ -109,7 +109,7 @@
             </mat-form-field>
           </ng-container>
           <ng-container *ngSwitchCase="'checkbox'">
-            <mat-checkbox id="{{node.id}}" class="col-sm-12" formControlName="{{node.id}}" color="primary"
+            <mat-checkbox id="{{node.id}}" class="col-sm-12 checkbox-size" formControlName="{{node.id}}" color="primary"
               [checked]="node.value">
               <span class="e2e-inner-html-bound multiline" [innerHTML]="node.placeholder | sanitizeHtml"></span>
             </mat-checkbox>
@@ -150,14 +150,14 @@
             <ng-container
               *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null; else elseTemplate">
               <mat-error class="col">
-                <div style="height: 7px;"></div>
-                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+                <div style="height: 7px"></div>
+                <a [innerHtml]="node.errorMessage | sanitizeHtml" style="font-size: 10.5px;"></a>
               </mat-error>
             </ng-container>
             <ng-template #elseTemplate>
               <mat-hint align="start" *ngIf="node.hint">
-                <div style="height: 7px;"></div>
-                <span class="col">{{node.hint}}</span>
+                <div style="height: 2px;"></div>
+                <span class="col" style="font-size: 10.5px;">{{node.hint}}</span>
               </mat-hint>
             </ng-template>
 
