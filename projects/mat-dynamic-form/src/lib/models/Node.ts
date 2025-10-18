@@ -9,7 +9,7 @@ import { FileChange } from "../interfaces/FileChange.interface";
 export type Node = Input | Checkbox | RadioGroup | Dropdown | TextArea | DatePicker | InputFile | InputNumber | InputPassword
 export type Validator = ValidatorFn | ValidatorFn[] | null;
 export type AsyncValidator = AsyncValidatorFn | AsyncValidatorFn[] | null;
-type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number' | 'switch' | 'custom' | 'autocomplete';
+type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number' | 'switch' | 'custom' | 'autocomplete' | 'datetime' | 'daterange';
 
 /**
  * @description Esta es la estructura general del nodo que se quiere mostrar en el DOM. 
@@ -56,6 +56,17 @@ class NodeBase extends ObjectBase {
 
     getNativeElement() {
         return document.getElementById(this.id);
+    }
+}
+
+export class InputBaseNode extends NodeBase {
+    public value?: any;
+    public readOnly: boolean;
+    
+    constructor(id, placeholder, type: NodeType, value?, singleLine?, icon?, errorMessage?, disabled?, readOnly?, validator?, asyncValidator?, action?) {
+        super(id, placeholder, type, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
+        this.value = value;
+        this.readOnly = readOnly ?? false;
     }
 }
 
@@ -153,17 +164,14 @@ export class Switch extends NodeBase {
     }
 }
 
-export class Input extends NodeBase {
-    public value?: string;
+export class Input extends InputBaseNode {
     public maxCharCount?: number;
     public minCharCount?: number;
-    public readOnly: boolean;
 
     constructor(id, placeholder?, value?, maxCharCount?, singleLine?, icon?, errorMessage?, disabled?, readOnly?, validator?, asyncValidator?, action?) {
         super(id, placeholder, 'input', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.value = value;
         this.maxCharCount = maxCharCount;
-        this.readOnly = readOnly;
     }
 
     editable() {
@@ -175,8 +183,7 @@ export class Input extends NodeBase {
     }
 }
 
-export class InputFile extends NodeBase {
-    public value?: string;
+export class InputFile extends InputBaseNode {
     public accept?: string[];
     public filename?: string;
     public maxSize?: number;
@@ -258,14 +265,40 @@ export class AutoComplete extends SelectableNode {
     }
 }
 
-export class DatePicker extends NodeBase {
-    public value?: string;
+export class DatePicker extends InputBaseNode {
     public minDate: Date;
     public maxDate: Date;
 
     constructor(id, placeholder?, value?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?) {
         super(id, placeholder, 'date', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.value = value;
+        this.minDate = minDate;
+        this.maxDate = maxDate;
+    }
+}
+
+export class DateTimePicker extends InputBaseNode {
+    public minDate: Date;
+    public maxDate: Date;
+
+    constructor(id, placeholder?, value?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?) {
+        super(id, placeholder, 'datetime', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
+        this.value = value;
+        this.minDate = minDate;
+        this.maxDate = maxDate;
+    }
+}
+
+export class DateRangePicker extends InputBaseNode {
+    public startDate?: string
+    public endDate?: string
+    public minDate: Date;
+    public maxDate: Date;
+
+    constructor(id, placeholder?, startDate?, endDate?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?) {
+        super(id, placeholder, 'daterange', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.minDate = minDate;
         this.maxDate = maxDate;
     }

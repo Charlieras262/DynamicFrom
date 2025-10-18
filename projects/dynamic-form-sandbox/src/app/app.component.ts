@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber, AutoComplete, SelectableNode } from 'projects/mat-dynamic-form/src/public-api';
+import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber, AutoComplete, SelectableNode, DateRangePicker, DateTimePicker } from 'projects/mat-dynamic-form/src/public-api';
 import { InputComponent } from './input/input.component';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -68,7 +68,7 @@ export class AppComponent implements OnInit {
         hint: 'Select your civil status',
       }),
       new AutoComplete('contry', 'Contry', this.getContries()).apply({ hint: "This is a hint for the country field", selectedValue: 'gb' }).apply({
-        action: {onEvent: (param) => console.log(param), type: 'valueChange' },
+        action: { onEvent: (param) => console.log(param), type: 'valueChange' },
       }),
       new InputFile('profPic', 'Profile Picture').apply({
         accept: ['png', 'jpg', 'jpeg', 'docx', 'xlsx', 'gif', 'rar'],
@@ -89,6 +89,14 @@ export class AppComponent implements OnInit {
         action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) },
         hint: 'Do you have a pet?',
         errorMessage: 'Error message'
+      }),
+      new DateRangePicker('dateRange', 'Date Range').apply({
+        minDate: new Date(),
+        maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+      }),
+      new DateTimePicker('appointment', 'Appointment').apply({
+        minDate: new Date(),
+        maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
       }),
       new InputPassword('pass', 'Password'),
       new Switch('switch', 'Toggle Switch', false),
@@ -127,19 +135,15 @@ export class AppComponent implements OnInit {
       }).apply({
         icon: 'close'
       }),
-      new Button('back', 'Back', {
+      new Button('back', 'Preview', {
         onEvent: (param) => {
-          console.log(param.structure?.getControlById("profPic"));
+          console.log(param.structure?.getValue<any>());
         }, style: 'primary',
       }).apply({
-        disabled: true,
-        icon: 'arrow_back'
+        disabled: false,
+        icon: 'visibility'
       }),
-      new Button('save', 'Save', {
-        onEvent: (param) => {
-          console.log(param.structure?.getControlById("profPic"));
-        }, style: 'primary',
-      }).apply({
+      new Button('save', 'Save', { style: 'primary' }).apply({
         validateForm: true,
         icon: 'save'
       }),

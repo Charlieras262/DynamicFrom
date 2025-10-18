@@ -2,7 +2,7 @@ import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn, Valida
 import { MatFormFieldAppearance } from "@angular/material/form-field";
 import { ReferenceException } from "../exceptions/Exceptions";
 import { DataSet } from "./DataSet";
-import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator, AutoComplete } from "./Node";
+import { Button, Dropdown, Node, RadioGroup, Validator, AsyncValidator, AutoComplete, DateRangePicker } from "./Node";
 import { ObjectBase } from "./base/ObjectBase";
 import { OptionChild } from "./OptionChild";
 import { map, startWith } from "rxjs/operators";
@@ -292,6 +292,7 @@ export class FormStructure extends ObjectBase {
      */
     createFormControl(node: Node) {
         if (node instanceof Button) return this.addNodeEvent(node);
+        if (node instanceof DateRangePicker) return this.createDateRangePickerControl(node);
 
         const value = node instanceof Dropdown || node instanceof RadioGroup || node instanceof AutoComplete ? node.selectedValue : node.value;
         this.setAutoCompleteValue(node);
@@ -569,5 +570,22 @@ export class FormStructure extends ObjectBase {
                 value.find(item => item.value.toLocaleLowerCase() == node.selectedValue.toLocaleLowerCase())
             );
         });
+    }
+
+    private createDateRangePickerControl(node: DateRangePicker) {
+        if (this.formGroup?.contains(node.id)) {
+            const group = this.getControlById(node.id) as FormGroup;
+            if (node.disabled) group.disable(); else group.enable();
+            return;
+        }
+
+        const group = new FormGroup({
+            start: new FormControl({ value: node.startDate ?? null, disabled: node.disabled }, node.validator, node.asyncValidator),
+            end: new FormControl({ value: node.endDate ?? null, disabled: node.disabled }, node.validator, node.asyncValidator)
+        });
+
+        this.formGroup?.addControl(node.id, group);
+
+        this.addNodeEvent(node);
     }
 }

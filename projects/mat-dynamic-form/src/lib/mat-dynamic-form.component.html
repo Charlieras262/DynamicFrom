@@ -135,8 +135,35 @@
               </mat-hint>
             </mat-form-field>
           </ng-container>
+          <ng-container *ngSwitchCase="'datetime'">
+            <div class="col-sm-12">
+              <mat-date-time-picker id="{{node.id}}" formControlName="{{node.id}}"
+                appearance="{{structure.appearance}}" [node]="node">
+              </mat-date-time-picker>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="'daterange'">
+            <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
+              <mat-label>{{node.placeholder}}</mat-label>
+              <mat-date-range-input [rangePicker]="rangePicker" formGroupName="{{node.id}}" [min]="node.minDate"
+                [max]="node.maxDate">
+                <input matStartDate formControlName="start" placeholder="Fecha Inicio" />
+                <input matEndDate formControlName="end" placeholder="Fecha Fin" />
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
+              <mat-date-range-picker #rangePicker color="primary"></mat-date-range-picker>
+              <mat-error
+                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
+                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+              </mat-error>
+              <mat-hint align="start" *ngIf="node.hint">
+                {{node.hint}}
+              </mat-hint>
+            </mat-form-field>
+          </ng-container>
           <ng-container *ngSwitchCase="'radiogroup'">
-            <mat-label class="col-sm-12" style="color: #757575; font-size: 11px;">{{node.placeholder}}:
+            <mat-label class="col-sm-12" style="color: #757575; font-size: 11px;">
+              {{node.placeholder}}
             </mat-label>
             <br>
             <mat-radio-group [id]="node.id" class="col-sm-12" formControlName="{{node.id}}"
