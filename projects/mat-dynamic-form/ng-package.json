@@ -2,10 +2,13 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/mat-dynamic-form",
   "lib": {
-    "entryFile": "src/public-api.ts"
+    "entryFile": "src/public-api.ts",
+    "styleIncludePaths": ["../../node_modules"]
   },
+  "assets": [
+    "src/lib/mat-dynamic-form.component.scss"
+  ],
   "whitelistedNonPeerDependencies": [
-    "ngx-material-file-input",
     "bootstrap"
   ]
 }
