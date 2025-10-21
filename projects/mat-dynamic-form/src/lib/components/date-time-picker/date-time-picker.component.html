@@ -1,13 +1,18 @@
 <mat-form-field [appearance]="appearance" class="col-sm-12">
   <mat-label>{{node.placeholder}}</mat-label>
-  <input id="{{node.id}}" matInput type="datetime-local" formControl="{{control}}"
-    [readonly]="node.readOnly" />
-  <button mat-icon-button matSuffix (click)="showDatePicker()" [attr.aria-label]="node.placeholder">
-    <mat-icon>calendar_today</mat-icon>
+
+  <input id="{{node.id}}Date" type="datetime-local" class="hidden-datetime" />
+  <!-- Format displayed value as a date string using the function formatDateTime avoiding replace value on control -->
+  <input id="{{node.id}}" matInput [formControl]="internalControl" (change)="processChange($event)" />
+
+  <button mat-icon-button matSuffix (click)="showDatePicker()" [attr.aria-label]="node.placeholder" type="button">
+    <mat-icon>today</mat-icon>
   </button>
-  <mat-error *ngIf="node.errorMessage && control.invalid && control.errors != null">
+
+  <mat-error *ngIf="node.errorMessage && internalControl.invalid && internalControl.errors">
     <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
   </mat-error>
+
   <mat-hint align="start" *ngIf="node.hint">
     {{node.hint}}
   </mat-hint>

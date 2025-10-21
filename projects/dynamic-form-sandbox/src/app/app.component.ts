@@ -94,9 +94,11 @@ export class AppComponent implements OnInit {
         minDate: new Date(),
         maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       }),
-      new DateTimePicker('appointment', 'Appointment').apply({
+      new DateTimePicker('appointment', 'Appointment', new Date()).apply({
         minDate: new Date(),
-        maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+        maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+        errorMessage: 'Please enter a valid date and time',
+        action: { type: 'valueChange', onEvent: (param) => console.log(param) }
       }),
       new InputPassword('pass', 'Password'),
       new Switch('switch', 'Toggle Switch', false),
@@ -119,13 +121,13 @@ export class AppComponent implements OnInit {
       new CustomNode<InputComponent>('custom3', InputComponent, { label: 'Custom 3', placeholder: 'Custom Placeholder 2' }),
     ];
     this.formStructure.validateActions = [
-      new Button('cancel', 'Cancel', {
+      new Button('delete', 'Delete', {
         onEvent: (param) => {
           param.structure?.reset();
           param.structure?.remapValues();
         }, style: 'warn'
       }).apply({
-        icon: 'close'
+        icon: 'delete'
       }),
       new Button('cancel', 'Cancel', {
         onEvent: (param) => {
@@ -138,6 +140,8 @@ export class AppComponent implements OnInit {
       new Button('back', 'Preview', {
         onEvent: (param) => {
           console.log(param.structure?.getValue<any>());
+          const control = param.structure?.getControlById('appointment');
+          control?.setErrors({ error: true })
         }, style: 'primary',
       }).apply({
         disabled: false,
