@@ -9,7 +9,6 @@ import { InputComponent } from './input/input.component';
 import { MaterialModule } from 'projects/mat-dynamic-form/src/lib/material-module';
 import { ReactiveFormsModule } from '@angular/forms';
 
-
 @NgModule({
   declarations: [
     AppComponent,
