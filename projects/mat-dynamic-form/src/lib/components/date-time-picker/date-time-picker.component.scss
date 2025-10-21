@@ -14,22 +14,106 @@ mat-form-field {
 
 .calendar-popup {
   background: white;
-  border-radius: 8px;
-  padding: 8px;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--mat-elevation-shadow-level8, 0px 4px 16px rgba(0, 0, 0, 0.2));
+  background-color: #fff;
+  color: rgba(0, 0, 0, 0.87);
+  width: 296px;
 }
 
-.time-section {
+.time-picker {
+  background: var(--mat-surface, #fff);
+  padding: 18px;
+  width: 296px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  margin-top: 8px;
-}
+  flex-direction: column;
+  user-select: none;
+  font-family: var(--font-family), sans-serif;
 
-.time-section input {
-  width: 48px;
-  text-align: center;
+  .time-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .time-section {
+    width: 96px;
+    height: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .time-input {
+      font-size: 56px;
+      font-weight: 400;
+      width: 80px;
+      text-align: center;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      color: rgba(0, 0, 0, 0.80);
+      background-color: #f5f5f5; // gris claro por defecto
+      transition: background 0.2s ease, color 0.2s ease;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      // Estado activo/focus
+      &:focus,
+      &.active {
+        color: var(--mat-primary, #3f51b5);
+        background-color: var(--mat-primary-container, #e8eaf6);
+      }
+    }
+  }
+
+  .colon {
+    font-size: 56px;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.80);
+  }
+
+  .ampm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 68px;
+    margin-left: 4px;
+    border: solid 1px #e8eaf6;
+    border-radius: 5px;
+
+    button {
+      width: 52px;
+      height: 33px;
+      min-width: unset;
+      font-weight: 500;
+
+      &.am {
+        border-top-left-radius: 4px !important;
+        border-top-right-radius: 4px !important;
+        border-bottom-left-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+      }
+
+      &.pm {
+        border-top-left-radius: 0px !important;
+        border-top-right-radius: 0px !important;
+        border-bottom-left-radius: 4px !important;
+        border-bottom-right-radius: 4px !important;
+        border-top: solid 1px #e0e0e0;
+      }
+
+      &.selected {
+        background-color: var(--mat-primary, #3f51b5);
+        color: var(--mat-on-primary, #fff);
+      }
+    }
+  }
 }

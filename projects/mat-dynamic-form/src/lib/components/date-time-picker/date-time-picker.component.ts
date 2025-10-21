@@ -1,8 +1,10 @@
-import { AfterViewInit, Component, Inject, Input, LOCALE_ID, OnInit, Optional, Self } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, Input, LOCALE_ID, OnInit, Optional, Self, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { DateTimePicker } from '../../models/Node';
 import { DatePipe } from '@angular/common';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { TemplatePortal } from '@angular/cdk/portal';
 
 @Component({
   selector: 'mat-date-time-picker',
@@ -14,21 +16,37 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
 
   @Input() node!: DateTimePicker;
   @Input() appearance: string = 'standard';
-  @Input() dateFormat: string = 'yyyy-MM-dd HH:mm';
+  @Input() dateFormat?: string;
+
+  @ViewChild('calendarPanel') calendarPanel!: TemplateRef<any>;
 
   control!: FormControl;
   internalControl: FormControl = new FormControl();
 
   formattedValue?: string;
 
+  hour: string = '07';
+  minute: string = '00';
+  isAM: boolean = true;
+  activePart: 'hour' | 'minute' | null = null;
+
+  setAMPM(am: boolean) {
+    this.isAM = am;
+  }
+
   private onChangeFn: (value: any) => void = () => { };
   private onTouchedFn: () => void = () => { };
+  private overlayRef!: OverlayRef | null;
 
   constructor(
     @Self() @Optional() private ngControl: NgControl,
     private datePipe: DatePipe,
     @Inject(LOCALE_ID) private locale: string,
     @Inject(MAT_DATE_FORMATS) private dateFormats: any,
+    private overlay: Overlay,
+    private viewContainerRef: ViewContainerRef,
+    private elementRef: ElementRef,
+    private dateAdapter: DateAdapter<any>
   ) {
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
@@ -44,7 +62,7 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
       }
 
       this.control.statusChanges.subscribe(status => {
-        if(this.internalControl.errors == this.control.errors) return;
+        if (this.internalControl.errors == this.control.errors) return;
         if (status === 'INVALID') {
           this.internalControl.setErrors(this.control.errors);
           this.internalControl.markAsTouched();
@@ -58,7 +76,7 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
       });
 
       this.internalControl.statusChanges.subscribe(status => {
-        if(this.control.errors == this.internalControl.errors) return;
+        if (this.control.errors == this.internalControl.errors) return;
         if (status === 'INVALID') {
           this.control.setErrors(this.internalControl.errors)
           this.control.markAsTouched();
@@ -94,8 +112,53 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
   }
 
   showDatePicker() {
-    const dateInput = document.getElementById(`${this.node.id}Date`) as any;
-    dateInput?.showPicker?.() ?? dateInput?.click();
+    if (this.overlayRef) {
+      this.close();
+      return;
+    }
+
+    const positionStrategy = this.overlay.position()
+      .flexibleConnectedTo(this.elementRef.nativeElement)
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+          offsetY: 8
+        }
+      ])
+      .withFlexibleDimensions(false)
+      .withPush(false);
+
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.close(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop'
+    });
+
+    this.overlayRef.backdropClick().subscribe(() => this.close());
+
+    const portal = new TemplatePortal(this.calendarPanel, this.viewContainerRef);
+    this.overlayRef.attach(portal);
+  }
+
+  close() {
+    this.overlayRef?.detach();
+    this.overlayRef?.dispose();
+    this.overlayRef = null;
+  }
+
+  onDateChange(date: Date) {
+    //this.selectedDate = date;
+  }
+
+  confirm() {
+    /* const date = new Date(this.selectedDate);
+    date.setHours(this.hours, this.minutes, this.seconds);
+    this.formattedDate = this.dateAdapter.format(date, 'MMM d, y, HH:mm:ss'); */
+    this.close();
   }
 
   processChange(event: any) {
@@ -117,7 +180,7 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
     this.onTouchedFn = fn;
   }
 
-  writeValue(_: any): void { 
+  writeValue(_: any): void {
     this.internalControl.setValue(this.formatDateTime(new Date(_)));
   }
 
@@ -127,7 +190,8 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
   }
 
   private formatDateTime(date: Date): string {
-    return this.datePipe.transform(date, this.dateFormat || this.dateFormats.display.dateTimeInput, this.locale) || '';
+    this.dateAdapter.setLocale(this.locale);
+    return this.dateFormat ? this.datePipe.transform(date, this.dateFormat, this.locale) : this.dateAdapter.format(date, this.dateFormats.display.dateTimeInput);
   }
 
   private setErrorState(hasError: boolean) {
