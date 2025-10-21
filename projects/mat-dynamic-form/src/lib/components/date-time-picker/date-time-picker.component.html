@@ -1,7 +1,6 @@
 <mat-form-field [appearance]="appearance" class="col-sm-12">
   <mat-label>{{node.placeholder}}</mat-label>
 
-  <input id="{{node.id}}Date" type="datetime-local" class="hidden-datetime" />
   <!-- Format displayed value as a date string using the function formatDateTime avoiding replace value on control -->
   <input id="{{node.id}}" matInput [formControl]="internalControl" (change)="processChange($event)" />
 
@@ -17,3 +16,35 @@
     {{node.hint}}
   </mat-hint>
 </mat-form-field>
+
+<ng-template #calendarPanel>
+  <div class="calendar-popup" (click)="$event.stopPropagation()">
+    <mat-calendar (selectedChange)="onDateChange($event)"></mat-calendar>
+    <mat-divider></mat-divider>
+    <div class="time-picker">
+      <div class="time-body">
+        <div class="time-section hour">
+          <input type="number" [(ngModel)]="hour" (focus)="activePart = 'hour'" min="0" max="23" class="time-input"
+            [class.active]="activePart === 'hour'" />
+        </div>
+
+        <span class="colon">:</span>
+
+        <div class="time-section minute">
+          <input type="number" [(ngModel)]="minute" (focus)="activePart = 'minute'" min="0" max="59" class="time-input"
+            [class.active]="activePart === 'minute'" />
+        </div>
+
+        <div class="ampm">
+          <button class="am" mat-button color="primary" [class.selected]="isAM" (click)="setAMPM(true)">
+            AM
+          </button>
+          <button class="pm" mat-button color="primary" [class.selected]="!isAM" (click)="setAMPM(false)">
+            PM
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ng-template>
