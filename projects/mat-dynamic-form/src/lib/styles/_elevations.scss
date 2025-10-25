@@ -1,0 +1,18 @@
+// _elevation.scss
+$elevations: (
+    1: 0px 1px 4px rgba(0, 0, 0, 0.12),
+    2: 0px 2px 8px rgba(0, 0, 0, 0.24),
+    3: 0px 4px 16px rgba(0, 0, 0, 0.32)
+);
+
+@mixin elevation($level) {
+    $shadow: map-get($elevations, $level);
+
+    @if $shadow {
+        box-shadow: $shadow;
+    }
+
+    @else {
+        @warn "Elevation level #{$level} not found!";
+    }
+}
