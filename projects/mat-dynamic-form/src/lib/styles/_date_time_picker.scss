@@ -1,0 +1,56 @@
+@import '@angular/material/theming';
+@include mat-core();
+
+@mixin calendar-popup-theme($theme) {
+  $color-config: mat-get-color-config($theme);
+  $primary: map-get($color-config, primary);
+  $background: map-get($color-config, background);
+  $foreground: map-get($color-config, foreground);
+  $elevation: map-get($theme, elevation);
+
+  .calendar-popup {
+    background-color: mat-color($background, card) !important;
+    color: mat-color($foreground, text) !important;
+    @include elevation(2);
+  }
+
+  .time-picker {
+
+    .time-section {
+      .time-input {
+        color: mat-color($foreground, text) !important;
+        background-color: mat-color($background, hover) !important;
+
+        &:focus {
+          border: solid 1px mat-color($primary, text) !important;
+        }
+      }
+
+      &.hour .time-input {
+        color: mat-color($primary, text) !important;
+        background-color: mat-color($primary, 50) !important;
+      }
+    }
+
+    .colon {
+      color: mat-color($foreground, text) !important;
+    }
+
+    .ampm {
+      border: solid 1px mat-color($foreground, divider) !important;
+      color: mat-color($foreground, disabled) !important;
+
+      button {
+
+        &.pm {
+          border-top: solid 1px #e0e0e0;
+        }
+
+        &.selected {
+          background-color: mat-color($primary, 50) !important;
+          color: mat-color($primary, text) !important;
+        }
+      }
+    }
+  }
+}

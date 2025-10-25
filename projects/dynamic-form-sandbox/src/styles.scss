@@ -1,8 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/theming';
+@import 'projects/mat-dynamic-form/src/lib/styles/theme.scss';
+@include mat-core();
+
+$my-app-primary: mat-palette($mat-blue, 800);
+$my-app-accent: mat-palette($mat-amber, 500);
+$my-app-warn: mat-palette($mat-red, 500);
+
+$my-app-theme: mat-light-theme((
+  color: (
+    primary: $my-app-primary,
+    accent: $my-app-accent,
+    warn: $my-app-warn
+  )
+));
+
+@include angular-material-theme($my-app-theme);
+@include mat-dynamic-form-theme($my-app-theme);
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-:root{
-    --primary-color: #3f51b5;
-}
