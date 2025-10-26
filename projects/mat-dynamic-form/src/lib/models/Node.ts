@@ -28,6 +28,7 @@ class NodeBase extends ObjectBase {
     public validator?: Validator | AbstractControlOptions;
     public asyncValidator?: AsyncValidatorFn;
     public hint?: string;
+    public autoFocus?: boolean;
 
     /**
      * @description Crea una instancia de un nodo con los parametros que se le envien.
@@ -40,7 +41,7 @@ class NodeBase extends ObjectBase {
      * @param action Es la acción {@link Action} a ejecutar dependiendo del evento asignado, este parametro es opcional
      * sino se desea utilizar se deberá enviar {@link undefined} en su lugar.
      */
-    constructor(id, placeholder, type: NodeType, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action) {
+    constructor(id, placeholder, type: NodeType, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action, autoFocus = false) {
         super();
         this.id = id;
         this.placeholder = placeholder;
@@ -52,6 +53,7 @@ class NodeBase extends ObjectBase {
         this.validator = validator;
         this.asyncValidator = asyncValidator
         this.action = action;
+        this.autoFocus = autoFocus;
     }
 
     getNativeElement() {
@@ -280,12 +282,18 @@ export class DatePicker extends InputBaseNode {
 export class DateTimePicker extends InputBaseNode {
     public minDate: Date;
     public maxDate: Date;
+    /**
+     * The date format to display the selected dates.
+     * @example 'dd-MM-yyyy HH:mm'
+     */
+    public dateFormat?: string;
 
-    constructor(id, placeholder?, value?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?) {
+    constructor(id, placeholder?, value?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?, dateFormat?) {
         super(id, placeholder, 'datetime', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.value = value;
         this.minDate = minDate;
         this.maxDate = maxDate;
+        this.dateFormat = dateFormat;
     }
 }
 

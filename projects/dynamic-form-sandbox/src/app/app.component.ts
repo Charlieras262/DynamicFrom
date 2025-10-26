@@ -26,6 +26,7 @@ export class AppComponent implements OnInit {
     this.formStructure.onlyScrollContent = true;
     this.formStructure.nodes = [
       new Input('name', 'Name').apply({
+        autoFocus: true,
         icon: 'person',
         maxCharCount: 100,
         hint: 'Enter your name',
@@ -98,7 +99,8 @@ export class AppComponent implements OnInit {
         minDate: new Date(),
         maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
         errorMessage: 'Please enter a valid date and time',
-        action: { type: 'valueChange', onEvent: (param) => console.log(param) }
+        action: { type: 'valueChange', onEvent: (param) => console.log(param) },
+        dateFormat: 'MM/dd/yyyy hh:mm a'
       }),
       new InputPassword('pass', 'Password'),
       new Switch('switch', 'Toggle Switch', false),

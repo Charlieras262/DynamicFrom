@@ -1,4 +1,4 @@
-import { Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { OptionChild } from './models/OptionChild';
 import { AdDirective } from './directive/append-component.directive';
@@ -10,7 +10,7 @@ import { Node, CustomNode, InputNumber, Button } from './models/Node';
   templateUrl: 'mat-dynamic-form.component.html',
   styleUrls: ['mat-dynamic-form.component.scss'],
 })
-export class MatDynamicFormComponent implements OnInit, DoCheck {
+export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
 
   @Input('structure') structure!: FormStructure;
   formGroup!: FormGroup;
@@ -46,6 +46,17 @@ export class MatDynamicFormComponent implements OnInit, DoCheck {
           this.structure?.createFormControl(item.currentValue);
         });
     }
+  }
+
+  ngAfterViewInit(): void {
+    // Request focus to first element with autoFocus
+    setTimeout(() => {
+      const autoFocusNode = this.structure.nodes.find(node => node.autoFocus) ?? this.structure.nodes[0];
+      if (autoFocusNode) {
+        const element = document.getElementById(autoFocusNode.id);
+        element?.focus();
+      }
+    });
   }
 
   getControlLenght(id: string) {

@@ -1,15 +1,86 @@
-mat-form-field {
-  mat-icon {
-    color: #757575;
-  }
-}
-
 .hidden-datetime {
   position: absolute;
   opacity: 0;
   width: 0;
   height: 24px;
   pointer-events: none;
+}
+
+.from-top,
+.from-bottom {
+  animation-duration: 0.2s;
+  animation-fill-mode: forwards;
+  /* mantiene estado final */
+  transform-origin: center;
+}
+
+.from-top.enter {
+  animation-name: popupFromTopEnter;
+  transform-origin: top center;
+}
+
+.from-top.leave {
+  animation-name: popupFromTopLeave;
+  transform-origin: top center;
+}
+
+.from-bottom.enter {
+  animation-name: popupFromBottomEnter;
+  transform-origin: bottom center;
+}
+
+.from-bottom.leave {
+  animation-name: popupFromBottomLeave;
+  transform-origin: bottom center;
+}
+
+
+@keyframes popupFromTopEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popupFromTopLeave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes popupFromBottomEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popupFromBottomLeave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
 }
 
 .calendar-popup {
@@ -22,19 +93,12 @@ mat-form-field {
   width: 296px;
   box-shadow: var(--mat-elevation-shadow-level8, 0px 4px 16px rgba(0, 0, 0, 0.24));
   overflow: hidden;
-  transform-origin: top center;
-  animation: popupEnter 0.15s ease-out forwards;
 
-  @keyframes popupEnter {
-    from {
-      opacity: 0;
-      transform: translateY(-12px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .calendar-footer {
+    padding: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
   }
 }
 
@@ -103,10 +167,9 @@ mat-form-field {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 68px;
     margin-left: 4px;
     border: solid 1px #e8eaf6;
-    border-radius: 5px;
+    border-radius: 4px;
 
     button {
       width: 52px;
@@ -114,6 +177,9 @@ mat-form-field {
       min-width: unset;
       font-weight: 500;
       color: #808080;
+      outline: none;
+      border: none;
+      box-shadow: none;
 
       &.am {
         border-top-left-radius: 4px !important;

@@ -1,18 +1,5 @@
-@import "bootstrap/dist/css/bootstrap.min.css";
 
-.btn-container {
-  display: inline-flex !important;
-  align-items: flex-end !important;
-  border-radius: 100px !important;
-  padding: 10px 20px !important;
-  min-height: 44px !important;
 
-  mat-icon {
-    font-size: 22px !important;
-    display: inline-flex !important;
-    align-items: flex-start !important;
-  }
-}
 
 .title {
   text-align: center;
@@ -55,6 +42,11 @@ mat-form-field {
 
   .mat-raised-button {
     margin-top: 3px !important;
+  }
+
+  .btn-container {
+    padding-top: 3px !important;
+    margin-top: 12px !important;
   }
 }
 

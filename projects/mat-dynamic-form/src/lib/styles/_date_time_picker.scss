@@ -6,7 +6,12 @@
   $primary: map-get($color-config, primary);
   $background: map-get($color-config, background);
   $foreground: map-get($color-config, foreground);
-  $elevation: map-get($theme, elevation);
+
+  .mat-dynamic-form-date-time-picker .active {
+    mat-icon {
+      color: mat-color($primary, text) !important;
+    }
+  }
 
   .calendar-popup {
     background-color: mat-color($background, card) !important;
@@ -43,7 +48,7 @@
       button {
 
         &.pm {
-          border-top: solid 1px #e0e0e0;
+          border-top: solid 1px mat-color($foreground, divider) !important;
         }
 
         &.selected {

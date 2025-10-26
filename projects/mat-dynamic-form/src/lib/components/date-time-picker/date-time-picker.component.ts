@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, ElementRef, Inject, Input, LOCALE_ID, OnInit, Optional, Self, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
+import { Component, ElementRef, Inject, Input, LOCALE_ID, OnInit, Optional, Self, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { ControlValueAccessor, FormControl, FormGroup, NgControl } from '@angular/forms';
 import { DateTimePicker } from '../../models/Node';
 import { DatePipe } from '@angular/common';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
+import { to12HourFormat, to24HourFormat } from '../../utils/date-utils';
 
 @Component({
   selector: 'mat-date-time-picker',
@@ -12,26 +13,24 @@ import { TemplatePortal } from '@angular/cdk/portal';
   styleUrls: ['./date-time-picker.component.scss'],
   providers: [DatePipe]
 })
-export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlValueAccessor {
+export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
 
   @Input() node!: DateTimePicker;
   @Input() appearance: string = 'standard';
-  @Input() dateFormat?: string;
 
   @ViewChild('calendarPanel') calendarPanel!: TemplateRef<any>;
 
   control!: FormControl;
-  internalControl: FormControl = new FormControl();
+  readonly internalControl: FormControl = new FormControl();
+  readonly internalFormGroup: FormGroup;
 
-  formattedValue?: string;
-
-  hour: string = '07';
-  minute: string = '00';
-  isAM: boolean = true;
   activePart: 'hour' | 'minute' | null = null;
+  selectedDate: Date = new Date();
 
   setAMPM(am: boolean) {
-    this.isAM = am;
+    this.internalFormGroup.patchValue({
+      meridiem: am ? 'AM' : 'PM'
+    });
   }
 
   private onChangeFn: (value: any) => void = () => { };
@@ -51,6 +50,12 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
     }
+
+    this.internalFormGroup = new FormGroup({
+      hours: new FormControl("00"),
+      minutes: new FormControl("00"),
+      meridiem: new FormControl("AM"),
+    });
   }
 
   ngOnInit() {
@@ -58,7 +63,15 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
       this.control = this.ngControl.control as FormControl;
 
       if (this.control.value) {
-        this.formattedValue = this.formatDateTime(new Date(this.control.value));
+        const date = new Date(this.control.value);
+        const _12Hour = to12HourFormat(date.getHours());
+
+        this.internalControl.setValue(this.formatDateTime(date));
+        this.internalFormGroup.setValue({
+          hours: _12Hour.hour12.toString().padStart(2, '0'),
+          minutes: date.getMinutes().toString().padStart(2, '0'),
+          meridiem: _12Hour.meridiem,
+        });
       }
 
       this.control.statusChanges.subscribe(status => {
@@ -91,26 +104,6 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
     }
   }
 
-  ngAfterViewInit() {
-    const dateInput = document.getElementById(`${this.node.id}Date`) as HTMLInputElement;
-    const facadeInput = document.getElementById(`${this.node.id}`) as HTMLInputElement;
-
-    if (!dateInput || !facadeInput) return;
-
-    dateInput.value = this.control.value ? this.toInputValue(new Date(this.control.value)) : '';
-
-    dateInput.addEventListener('change', (event) => {
-      const target = event.target as HTMLInputElement;
-      const newValue = target.value ? new Date(target.value) : null;
-
-      this.onChangeFn(newValue);
-      this.onTouchedFn();
-      this.internalControl.setValue(newValue ? this.formatDateTime(newValue) : '');
-
-      this.formattedValue = newValue ? this.formatDateTime(newValue) : '';
-    });
-  }
-
   showDatePicker() {
     if (this.overlayRef) {
       this.close();
@@ -119,6 +112,8 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
 
     const positionStrategy = this.overlay.position()
       .flexibleConnectedTo(this.elementRef.nativeElement)
+      .withFlexibleDimensions(true)
+      .withPush(true)
       .withPositions([
         {
           originX: 'start',
@@ -126,10 +121,15 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
           overlayX: 'start',
           overlayY: 'top',
           offsetY: 8
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+          offsetY: -8
         }
-      ])
-      .withFlexibleDimensions(false)
-      .withPush(false);
+      ]);
 
     this.overlayRef = this.overlay.create({
       positionStrategy,
@@ -138,44 +138,93 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
       backdropClass: 'cdk-overlay-transparent-backdrop'
     });
 
+    const portal = new TemplatePortal(this.calendarPanel, this.viewContainerRef);
+
+    positionStrategy.positionChanges.subscribe(change => {
+      const overlayEl = this.overlayRef?.overlayElement;
+      const element = document.getElementById(`${this.node.id}DateTimePicker`);
+      if (!overlayEl) return;
+
+      overlayEl.classList.remove('from-top', 'from-bottom', 'enter', 'leave');
+
+      if (change.connectionPair.originY === 'bottom') {
+        element?.classList.add('from-top', 'enter');
+      } else {
+        element?.classList.add('from-bottom', 'enter');
+      }
+    });
+    this.overlayRef.attach(portal);
     this.overlayRef.backdropClick().subscribe(() => this.close());
 
-    const portal = new TemplatePortal(this.calendarPanel, this.viewContainerRef);
-    this.overlayRef.attach(portal);
+    document.getElementById(`${this.node.id}TodayIcon`).classList.add('active');
   }
 
   close() {
-    this.overlayRef?.detach();
-    this.overlayRef?.dispose();
-    this.overlayRef = null;
+    const element = document.getElementById(`${this.node.id}DateTimePicker`);
+    element?.classList.remove('enter');
+    element?.classList.add('leave');
+
+    element?.addEventListener('animationend', () => {
+      this.overlayRef?.detach();
+      this.overlayRef?.dispose();
+      this.overlayRef = null;
+    }, { once: true });
+
+    document.getElementById(`${this.node.id}TodayIcon`).classList.remove('active');
   }
 
   onDateChange(date: Date) {
-    //this.selectedDate = date;
+    this.selectedDate = date;
   }
 
   confirm() {
-    /* const date = new Date(this.selectedDate);
-    date.setHours(this.hours, this.minutes, this.seconds);
-    this.formattedDate = this.dateAdapter.format(date, 'MMM d, y, HH:mm:ss'); */
+    const date = new Date(this.selectedDate);
+    const _24Hour = +to24HourFormat(+this.internalFormGroup.value.hours, this.internalFormGroup.value.meridiem);
+
+    date.setHours(_24Hour, this.internalFormGroup.value.minutes);
+    this.internalControl.setValue(this.formatDateTime(date));
+    this.onChangeFn(date);
     this.close();
   }
 
   processChange(event: any) {
-    const dateInput = document.getElementById(`${this.node.id}Date`) as HTMLInputElement;
+    const input = event.target as HTMLInputElement;
+    const newValue = input.value ? new Date(input.value) : null;
 
-    try {
-      dateInput.value = this.toInputValue(new Date(event.target.value));
-      this.onChangeFn(new Date(event.target.value));
-    } catch (error) {
-      console.error('Invalid date format', error);
+    if (!newValue.getDate()) {
       this.setErrorState(true);
+      return;
     }
+
+    this.onChangeFn(newValue);
+    this.onTouchedFn();
+  }
+
+  justNumbers(event: Event, type: 'H' | 'M') {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, '');
+    const valueNum = +value;
+
+    // Validate range
+    if (type === 'H') {
+      if (valueNum > 12) value = '12';
+      else if (valueNum === 0) value = '01';
+      else value = valueNum.toString();
+    } else {
+      if (valueNum > 59) value = '59';
+      else value = valueNum.toString();
+    }
+
+    input.value = value.padStart(2, '0');
+    this.internalFormGroup.patchValue({
+      [type === 'H' ? 'hours' : 'minutes']: input.value
+    });
   }
 
   registerOnChange(fn: any): void {
     this.onChangeFn = fn;
   }
+
   registerOnTouched(fn: any): void {
     this.onTouchedFn = fn;
   }
@@ -184,14 +233,8 @@ export class DateTimePickerComponent implements OnInit, AfterViewInit, ControlVa
     this.internalControl.setValue(this.formatDateTime(new Date(_)));
   }
 
-  private toInputValue(date: Date): string {
-    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
-    return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
-  }
-
   private formatDateTime(date: Date): string {
-    this.dateAdapter.setLocale(this.locale);
-    return this.dateFormat ? this.datePipe.transform(date, this.dateFormat, this.locale) : this.dateAdapter.format(date, this.dateFormats.display.dateTimeInput);
+    return this.node.dateFormat ? this.datePipe.transform(date, this.node.dateFormat, this.locale) : this.dateAdapter.format(date, this.dateFormats.display.dateTimeInput);
   }
 
   private setErrorState(hasError: boolean) {

@@ -136,11 +136,9 @@
             </mat-form-field>
           </ng-container>
           <ng-container *ngSwitchCase="'datetime'">
-            <div class="col-sm-12">
-              <mat-date-time-picker id="{{node.id}}" formControlName="{{node.id}}"
-                appearance="{{structure.appearance}}" [node]="node">
-              </mat-date-time-picker>
-            </div>
+            <mat-date-time-picker id="{{node.id}}" formControlName="{{node.id}}" appearance="{{structure.appearance}}"
+              [node]="node">
+            </mat-date-time-picker>
           </ng-container>
           <ng-container *ngSwitchCase="'daterange'">
             <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
@@ -247,9 +245,7 @@
             </mat-hint>
           </ng-container>
           <ng-container *ngSwitchCase="'custom'">
-            <div class="col-sm-12">
-              <ng-template adHost [nodeId]="node.id"></ng-template>
-            </div>
+            <ng-template adHost [nodeId]="node.id"></ng-template>
           </ng-container>
           <ng-container *ngSwitchDefault>
             Tipo de Nodo no soportado
