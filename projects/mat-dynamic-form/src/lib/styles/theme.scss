@@ -1,6 +1,44 @@
 @import '~@angular/material/theming';
 @import './date_time_picker';
 @import './elevations';
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+.btn-container {
+  display: inline-flex !important;
+  align-items: flex-end !important;
+  border-radius: 100px !important;
+
+  mat-icon {
+    font-size: 22px !important;
+    display: inline-flex !important;
+    align-items: flex-start !important;
+  }
+}
+
+mat-form-field {
+  mat-icon {
+    color: #757575;
+  }
+}
+
+.btn-form {
+  width: 10px;
+
+  .mat-button,
+  .mat-stroked-button,
+  .mat-raised-button {
+    margin-left: 15px !important;
+    margin-top: 6px !important;
+  }
+
+  .mat-raised-button {
+    margin-top: 3px !important;
+  }
+
+  .btn-container {
+    padding-top: 15px !important;
+  }
+}
 
 @mixin mat-dynamic-form-theme($theme) {
   @include calendar-popup-theme($theme);

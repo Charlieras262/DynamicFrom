@@ -1,10 +1,9 @@
-<mat-form-field [appearance]="appearance" class="col-sm-12">
+<mat-form-field [appearance]="appearance" class="col-sm-12 mat-dynamic-form-date-time-picker">
   <mat-label>{{node.placeholder}}</mat-label>
 
-  <!-- Format displayed value as a date string using the function formatDateTime avoiding replace value on control -->
   <input id="{{node.id}}" matInput [formControl]="internalControl" (change)="processChange($event)" />
 
-  <button mat-icon-button matSuffix (click)="showDatePicker()" [attr.aria-label]="node.placeholder" type="button">
+  <button id="{{node.id}}TodayIcon" mat-icon-button matSuffix (click)="showDatePicker()" [attr.aria-label]="node.placeholder" type="button">
     <mat-icon>today</mat-icon>
   </button>
 
@@ -18,30 +17,44 @@
 </mat-form-field>
 
 <ng-template #calendarPanel>
-  <div class="calendar-popup" (click)="$event.stopPropagation()">
-    <mat-calendar (selectedChange)="onDateChange($event)"></mat-calendar>
-    <mat-divider></mat-divider>
-    <div class="time-picker">
-      <div class="time-body">
-        <div class="time-section hour">
-          <input type="number" [(ngModel)]="hour" (focus)="activePart = 'hour'" min="0" [max]="isAM ? 11 : 12"
-            class="time-input" [class.active]="activePart === 'hour'" />
-        </div>
-        <span class="colon">:</span>
-        <div class="time-section minute">
-          <input type="number" [(ngModel)]="minute" (focus)="activePart = 'minute'" min="0" max="59" class="time-input"
-            [class.active]="activePart === 'minute'" />
-        </div>
-        <div class="ampm">
-          <button class="am" mat-button color="primary" [class.selected]="isAM" (click)="setAMPM(true)">
-            AM
-          </button>
-          <button class="pm" mat-button color="primary" [class.selected]="!isAM" (click)="setAMPM(false)">
-            PM
-          </button>
+  <div id="{{node.id}}DateTimePicker" class="calendar-popup" (click)="$event.stopPropagation()">
+    <form [formGroup]="internalFormGroup">
+      <mat-calendar [selected]="selectedDate" (selectedChange)="onDateChange($event)"></mat-calendar>
+      <mat-divider></mat-divider>
+      <div class="time-picker">
+        <div class="time-body">
+          <div class="time-section hour">
+            <input type="number" formControlName="hours" (focus)="activePart = 'hour'" min="1" [max]="12"
+              class="time-input" [class.active]="activePart === 'hour'" (input)="justNumbers($event, 'H')" />
+          </div>
+          <span class="colon">:</span>
+          <div class="time-section minute">
+            <input type="number" formControlName="minutes" (focus)="activePart = 'minute'" min="0" max="59"
+              class="time-input" [class.active]="activePart === 'minute'" (input)="justNumbers($event, 'M')" />
+          </div>
+          <div class="ampm">
+            <button class="am" [class.selected]="internalFormGroup.value.meridiem === 'AM'" (click)="setAMPM(true)"
+              matRipple>
+              AM
+            </button>
+            <button class="pm" [class.selected]="internalFormGroup.value.meridiem === 'PM'" (click)="setAMPM(false)"
+              matRipple>
+              PM
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-
+      <mat-divider></mat-divider>
+      <div class="calendar-footer">
+        <button mat-button (click)="close()" color="warn" class="btn-container">
+          <mat-icon>close</mat-icon>
+          Cancel
+        </button>
+        <button mat-button color="primary" (click)="confirm()" class="btn-container">
+          <mat-icon>check</mat-icon>
+          OK
+        </button>
+      </div>
+    </form>
   </div>
 </ng-template>
