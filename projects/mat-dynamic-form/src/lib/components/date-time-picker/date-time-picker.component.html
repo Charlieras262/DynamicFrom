@@ -19,7 +19,7 @@
 <ng-template #calendarPanel>
   <div id="{{node.id}}DateTimePicker" class="calendar-popup" (click)="$event.stopPropagation()">
     <form [formGroup]="internalFormGroup">
-      <mat-calendar [selected]="selectedDate" (selectedChange)="onDateChange($event)"></mat-calendar>
+      <mat-calendar #matDFCalendar [selected]="selectedDate" (selectedChange)="onDateChange($event)" [max]="maxDate" [min]="minDate"></mat-calendar>
       <mat-divider></mat-divider>
       <div class="time-picker">
         <div class="time-body">

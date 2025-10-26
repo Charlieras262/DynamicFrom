@@ -6,6 +6,7 @@ import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { to12HourFormat, to24HourFormat } from '../../utils/date-utils';
+import { MatCalendar } from '@angular/material/datepicker';
 
 @Component({
   selector: 'mat-date-time-picker',
@@ -18,6 +19,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   @Input() node!: DateTimePicker;
   @Input() appearance: string = 'standard';
 
+  @ViewChild('matDFCalendar') calendar!: MatCalendar<Date>;
   @ViewChild('calendarPanel') calendarPanel!: TemplateRef<any>;
 
   control!: FormControl;
@@ -25,7 +27,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   readonly internalFormGroup: FormGroup;
 
   activePart: 'hour' | 'minute' | null = null;
-  selectedDate: Date = new Date();
+  selectedDate: Date;
 
   setAMPM(am: boolean) {
     this.internalFormGroup.patchValue({
@@ -72,6 +74,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
           minutes: date.getMinutes().toString().padStart(2, '0'),
           meridiem: _12Hour.meridiem,
         });
+        this.selectedDate = date;
       }
 
       this.control.statusChanges.subscribe(status => {
@@ -155,6 +158,10 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     });
     this.overlayRef.attach(portal);
     this.overlayRef.backdropClick().subscribe(() => this.close());
+
+    setTimeout(() => {
+      if(this.selectedDate) this.calendar.activeDate = this.selectedDate;
+    });
 
     document.getElementById(`${this.node.id}TodayIcon`).classList.add('active');
   }
