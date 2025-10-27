@@ -3,7 +3,8 @@
 
   <input id="{{node.id}}" matInput [formControl]="internalControl" (change)="processChange($event)" />
 
-  <button id="{{node.id}}TodayIcon" mat-icon-button matSuffix (click)="showDatePicker()" [attr.aria-label]="node.placeholder" type="button">
+  <button id="{{node.id}}TodayIcon" mat-icon-button matSuffix (click)="showDatePicker()"
+    [attr.aria-label]="node.placeholder" type="button">
     <mat-icon>today</mat-icon>
   </button>
 
@@ -19,7 +20,8 @@
 <ng-template #calendarPanel>
   <div id="{{node.id}}DateTimePicker" class="calendar-popup" (click)="$event.stopPropagation()">
     <form [formGroup]="internalFormGroup">
-      <mat-calendar #matDFCalendar [selected]="selectedDate" (selectedChange)="onDateChange($event)" [max]="maxDate" [min]="minDate"></mat-calendar>
+      <mat-calendar #matDFCalendar [selected]="selectedDate" (selectedChange)="onDateChange($event)"
+        [dateClass]="dateClass" [minDate]="node.minDate" [maxDate]="maxDate"></mat-calendar>
       <mat-divider></mat-divider>
       <div class="time-picker">
         <div class="time-body">
@@ -50,7 +52,7 @@
           <mat-icon>close</mat-icon>
           Cancel
         </button>
-        <button mat-button color="primary" (click)="confirm()" class="btn-container">
+        <button mat-button color="primary" (click)="confirm()" class="btn-container" [disabled]="!selectedDate">
           <mat-icon>check</mat-icon>
           OK
         </button>
