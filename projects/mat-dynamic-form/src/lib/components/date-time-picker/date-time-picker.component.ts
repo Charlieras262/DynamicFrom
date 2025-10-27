@@ -27,7 +27,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   readonly internalFormGroup: FormGroup;
 
   activePart: 'hour' | 'minute' | null = null;
-  selectedDate: Date;
+  selectedDate: Date | null = null;
 
   setAMPM(am: boolean) {
     this.internalFormGroup.patchValue({
@@ -38,6 +38,18 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   private onChangeFn: (value: any) => void = () => { };
   private onTouchedFn: () => void = () => { };
   private overlayRef!: OverlayRef | null;
+  private today: Date = this.dateAdapter.createDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
+  readonly dateClass = (date: Date) => {
+    if (
+      this.selectedDate === null &&
+      this.today &&
+      date.toDateString() === this.today.toDateString()
+    ) {
+      return 'mat-calendar-body-initial';
+    }
+    return '';
+  }
 
   constructor(
     @Self() @Optional() private ngControl: NgControl,
@@ -54,9 +66,9 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     }
 
     this.internalFormGroup = new FormGroup({
-      hours: new FormControl("00"),
-      minutes: new FormControl("00"),
-      meridiem: new FormControl("AM"),
+      hours: new FormControl( '12'),
+      minutes: new FormControl('00'),
+      meridiem: new FormControl('AM'),
     });
   }
 
@@ -160,7 +172,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     this.overlayRef.backdropClick().subscribe(() => this.close());
 
     setTimeout(() => {
-      if(this.selectedDate) this.calendar.activeDate = this.selectedDate;
+      if (this.selectedDate) this.calendar.activeDate = this.selectedDate;
     });
 
     document.getElementById(`${this.node.id}TodayIcon`).classList.add('active');
@@ -182,12 +194,13 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
 
   onDateChange(date: Date) {
     this.selectedDate = date;
+    this.calendar.updateTodaysDate();
   }
 
   confirm() {
     const date = new Date(this.selectedDate);
     const _24Hour = +to24HourFormat(+this.internalFormGroup.value.hours, this.internalFormGroup.value.meridiem);
-
+    
     date.setHours(_24Hour, this.internalFormGroup.value.minutes);
     this.internalControl.setValue(this.formatDateTime(date));
     this.onChangeFn(date);
@@ -237,7 +250,8 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   }
 
   writeValue(_: any): void {
-    this.internalControl.setValue(this.formatDateTime(new Date(_)));
+    if(_?.toString()?.length <= 0) return;
+    this.internalControl.setValue(this.formatDateTime(_));
   }
 
   private formatDateTime(date: Date): string {

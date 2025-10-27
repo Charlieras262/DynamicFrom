@@ -13,6 +13,14 @@
     }
   }
 
+  .mat-calendar-body-initial {
+    .mat-calendar-body-cell-content {
+      background-color: mat-color($primary, 100);
+      color: mat-color($primary, text);
+      border-radius: 50%;
+    }
+  }
+
   .calendar-popup {
     background-color: mat-color($background, card) !important;
     color: mat-color($foreground, text) !important;
