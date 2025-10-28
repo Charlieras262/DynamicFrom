@@ -284,16 +284,20 @@ export class DateTimePicker extends InputBaseNode {
     public maxDate: Date;
     /**
      * The date format to display the selected dates.
-     * @example 'dd-MM-yyyy HH:mm'
+     * @example 'dd-MM-yyyy hh:mm a'
      */
     public dateFormat?: string;
+    public acceptLabel?: string;
+    public cancelLabel?: string;
 
-    constructor(id, placeholder?, value?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?, dateFormat?) {
+    constructor(id, placeholder?, value?, dateFormat?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?, acceptLabel?, cancelLabel?) {
         super(id, placeholder, 'datetime', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.value = value;
         this.minDate = minDate;
         this.maxDate = maxDate;
         this.dateFormat = dateFormat;
+        this.acceptLabel = acceptLabel ?? 'OK';
+        this.cancelLabel = cancelLabel ?? 'Cancel';
     }
 }
 

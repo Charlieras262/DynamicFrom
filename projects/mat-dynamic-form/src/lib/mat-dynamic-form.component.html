@@ -2,256 +2,253 @@
   <mat-card-title class="title" color="primary">{{structure.title}}</mat-card-title>
 </div>
 <form [formGroup]="formGroup">
-  <div id="mdf_content" class="row justify-content-center" style="max-width: 100vw;">
-    <div class="col-md-12">
-      <div class="row mt-2">
-        <span *ngFor="let node of structure.nodes" [ngSwitch]="node.type.toString()"
-          class="{{node.type == 'button' ? 'btn-form' : ''}} {{node.singleLine ? 'col-sm-12' : 'col-sm-' + normilizeValue(12 / structure.nodeGrid)}} m-0 p-0">
-          <ng-container *ngSwitchCase="'input'">
-            <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
-              <mat-label>{{node.placeholder}}</mat-label>
-              <input id="{{node.id}}" matInput formControlName="{{node.id}}" [readonly]="node.readOnly"
-                [maxlength]="node.maxCharCount" [minlength]="node.minCharCount" />
-              <mat-icon *ngIf="node.icon" matSuffix>{{node.icon}}</mat-icon>
-              <mat-hint align="end" *ngIf="node.maxCharCount">
-                {{getControlLenght(node.id)}} / {{node.maxCharCount}}
-              </mat-hint>
-              <mat-error
-                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
-                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
-              </mat-error>
-              <mat-hint align="start" *ngIf="node.hint">
-                {{node.hint}}
-              </mat-hint>
-            </mat-form-field>
-          </ng-container>
-          <ng-container *ngSwitchCase="'password'">
-            <mat-form-field [appearance]="structure.appearance" class="col-sm-12">
-              <mat-label>{{node.placeholder}}</mat-label>
-              <input id="{{node.id}}" matInput [type]="hide ? 'password' : 'text'" formControlName="{{node.id}}"
-                [readonly]="node.readOnly" [maxlength]="node.maxCharCount" [minlength]="node.minCharCount" />
-              <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Ocultar Contraseña'"
-                [attr.aria-pressed]="hide">
-                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-              </button>
-              <mat-hint align="end" *ngIf="node.maxCharCount">
-                {{getControlLenght(node.id)}} / {{node.maxCharCount}}
-              </mat-hint>
-              <mat-error
-                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
-                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
-              </mat-error>
-              <mat-hint align="start" *ngIf="node.hint">
-                {{node.hint}}
-              </mat-hint>
-            </mat-form-field>
-          </ng-container>
-          <div *ngSwitchCase="'button'" class="btn-form">
-            <span [ngSwitch]="structure.appearance">
-              <p *ngSwitchCase="'outline'">
-                <button id="{{node.id}}" mat-stroked-button color="{{node?.action?.style}}" class="btn-container"
-                  [disabled]="shouldDisable(node)" type="button">
-                  <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
-                  {{node.placeholder}}
-                </button>
-              </p>
-              <p *ngSwitchCase="'fill'">
-                <button id="{{node.id}}" mat-raised-button color="{{node?.action?.style}}" class="btn-container"
-                  [disabled]="shouldDisable(node)" type="button">
-                  <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
-                  {{node.placeholder}}
-                </button>
-              </p>
-              <p *ngSwitchDefault>
-                <button id="{{node.id}}" mat-button color="{{node?.action?.style}}" class="btn-container"
-                  (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
-                  [disabled]="shouldDisable(node)" type="button">
-                  <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
-                  {{node.placeholder}}
-                </button>
-              </p>
-            </span>
-          </div>
-          <ng-container *ngSwitchCase="'dropdown'">
-            <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
-              <mat-label>{{node.placeholder}}</mat-label>
-              <mat-select id="{{node.id}}" formControlName="{{node.id}}" [multiple]="node.multiple">
-                <mat-option *ngFor="let child of node.value" [value]="child.value ? child.value : child.id">
-                  {{child.title}}
-                </mat-option>
-              </mat-select>
-              <mat-error
-                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
-                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
-              </mat-error>
-              <mat-hint align="start" *ngIf="node.hint">
-                {{node.hint}}
-              </mat-hint>
-            </mat-form-field>
-          </ng-container>
-          <ng-container *ngSwitchCase="'autocomplete'">
-            <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
-              <mat-label>{{node.placeholder}}</mat-label>
-              <input id="{{node.id}}" type="text" [aria-label]="node.placeholder" matInput formControlName="{{node.id}}"
-                [matAutocomplete]="auto">
-              <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn">
-                <mat-option *ngFor="let child of node.filteredOptions | async" [value]="child">
-                  {{child.title}}
-                </mat-option>
-              </mat-autocomplete>
-              <mat-error
-                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
-                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
-              </mat-error>
-              <mat-hint align="start" *ngIf="node.hint">
-                {{node.hint}}
-              </mat-hint>
-            </mat-form-field>
-          </ng-container>
-          <ng-container *ngSwitchCase="'checkbox'">
-            <mat-checkbox id="{{node.id}}" class="col-sm-12 checkbox-size" formControlName="{{node.id}}" color="primary"
-              [checked]="node.value">
-              <span class="e2e-inner-html-bound multiline" [innerHTML]="node.placeholder | sanitizeHtml"></span>
-            </mat-checkbox>
+  <div id="mdf_content" style="max-width: 100vw;">
+    <div class="row mt-2">
+      <span *ngFor="let node of structure.nodes" [ngSwitch]="node.type.toString()"
+        class="{{node.type == 'button' ? 'btn-form' : ''}} {{node.singleLine ? 'col-sm-12' : 'col-sm-' + normilizeValue(12 / structure.nodeGrid)}} m-0 p-0">
+        <ng-container *ngSwitchCase="'input'">
+          <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
+            <mat-label>{{node.placeholder}}</mat-label>
+            <input id="{{node.id}}" matInput formControlName="{{node.id}}" [readonly]="node.readOnly"
+              [maxlength]="node.maxCharCount" [minlength]="node.minCharCount" />
+            <mat-icon *ngIf="node.icon" matSuffix>{{node.icon}}</mat-icon>
+            <mat-hint align="end" *ngIf="node.maxCharCount">
+              {{getControlLenght(node.id)}} / {{node.maxCharCount}}
+            </mat-hint>
             <mat-error
-              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null"
-              class="col-sm-12">
-              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
-            </mat-error>
-          </ng-container>
-          <ng-container *ngSwitchCase="'date'">
-            <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
-              <mat-label>{{node.placeholder}}</mat-label>
-              <input id="{{node.id}}" matInput [matDatepicker]="datePicker" formControlName="{{node.id}}"
-                [readonly]="node.readOnly" [min]="node.minDate" [max]="node.maxDate" />
-              <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-              <mat-datepicker #datePicker color="primary" class="col-sm-12"></mat-datepicker>
-              <mat-error
-                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
-                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
-              </mat-error>
-              <mat-hint align="start" *ngIf="node.hint">
-                {{node.hint}}
-              </mat-hint>
-            </mat-form-field>
-          </ng-container>
-          <ng-container *ngSwitchCase="'datetime'">
-            <mat-date-time-picker id="{{node.id}}" formControlName="{{node.id}}" appearance="{{structure.appearance}}"
-              [node]="node">
-            </mat-date-time-picker>
-          </ng-container>
-          <ng-container *ngSwitchCase="'daterange'">
-            <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
-              <mat-label>{{node.placeholder}}</mat-label>
-              <mat-date-range-input [rangePicker]="rangePicker" formGroupName="{{node.id}}" [min]="node.minDate"
-                [max]="node.maxDate">
-                <input matStartDate formControlName="start" placeholder="Fecha Inicio" />
-                <input matEndDate formControlName="end" placeholder="Fecha Fin" />
-              </mat-date-range-input>
-              <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
-              <mat-date-range-picker #rangePicker color="primary"></mat-date-range-picker>
-              <mat-error
-                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
-                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
-              </mat-error>
-              <mat-hint align="start" *ngIf="node.hint">
-                {{node.hint}}
-              </mat-hint>
-            </mat-form-field>
-          </ng-container>
-          <ng-container *ngSwitchCase="'radiogroup'">
-            <mat-label class="col-sm-12" style="color: #757575; font-size: 11px;">
-              {{node.placeholder}}
-            </mat-label>
-            <br>
-            <mat-radio-group [id]="node.id" class="col-sm-12" formControlName="{{node.id}}"
-              [value]="node.selectedValue">
-              <mat-radio-button *ngFor="let child of node.value" class="mr-4 mt-2" color="primary"
-                [value]="child.value ? child.value : child.title">
-                {{child.title}}
-              </mat-radio-button>
-            </mat-radio-group>
-            <br>
-            <ng-container
-              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null; else elseTemplate">
-              <mat-error class="col">
-                <div style="height: 7px"></div>
-                <a [innerHtml]="node.errorMessage | sanitizeHtml" style="font-size: 10.5px;"></a>
-              </mat-error>
-            </ng-container>
-            <ng-template #elseTemplate>
-              <mat-hint align="start" *ngIf="node.hint">
-                <div style="height: 2px;"></div>
-                <span class="col" style="font-size: 10.5px;">{{node.hint}}</span>
-              </mat-hint>
-            </ng-template>
-
-          </ng-container>
-          <ng-container *ngSwitchCase="'textarea'">
-            <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
-              <mat-label>{{node.placeholder}}</mat-label>
-              <textarea [id]="node.id" formControlName="{{node.id}}" matInput [readonly]="node.readOnly"
-                [maxlength]="node.maxCharCount" [minlength]="node.minCharCount"></textarea>
-              <mat-hint align="end" *ngIf="node.maxCharCount">
-                {{getControlLenght(node.id)}} / {{node.maxCharCount}}
-              </mat-hint>
-              <mat-error
-                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
-                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
-              </mat-error>
-              <mat-hint align="start" *ngIf="node.hint">
-                {{node.hint}}
-              </mat-hint>
-            </mat-form-field>
-          </ng-container>
-          <ng-container *ngSwitchCase="'file'">
-            <div class="col-sm-12">
-              <upload-file [id]="node.id" formControlName="{{node.id}}" [data]="node"
-                (onStatusChange)="node?.executeStatusChange($event)">
-              </upload-file>
-            </div>
-          </ng-container>
-
-          <ng-container *ngSwitchCase="'number'">
-            <mat-form-field [appearance]="structure.appearance" class="col-sm-12">
-              <mat-label>{{node.placeholder}}</mat-label>
-              <input id="{{node.id}}" matInput formControlName="{{node.id}}" [readonly]="node.readOnly"
-                (input)="input($event, node)" class="no-arrows" (blur)="change($event, node)"
-                [maxlength]="node.maxCharCount" [minlength]="node.minCharCount">
-              <mat-icon matSuffix *ngIf="node.icon">{{node.icon}}</mat-icon>
-              <mat-hint align="end" *ngIf="node.maxCharCount">
-                {{getControlLenght(node.id)}} / {{node.maxCharCount}}
-              </mat-hint>
-              <mat-error
-                *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
-                <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
-              </mat-error>
-              <mat-hint align="start" *ngIf="node.hint">
-                {{node.hint}}
-              </mat-hint>
-            </mat-form-field>
-          </ng-container>
-          <ng-container *ngSwitchCase="'switch'">
-            <mat-slide-toggle id="{{node.id}}" class="col-sm-12 mt-3" formControlName="{{node.id}}" color="primary">
-              {{node.placeholder}}
-            </mat-slide-toggle>
-            <mat-error
-              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null"
-              class="col-sm-12">
+              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
               <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
             </mat-error>
             <mat-hint align="start" *ngIf="node.hint">
               {{node.hint}}
             </mat-hint>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngSwitchCase="'password'">
+          <mat-form-field [appearance]="structure.appearance" class="col-sm-12">
+            <mat-label>{{node.placeholder}}</mat-label>
+            <input id="{{node.id}}" matInput [type]="hide ? 'password' : 'text'" formControlName="{{node.id}}"
+              [readonly]="node.readOnly" [maxlength]="node.maxCharCount" [minlength]="node.minCharCount" />
+            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Ocultar Contraseña'"
+              [attr.aria-pressed]="hide">
+              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-hint align="end" *ngIf="node.maxCharCount">
+              {{getControlLenght(node.id)}} / {{node.maxCharCount}}
+            </mat-hint>
+            <mat-error
+              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+            </mat-error>
+            <mat-hint align="start" *ngIf="node.hint">
+              {{node.hint}}
+            </mat-hint>
+          </mat-form-field>
+        </ng-container>
+        <div *ngSwitchCase="'button'" class="btn-form">
+          <span [ngSwitch]="structure.appearance">
+            <p *ngSwitchCase="'outline'">
+              <button id="{{node.id}}" mat-stroked-button color="{{node?.action?.style}}" class="btn-container"
+                [disabled]="shouldDisable(node)" type="button">
+                <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+                {{node.placeholder}}
+              </button>
+            </p>
+            <p *ngSwitchCase="'fill'">
+              <button id="{{node.id}}" mat-raised-button color="{{node?.action?.style}}" class="btn-container"
+                [disabled]="shouldDisable(node)" type="button">
+                <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+                {{node.placeholder}}
+              </button>
+            </p>
+            <p *ngSwitchDefault>
+              <button id="{{node.id}}" mat-button color="{{node?.action?.style}}" class="btn-container"
+                (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
+                [disabled]="shouldDisable(node)" type="button">
+                <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+                {{node.placeholder}}
+              </button>
+            </p>
+          </span>
+        </div>
+        <ng-container *ngSwitchCase="'dropdown'">
+          <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
+            <mat-label>{{node.placeholder}}</mat-label>
+            <mat-select id="{{node.id}}" formControlName="{{node.id}}" [multiple]="node.multiple">
+              <mat-option *ngFor="let child of node.value" [value]="child.value ? child.value : child.id">
+                {{child.title}}
+              </mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+            </mat-error>
+            <mat-hint align="start" *ngIf="node.hint">
+              {{node.hint}}
+            </mat-hint>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngSwitchCase="'autocomplete'">
+          <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
+            <mat-label>{{node.placeholder}}</mat-label>
+            <input id="{{node.id}}" type="text" [aria-label]="node.placeholder" matInput formControlName="{{node.id}}"
+              [matAutocomplete]="auto">
+            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let child of node.filteredOptions | async" [value]="child">
+                {{child.title}}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error
+              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+            </mat-error>
+            <mat-hint align="start" *ngIf="node.hint">
+              {{node.hint}}
+            </mat-hint>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngSwitchCase="'checkbox'">
+          <mat-checkbox id="{{node.id}}" class="col-sm-12 checkbox-size" formControlName="{{node.id}}" color="primary"
+            [checked]="node.value">
+            <span class="e2e-inner-html-bound multiline" [innerHTML]="node.placeholder | sanitizeHtml"></span>
+          </mat-checkbox>
+          <mat-error
+            *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null"
+            class="col-sm-12">
+            <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+          </mat-error>
+        </ng-container>
+        <ng-container *ngSwitchCase="'date'">
+          <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
+            <mat-label>{{node.placeholder}}</mat-label>
+            <input id="{{node.id}}" matInput [matDatepicker]="datePicker" formControlName="{{node.id}}"
+              [readonly]="node.readOnly" [min]="node.minDate" [max]="node.maxDate" />
+            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+            <mat-datepicker #datePicker color="primary" class="col-sm-12"></mat-datepicker>
+            <mat-error
+              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+            </mat-error>
+            <mat-hint align="start" *ngIf="node.hint">
+              {{node.hint}}
+            </mat-hint>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngSwitchCase="'datetime'">
+          <mat-date-time-picker id="{{node.id}}" formControlName="{{node.id}}" appearance="{{structure.appearance}}"
+            [node]="node">
+          </mat-date-time-picker>
+        </ng-container>
+        <ng-container *ngSwitchCase="'daterange'">
+          <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
+            <mat-label>{{node.placeholder}}</mat-label>
+            <mat-date-range-input [rangePicker]="rangePicker" formGroupName="{{node.id}}" [min]="node.minDate"
+              [max]="node.maxDate">
+              <input matStartDate formControlName="start" placeholder="Fecha Inicio" />
+              <input matEndDate formControlName="end" placeholder="Fecha Fin" />
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
+            <mat-date-range-picker #rangePicker color="primary"></mat-date-range-picker>
+            <mat-error
+              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+            </mat-error>
+            <mat-hint align="start" *ngIf="node.hint">
+              {{node.hint}}
+            </mat-hint>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngSwitchCase="'radiogroup'">
+          <mat-label class="col-sm-12" style="color: #757575; font-size: 11px;">
+            {{node.placeholder}}
+          </mat-label>
+          <br>
+          <mat-radio-group [id]="node.id" class="col-sm-12" formControlName="{{node.id}}" [value]="node.selectedValue">
+            <mat-radio-button *ngFor="let child of node.value" class="mr-4 mt-2" color="primary"
+              [value]="child.value ? child.value : child.title">
+              {{child.title}}
+            </mat-radio-button>
+          </mat-radio-group>
+          <br>
+          <ng-container
+            *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null; else elseTemplate">
+            <mat-error class="col">
+              <div style="height: 7px"></div>
+              <a [innerHtml]="node.errorMessage | sanitizeHtml" style="font-size: 10.5px;"></a>
+            </mat-error>
           </ng-container>
-          <ng-container *ngSwitchCase="'custom'">
-            <ng-template adHost [nodeId]="node.id"></ng-template>
-          </ng-container>
-          <ng-container *ngSwitchDefault>
-            Tipo de Nodo no soportado
-          </ng-container>
-        </span>
-      </div>
+          <ng-template #elseTemplate>
+            <mat-hint align="start" *ngIf="node.hint">
+              <div style="height: 2px;"></div>
+              <span class="col" style="font-size: 10.5px;">{{node.hint}}</span>
+            </mat-hint>
+          </ng-template>
+
+        </ng-container>
+        <ng-container *ngSwitchCase="'textarea'">
+          <mat-form-field class="col-sm-12" [appearance]="structure.appearance">
+            <mat-label>{{node.placeholder}}</mat-label>
+            <textarea [id]="node.id" formControlName="{{node.id}}" matInput [readonly]="node.readOnly"
+              [maxlength]="node.maxCharCount" [minlength]="node.minCharCount"></textarea>
+            <mat-hint align="end" *ngIf="node.maxCharCount">
+              {{getControlLenght(node.id)}} / {{node.maxCharCount}}
+            </mat-hint>
+            <mat-error
+              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+            </mat-error>
+            <mat-hint align="start" *ngIf="node.hint">
+              {{node.hint}}
+            </mat-hint>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngSwitchCase="'file'">
+          <div class="col-sm-12">
+            <upload-file [id]="node.id" formControlName="{{node.id}}" [data]="node"
+              (onStatusChange)="node?.executeStatusChange($event)">
+            </upload-file>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'number'">
+          <mat-form-field [appearance]="structure.appearance" class="col-sm-12">
+            <mat-label>{{node.placeholder}}</mat-label>
+            <input id="{{node.id}}" matInput formControlName="{{node.id}}" [readonly]="node.readOnly"
+              (input)="input($event, node)" class="no-arrows" (blur)="change($event, node)"
+              [maxlength]="node.maxCharCount" [minlength]="node.minCharCount">
+            <mat-icon matSuffix *ngIf="node.icon">{{node.icon}}</mat-icon>
+            <mat-hint align="end" *ngIf="node.maxCharCount">
+              {{getControlLenght(node.id)}} / {{node.maxCharCount}}
+            </mat-hint>
+            <mat-error
+              *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null">
+              <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+            </mat-error>
+            <mat-hint align="start" *ngIf="node.hint">
+              {{node.hint}}
+            </mat-hint>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngSwitchCase="'switch'">
+          <mat-slide-toggle id="{{node.id}}" class="col-sm-12 mt-3" formControlName="{{node.id}}" color="primary">
+            {{node.placeholder}}
+          </mat-slide-toggle>
+          <mat-error
+            *ngIf="node.errorMessage && formGroup.get(node.id).invalid && formGroup.get(node.id).errors != null"
+            class="col-sm-12">
+            <a [innerHtml]="node.errorMessage | sanitizeHtml"></a>
+          </mat-error>
+          <mat-hint align="start" *ngIf="node.hint">
+            {{node.hint}}
+          </mat-hint>
+        </ng-container>
+        <ng-container *ngSwitchCase="'custom'">
+          <ng-template adHost [nodeId]="node.id"></ng-template>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          Tipo de Nodo no soportado
+        </ng-container>
+      </span>
     </div>
   </div>
 

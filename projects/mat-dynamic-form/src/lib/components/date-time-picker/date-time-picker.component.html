@@ -21,18 +21,20 @@
   <div id="{{node.id}}DateTimePicker" class="calendar-popup" (click)="$event.stopPropagation()">
     <form [formGroup]="internalFormGroup">
       <mat-calendar #matDFCalendar [selected]="selectedDate" (selectedChange)="onDateChange($event)"
-        [dateClass]="dateClass" [minDate]="node.minDate" [maxDate]="maxDate"></mat-calendar>
+        [dateClass]="dateClass" [minDate]="node.minDate" [maxDate]="node.maxDate"></mat-calendar>
       <mat-divider></mat-divider>
       <div class="time-picker">
         <div class="time-body">
           <div class="time-section hour">
             <input type="number" formControlName="hours" (focus)="activePart = 'hour'" min="1" [max]="12"
-              class="time-input" [class.active]="activePart === 'hour'" (input)="justNumbers($event, 'H')" />
+              class="time-input" [class.active]="activePart === 'hour'" (input)="justNumbers($event, 'H')"
+              (change)="normalizeTime()" />
           </div>
           <span class="colon">:</span>
           <div class="time-section minute">
             <input type="number" formControlName="minutes" (focus)="activePart = 'minute'" min="0" max="59"
-              class="time-input" [class.active]="activePart === 'minute'" (input)="justNumbers($event, 'M')" />
+              class="time-input" [class.active]="activePart === 'minute'" (input)="justNumbers($event, 'M')"
+              (change)="normalizeTime()" />
           </div>
           <div class="ampm">
             <button class="am" [class.selected]="internalFormGroup.value.meridiem === 'AM'" (click)="setAMPM(true)"
@@ -50,11 +52,12 @@
       <div class="calendar-footer">
         <button mat-button (click)="close()" color="warn" class="btn-container">
           <mat-icon>close</mat-icon>
-          Cancel
+          {{node.cancelLabel}}
         </button>
-        <button mat-button color="primary" (click)="confirm()" class="btn-container" [disabled]="!selectedDate">
+        <button mat-button color="primary" (click)="confirm()" class="btn-container"
+          [disabled]="internalFormGroup.invalid">
           <mat-icon>check</mat-icon>
-          OK
+          {{node.acceptLabel}}
         </button>
       </div>
     </form>
