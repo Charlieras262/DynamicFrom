@@ -1,11 +1,11 @@
 import { Component, ElementRef, Inject, Input, LOCALE_ID, OnInit, Optional, Self, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import { ControlValueAccessor, FormControl, FormGroup, NgControl } from '@angular/forms';
+import { ControlValueAccessor, FormControl, FormGroup, NgControl, Validators } from '@angular/forms';
 import { DateTimePicker } from '../../models/Node';
 import { DatePipe } from '@angular/common';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { to12HourFormat, to24HourFormat } from '../../utils/date-utils';
+import { isGreaterDate, isSameDate, to12HourFormat, to24HourFormat } from '../../utils/date-utils';
 import { MatCalendar } from '@angular/material/datepicker';
 
 @Component({
@@ -29,18 +29,13 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   activePart: 'hour' | 'minute' | null = null;
   selectedDate: Date | null = null;
 
-  setAMPM(am: boolean) {
-    this.internalFormGroup.patchValue({
-      meridiem: am ? 'AM' : 'PM'
-    });
-  }
-
   private onChangeFn: (value: any) => void = () => { };
   private onTouchedFn: () => void = () => { };
   private overlayRef!: OverlayRef | null;
   private today: Date = this.dateAdapter.createDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
 
   readonly dateClass = (date: Date) => {
+    if (this.selectedDate != null) return '';
     if (
       this.selectedDate === null &&
       this.today &&
@@ -66,9 +61,10 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     }
 
     this.internalFormGroup = new FormGroup({
-      hours: new FormControl( '12'),
-      minutes: new FormControl('00'),
-      meridiem: new FormControl('AM'),
+      date: new FormControl(null, Validators.required),
+      hours: new FormControl('12', [Validators.required, Validators.min(1), Validators.max(12)]),
+      minutes: new FormControl('00', [Validators.required, Validators.min(0), Validators.max(59)]),
+      meridiem: new FormControl('AM', Validators.required),
     });
   }
 
@@ -82,10 +78,12 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
 
         this.internalControl.setValue(this.formatDateTime(date));
         this.internalFormGroup.setValue({
+          date: date,
           hours: _12Hour.hour12.toString().padStart(2, '0'),
           minutes: date.getMinutes().toString().padStart(2, '0'),
           meridiem: _12Hour.meridiem,
         });
+
         this.selectedDate = date;
       }
 
@@ -116,6 +114,20 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
           this.control.updateValueAndValidity();
         }
       });
+
+      if (this.node.minDate) {
+        const hour12 = to12HourFormat(this.node.minDate.getHours());
+        this.today.setHours(
+          this.node?.minDate?.getHours() ?? 12,
+          this.node?.minDate?.getMinutes() ?? 0
+        );
+
+        this.internalFormGroup.patchValue({
+          hours: hour12.hour12.toString().padStart(2, '0'),
+          minutes: this.node.minDate.getMinutes().toString().padStart(2, '0'),
+          meridiem: hour12.meridiem
+        });
+      }
     }
   }
 
@@ -195,12 +207,30 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   onDateChange(date: Date) {
     this.selectedDate = date;
     this.calendar.updateTodaysDate();
+
+    this.selectedDate.setHours(
+      +to24HourFormat(+this.internalFormGroup.value.hours, this.internalFormGroup.value.meridiem),
+      +this.internalFormGroup.value.minutes
+    );
+
+    this.internalFormGroup.patchValue({
+      date: this.selectedDate
+    });
+
+    this.normalizeTime();
+  }
+
+  setAMPM(am: boolean) {
+    if (this.normalizeTime(am ? 'AM' : 'PM'))
+      this.internalFormGroup.patchValue({
+        meridiem: am ? 'AM' : 'PM'
+      });
   }
 
   confirm() {
     const date = new Date(this.selectedDate);
     const _24Hour = +to24HourFormat(+this.internalFormGroup.value.hours, this.internalFormGroup.value.meridiem);
-    
+
     date.setHours(_24Hour, this.internalFormGroup.value.minutes);
     this.internalControl.setValue(this.formatDateTime(date));
     this.onChangeFn(date);
@@ -241,6 +271,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     });
   }
 
+
   registerOnChange(fn: any): void {
     this.onChangeFn = fn;
   }
@@ -250,8 +281,38 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   }
 
   writeValue(_: any): void {
-    if(_?.toString()?.length <= 0) return;
+    if (_?.toString()?.length <= 0) return;
     this.internalControl.setValue(this.formatDateTime(_));
+  }
+
+  private normalizeTime(newMeridiem: 'AM' | 'PM' = this.internalFormGroup.value.meridiem): boolean {
+    if (this.selectedDate) {
+      this.selectedDate.setHours(
+        +to24HourFormat(+this.internalFormGroup.value.hours, newMeridiem),
+        +this.internalFormGroup.value.minutes
+      );
+    }
+    if (this.node.minDate && isGreaterDate(this.node.minDate, this.selectedDate ?? new Date())) {
+      const minHour12 = to12HourFormat(this.node.minDate.getHours());
+      this.internalFormGroup.patchValue({
+        hours: minHour12.hour12.toString().padStart(2, '0'),
+        minutes: this.node?.minDate.getMinutes().toString().padStart(2, '0'),
+        meridiem: minHour12.meridiem
+      });
+      return false;
+    }
+
+    if (this.node.maxDate && isGreaterDate(this.selectedDate ?? new Date(), this.node.maxDate)) {
+      const maxHour12 = to12HourFormat(this.node.maxDate.getHours());
+      this.internalFormGroup.patchValue({
+        hours: maxHour12.hour12.toString().padStart(2, '0'),
+        minutes: this.node.maxDate.getMinutes().toString().padStart(2, '0'),
+        meridiem: maxHour12.meridiem
+      });
+      return false;
+    }
+
+    return true;
   }
 
   private formatDateTime(date: Date): string {

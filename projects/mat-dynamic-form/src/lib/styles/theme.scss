@@ -1,5 +1,6 @@
 @import '~@angular/material/theming';
 @import './date_time_picker';
+@import './upload_file';
 @import './elevations';
 @import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -36,10 +37,15 @@ mat-form-field {
   }
 
   .btn-container {
-    padding-top: 15px !important;
+    margin-top: 14px !important;
   }
 }
 
 @mixin mat-dynamic-form-theme($theme) {
   @include calendar-popup-theme($theme);
+  @include mat-upload-file-theme($theme);
+
+  .primary {
+    color: mat-color(map-get(mat-get-color-config($theme), primary), text) !important;
+  }
 }

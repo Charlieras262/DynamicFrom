@@ -95,13 +95,7 @@ export class AppComponent implements OnInit {
         minDate: new Date(),
         maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       }),
-      new DateTimePicker('appointment', 'Appointment', new Date()).apply({
-        minDate: new Date(),
-        maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-        errorMessage: 'Please enter a valid date and time',
-        action: { type: 'valueChange', onEvent: (param) => console.log(param) },
-        dateFormat: 'MM/dd/yyyy hh:mm a'
-      }),
+      new DateTimePicker('appointment', 'Appointment', null, 'dd-MM-yyyy hh:mm a'),
       new InputPassword('pass', 'Password'),
       new Switch('switch', 'Toggle Switch', false),
       new InputNumber('idNumber', 'Number').apply({
@@ -116,7 +110,7 @@ export class AppComponent implements OnInit {
       new CustomNode<InputComponent>('custom2', InputComponent, { label: 'Custom 2', placeholder: 'Custom Placeholder 2' }),
       new Checkbox(
         'agreement',
-        `I have read and agree to the terms of DynamicForm License Agreement, <strong><a href='https://www.google.com'>Read the license here.</a></strong>`,
+        `I have read and agree to the terms of DynamicForm License Agreement, <strong><a href='https://www.google.com' class="primary">Read the license here.</a></strong>`,
         false
       ).apply({
       }),

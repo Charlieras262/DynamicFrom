@@ -8,6 +8,7 @@ import { MatDynamicFormModule } from 'projects/mat-dynamic-form/src/public-api';
 import { InputComponent } from './input/input.component';
 import { MaterialModule } from 'projects/mat-dynamic-form/src/lib/material-module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -20,9 +21,11 @@ import { ReactiveFormsModule } from '@angular/forms';
     HttpClientModule,
     MatDynamicFormModule,
     MaterialModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
-  providers: [],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'es-GT' },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
