@@ -5,15 +5,12 @@ import { FileUtils } from '../../utils/file-utils';
 import { InputFile } from '../../models/Node';
 
 @Component({
-  selector: 'upload-file',
-  templateUrl: './upload-file.component.html',
-  styleUrls: ['./upload-file.component.scss'],
+  selector: 'input-file',
+  templateUrl: './input-file.component.html',
+  styleUrls: ['./input-file.component.scss'],
 })
-export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterViewInit {
+export class InputFileComponent implements OnInit, ControlValueAccessor, AfterViewInit {
 
-  /**
-   * @description Se ejecuta cuando el estado de la carga cambia.
-   */
   @Output() onStatusChange: EventEmitter<FileChange> = new EventEmitter();
   private fileState: FileState;
   set emiter(emiter: (value: FileChange) => void) {
@@ -117,7 +114,6 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterV
 
   setFile(file: File) {
     const files = FileUtils.createFileList([file]);
-    console.log(files);
 
     const innerFile = document.getElementById(`innerFile${this.controlName}`) as HTMLInputElement;
 
@@ -141,7 +137,9 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor, AfterV
   }
 
   private handleInputFile(file: File) {
-    this.currentFile = FileUtils.changeFileName(file, this.data.filename);
+    try {
+      this.currentFile = FileUtils.changeFileName(file, this.data.filename);
+    } catch (error) {}
     this.fileState = 'preparing';
     this.onStatusChange.emit({ state: this.fileState });
     const fileStatus = FileUtils.isValidFile(this.currentFile, this.data.accept, this.data.maxSize);

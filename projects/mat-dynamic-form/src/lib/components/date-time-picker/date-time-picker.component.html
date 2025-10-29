@@ -50,13 +50,10 @@
       </div>
       <mat-divider></mat-divider>
       <div class="calendar-footer">
-        <button mat-button (click)="close()" color="warn" class="btn-container">
-          <mat-icon>close</mat-icon>
+        <button mat-button (click)="close()" color="primary">
           {{node.cancelLabel}}
         </button>
-        <button mat-button color="primary" (click)="confirm()" class="btn-container"
-          [disabled]="internalFormGroup.invalid">
-          <mat-icon>check</mat-icon>
+        <button mat-button color="primary" (click)="confirm()" [disabled]="internalFormGroup.invalid">
           {{node.acceptLabel}}
         </button>
       </div>

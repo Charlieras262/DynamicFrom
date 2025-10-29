@@ -296,7 +296,7 @@ export class DateTimePicker extends InputBaseNode {
         this.minDate = minDate;
         this.maxDate = maxDate;
         this.dateFormat = dateFormat;
-        this.acceptLabel = acceptLabel ?? 'OK';
+        this.acceptLabel = acceptLabel ?? 'Accept';
         this.cancelLabel = cancelLabel ?? 'Cancel';
     }
 }

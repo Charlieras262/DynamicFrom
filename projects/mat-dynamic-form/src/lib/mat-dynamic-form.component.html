@@ -204,9 +204,9 @@
         </ng-container>
         <ng-container *ngSwitchCase="'file'">
           <div class="col-sm-12">
-            <upload-file [id]="node.id" formControlName="{{node.id}}" [data]="node"
+            <input-file [id]="node.id" formControlName="{{node.id}}" [data]="node"
               (onStatusChange)="node?.executeStatusChange($event)">
-            </upload-file>
+            </input-file>
           </div>
         </ng-container>
 

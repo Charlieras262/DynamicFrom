@@ -5,11 +5,11 @@ import { MatDynamicFormComponent } from './mat-dynamic-form.component';
 import { MaterialModule } from './material-module';
 import { AdDirective } from './directive/append-component.directive';
 import { SinitizeHtmlPipe } from './pipes/sinitize-html.pipe';
-import { UploadFileComponent } from './components/upload-file/upload-file.component';
+import { InputFileComponent } from './components/input-file/input-file.component';
 import { DateTimePickerComponent } from './components/date-time-picker/date-time-picker.component';
 
 @NgModule({
-  declarations: [MatDynamicFormComponent, AdDirective, SinitizeHtmlPipe, UploadFileComponent, DateTimePickerComponent],
+  declarations: [MatDynamicFormComponent, AdDirective, SinitizeHtmlPipe, InputFileComponent, DateTimePickerComponent],
   imports: [
     CommonModule,
     MaterialModule,

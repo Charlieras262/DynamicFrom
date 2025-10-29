@@ -1,7 +1,5 @@
 .mdf_upload_file {
-  $icon-size: 32px;
-  $enphasis: #ff0039;
-  $transition: 0.3s all ease-in-out;
+  padding: 0 1px;
 
   .parent {
     outline: 1px dashed #757575;
@@ -13,11 +11,15 @@
     padding-left: 4px;
     padding-right: 4px;
     margin-bottom: 4px;
-    transition: $transition;
+    transition: 0.2s all ease-in-out;
 
     &:hover {
-      outline: 1px dashed $enphasis;
+      outline: 1px dashed blue;
     }
+  }
+
+  .info label {
+    color: #757575;
   }
 
   .hint,
@@ -30,7 +32,6 @@
 
     .info label {
       color: #F44336;
-      font-size: 75%;
     }
   }
 
@@ -39,35 +40,41 @@
     pointer-events: none;
 
     &:hover {
-      border-color: $enphasis;
+      border-color: blue;
     }
 
     .drag-label {
-      color: white;
-      display: none;
+      color: blue;
+      opacity: 0;
       pointer-events: none;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 12px;
+      transition: 0.2s all ease-in-out;
     }
 
     .close {
       position: absolute;
       right: 0;
-      margin-top: 1px;
+      top: 2px;
       pointer-events: all;
+
+      mat-icon {
+        margin-top: -1px;
+      }
     }
   }
 
   .dragover {
-    outline-color: $enphasis;
-    background-color: $enphasis;
+    outline-color: blue;
+    background-color: rgba(0, 0, 255, 0.1);
     border-radius: 5px;
     margin-top: 8px !important;
+    transition: 0.2s all ease-in-out;
     outline-offset: 4px;
-    transition: $transition;
+    margin: 4px 4px;
 
     .file-icon-container {
       visibility: hidden;
@@ -89,17 +96,17 @@
     }
 
     .drag-label {
-      display: inherit;
+      opacity: 1;
     }
   }
 
   .file-icon-container {
-    min-width: $icon-size;
-    min-height: $icon-size;
-    max-width: $icon-size;
-    max-height: $icon-size;
+    min-width: 32px;
+    min-height: 32px;
+    max-width: 32px;
+    max-height: 32px;
     margin-right: 5px;
-    transition: $transition;
+    transition: 0.2s all ease-in-out;
 
     .upload-icon-size {
       width: 100%;
@@ -113,24 +120,28 @@
   }
 
   .info {
-    margin-top: -5px;
+    margin-top: -3px;
+    margin-left: -4px;
+
+    label {
+      margin-left: -5px;
+      margin-bottom: 0px;
+    }
   }
 
   .btn-container {
     display: inline-flex !important;
     align-items: flex-end !important;
     border-radius: 4px !important;
-    margin-left: -3px !important;
-    padding: 0px 0px !important;
     background: transparent !important;
     border: none !important;
-    color: $enphasis;
+    color: blue;
     font-size: 14px;
     height: 18px;
     align-items: center;
     position: relative;
     pointer-events: all;
-    transition: $transition;
+    transition: 0.2s all ease-in-out;
 
     mat-icon {
       font-size: 18px !important;
@@ -169,7 +180,7 @@
   .cell {
     display: table-cell;
     vertical-align: middle;
-    transition: $transition;
+    transition: 0.2s all ease-in-out;
   }
 
   .bar {

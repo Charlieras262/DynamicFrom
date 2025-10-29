@@ -16,18 +16,19 @@
           </div>
         </div>
         <div mat-line class="buttons">
-          <div id="retry" type="button" class="btn-container" *ngIf="getState() == 'error'">
+          <button id="retry" type="button" class="btn-container" *ngIf="getState() == 'error'">
             <mat-icon (click)="saveFile()" [title]="data.retryHint ? data.retryHint : 'Retry loading file'">
               refresh
             </mat-icon>
             <span [title]="data.downloadHint ? data.downloadHint : 'Download current file'"
               (click)="downloadFile()">{{currentFile?.name}}</span>
-          </div>
-          <div type="button" class="btn-container" *ngIf="['valid'].includes(getState())">
+          </button>
+          <button type="button" class="btn-container" *ngIf="['valid'].includes(getState())">
             <mat-icon>file_download</mat-icon>
             <span [title]="data.downloadHint ? data.downloadHint : 'Download current file'" (click)="downloadFile()">
-              {{currentFile?.name}}</span>
-          </div>
+              {{currentFile?.name}}
+            </span>
+          </button>
           <button type="button" class="btn-container" *ngIf="['uploading', 'preparing'].includes(getState())">
             <mat-spinner diameter="15">
             </mat-spinner>
