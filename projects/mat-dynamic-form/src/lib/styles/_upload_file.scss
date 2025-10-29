@@ -6,40 +6,26 @@
   $primary: map-get($color-config, primary);
   $background: map-get($color-config, background);
   $foreground: map-get($color-config, foreground);
+  $warn: map-get($color-config, warn);
 
   .mdf_upload_file {
-    $icon-size: 32px;
-    $enphasis: mat-color($primary, 500);
-    $transition: 0.3s all ease-in-out;
-
     .parent {
-      outline: 1px dashed #757575;
-      -webkit-border-radius: 10px !important;
-      -moz-border-radius: 10px !important;
-      -ms-border-radius: 10px !important;
-      -o-border-radius: 10px !important;
-      border-radius: 10px !important;
-      padding-left: 4px;
-      padding-right: 4px;
-      margin-bottom: 4px;
-      transition: $transition;
+      outline: 1px dashed mat-color($foreground, icon) !important;
 
       &:hover {
-        outline: 1px dashed $enphasis !important;
+        outline: 1px dashed mat-color($primary, 500) !important;
       }
     }
 
-    .hint,
-    .m-error {
-      font-size: 75%;
+    .info label {
+      color: mat-color($foreground, icon) !important;
     }
 
     .error {
-      outline: 1px dashed #F44336;
+      outline: 1px dashed mat-color($warn, text) !important;
 
       .info label {
-        color: #F44336;
-        font-size: 75%;
+        color: mat-color($warn, text) !important;
       }
     }
 
@@ -48,148 +34,21 @@
       pointer-events: none;
 
       &:hover {
-        border-color: $enphasis !important;
+        border-color: mat-color($foreground, icon) !important;
       }
 
       .drag-label {
-        color: white;
-        display: none;
-        pointer-events: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 12px;
-      }
-
-      .close {
-        position: absolute;
-        right: 0;
-        margin-top: 1px;
-        pointer-events: all;
+        color: mat-color($primary, text) !important;
       }
     }
 
     .dragover {
-      outline-color: $enphasis !important;
-      background-color: $enphasis !important;
-      border-radius: 5px;
-      margin-top: 8px !important;
-      outline-offset: 4px;
-      transition: $transition;
-
-      .file-icon-container {
-        visibility: hidden;
-        pointer-events: none;
-        opacity: 0;
-      }
-
-      .info {
-        .btn-container {
-          display: none;
-          opacity: 0;
-        }
-
-        .cell {
-          visibility: hidden;
-          pointer-events: none;
-          opacity: 0;
-        }
-      }
-
-      .drag-label {
-        display: inherit;
-      }
-    }
-
-    .file-icon-container {
-      min-width: $icon-size;
-      min-height: $icon-size;
-      max-width: $icon-size;
-      max-height: $icon-size;
-      margin-right: 5px;
-      transition: $transition;
-
-      .upload-icon-size {
-        width: 100%;
-        height: 100%;
-      }
-    }
-
-    img,
-    mat-spinner {
-      margin-top: 6px;
-    }
-
-    .info {
-      margin-top: -5px;
+      outline-color: mat-color($primary, 500) !important;
+      background-color: mat-color($primary, 50) !important;
     }
 
     .btn-container {
-      display: inline-flex !important;
-      align-items: flex-end !important;
-      border-radius: 4px !important;
-      margin-left: -3px !important;
-      padding: 0px 0px !important;
-      background: transparent !important;
-      border: none !important;
-      color: $enphasis !important;
-      font-size: 14px;
-      height: 18px;
-      align-items: center;
-      position: relative;
-      pointer-events: all;
-      transition: $transition;
-
-      mat-icon {
-        font-size: 18px !important;
-        display: inline-flex !important;
-        align-items: flex-start !important;
-        padding-top: 4px;
-        position: absolute;
-      }
-
-      mat-spinner {
-        display: inline-flex !important;
-        align-items: flex-start !important;
-        padding-top: 19px !important;
-        position: absolute;
-      }
-
-      span {
-        display: inline-flex !important;
-        align-items: flex-start !important;
-        margin-left: 23px;
-        margin-bottom: 0px;
-      }
-
-      p {
-        margin-left: 4px;
-        margin-bottom: 0px;
-      }
+      color: mat-color($primary, 500) !important;
     }
-
-    .container {
-      display: table;
-      table-layout: fixed;
-      width: 100%;
-    }
-
-    .cell {
-      display: table-cell;
-      vertical-align: middle;
-      transition: $transition;
-    }
-
-    .bar {
-      font-size: 14px;
-      color: #757575;
-      margin-top: 7px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 100%;
-    }
-
   }
 }

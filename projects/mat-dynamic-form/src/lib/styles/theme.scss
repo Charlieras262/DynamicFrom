@@ -16,12 +16,6 @@
   }
 }
 
-mat-form-field {
-  mat-icon {
-    color: #757575;
-  }
-}
-
 .btn-form {
   width: 10px;
 
@@ -41,11 +35,22 @@ mat-form-field {
   }
 }
 
+.multiline {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 @mixin mat-dynamic-form-theme($theme) {
   @include calendar-popup-theme($theme);
   @include mat-upload-file-theme($theme);
 
   .primary {
     color: mat-color(map-get(mat-get-color-config($theme), primary), text) !important;
+  }
+
+  mat-form-field {
+    mat-icon {
+      color: mat-color(map-get(mat-get-color-config($theme), foreground), icon) !important;
+    }
   }
 }

@@ -21,17 +21,6 @@ input.no-arrows {
   -moz-appearance: textfield;
 }
 
-mat-form-field {
-  mat-icon {
-    color: #757575;
-  }
-}
-
-.multiline {
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
 .checkbox-size {
   height: 58px;
   justify-content: flex-start;
