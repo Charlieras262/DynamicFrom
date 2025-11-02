@@ -40,6 +40,108 @@
   word-break: break-all;
 }
 
+.from-top,
+.from-bottom {
+  animation-duration: 0.2s;
+  animation-fill-mode: forwards;
+}
+
+.from-top.enter {
+  animation-name: popupFromTopEnter;
+  transform-origin: top center;
+}
+
+.from-top.leave {
+  animation-name: popupFromTopLeave;
+  transform-origin: top center;
+}
+
+.from-bottom.enter {
+  animation-name: popupFromBottomEnter;
+  transform-origin: bottom center;
+}
+
+.from-bottom.leave {
+  animation-name: popupFromBottomLeave;
+  transform-origin: bottom center;
+}
+
+
+@keyframes popupFromTopEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popupFromTopLeave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes popupFromBottomEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popupFromBottomLeave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.mdf-overlay-popup {
+  background-color: var(--mat-sys-surface, #fff);
+  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 296px;
+  box-shadow: var(--mat-elevation-shadow-level8, 0px 4px 16px rgba(0, 0, 0, 0.24));
+  overflow: hidden;
+  position: relative;
+  transition: all 0.25s ease-out;
+
+  .mdf-overlay-footer {
+    padding: 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .mdf-clock-icon {
+    position: absolute;
+    bottom: 10px;
+    left: 8px;
+  }
+}
+
 @mixin mat-dynamic-form-theme($theme) {
   @include calendar-popup-theme($theme);
   @include mat-upload-file-theme($theme);

@@ -9,7 +9,7 @@ import { FileChange } from "../interfaces/FileChange.interface";
 export type Node = Input | Checkbox | RadioGroup | Dropdown | TextArea | DatePicker | InputFile | InputNumber | InputPassword
 export type Validator = ValidatorFn | ValidatorFn[] | null;
 export type AsyncValidator = AsyncValidatorFn | AsyncValidatorFn[] | null;
-type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number' | 'switch' | 'custom' | 'autocomplete' | 'datetime' | 'daterange';
+type NodeType = 'input' | 'checkbox' | 'dropdown' | 'button' | 'date' | 'radiogroup' | 'textarea' | 'file' | 'password' | 'number' | 'switch' | 'custom' | 'autocomplete' | 'datetime' | 'daterange' | 'timepicker';
 
 /**
  * @description Esta es la estructura general del nodo que se quiere mostrar en el DOM. 
@@ -64,7 +64,7 @@ class NodeBase extends ObjectBase {
 export class InputBaseNode extends NodeBase {
     public value?: any;
     public readOnly: boolean;
-    
+
     constructor(id, placeholder, type: NodeType, value?, singleLine?, icon?, errorMessage?, disabled?, readOnly?, validator?, asyncValidator?, action?) {
         super(id, placeholder, type, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.value = value;
@@ -289,15 +289,30 @@ export class DateTimePicker extends InputBaseNode {
     public dateFormat?: string;
     public acceptLabel?: string;
     public cancelLabel?: string;
+    public selectTimeLabel?: string;
+    public enterTimeLabel?: string;
+    public showClockPicker?: boolean;
+    public orientation?: 'portrait' | 'landscape';
 
-    constructor(id, placeholder?, value?, dateFormat?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?, acceptLabel?, cancelLabel?) {
+    constructor(id, placeholder?, value?, dateFormat?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?, acceptLabel?, cancelLabel?, selectTimeLabel?, enterTimeLabel?, showClockPicker?, orientation?) {
         super(id, placeholder, 'datetime', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.value = value;
         this.minDate = minDate;
         this.maxDate = maxDate;
         this.dateFormat = dateFormat;
-        this.acceptLabel = acceptLabel ?? 'Accept';
+        this.acceptLabel = acceptLabel ?? 'OK';
         this.cancelLabel = cancelLabel ?? 'Cancel';
+        this.selectTimeLabel = selectTimeLabel ?? 'Select Time';
+        this.enterTimeLabel = enterTimeLabel ?? 'Enter Time';
+        this.showClockPicker = showClockPicker ?? false;
+        this.orientation = orientation ?? 'portrait';
+    }
+}
+
+export class TimePicker extends DateTimePicker {
+    constructor(id, placeholder?, value?, dateFormat?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?, acceptLabel?, cancelLabel?) {
+        super(id, placeholder, value, dateFormat, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action, minDate, maxDate, acceptLabel, cancelLabel);
+        this.type = 'timepicker';
     }
 }
 

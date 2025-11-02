@@ -21,25 +21,29 @@
     }
   }
 
-  .calendar-popup {
+  .mdf-overlay-popup {
     background-color: mat-color($background, card) !important;
     color: mat-color($foreground, text) !important;
     @include elevation(2);
   }
 
-  .time-picker {
+  .mdf-time-picker {
 
-    .time-section {
-      .time-input {
+    .mdf-hint {
+      color: mat-color($foreground, icon) !important;
+    }
+
+    .mdf-time-section {
+      .mdf-time-input {
         color: mat-color($foreground, text) !important;
         background-color: mat-color($background, hover) !important;
 
         &:focus {
-          border: solid 1px mat-color($primary, text) !important;
+          border: solid 2px mat-color($primary, text) !important;
         }
       }
 
-      &.hour .time-input {
+      .mdf-time-input.active:not(:focus) {
         color: mat-color($primary, text) !important;
         background-color: mat-color($primary, 50) !important;
       }
@@ -49,20 +53,57 @@
       color: mat-color($foreground, text) !important;
     }
 
-    .ampm {
-      border: solid 1px mat-color($foreground, divider) !important;
+    .mdf-ampm {
+      border: solid 2px mat-color($foreground, divider) !important;
       color: mat-color($foreground, disabled) !important;
 
       button {
 
-        &.pm {
-          border-top: solid 1px mat-color($foreground, divider) !important;
+        &.mdf-pm {
+          border-top: solid 2px mat-color($foreground, divider) !important;
         }
 
         &.selected {
           background-color: mat-color($primary, 50) !important;
           color: mat-color($primary, text) !important;
         }
+      }
+    }
+  }
+
+  .mdf-clock-icon {
+    color: mat-color($foreground, icon) !important;
+  }
+
+  .mdf-time-clock {
+    .clock-face {
+      background-color: mat-color($background, hover) !important;
+    }
+
+    .numbers {
+
+      span {
+        color: mat-color($foreground, text) !important;
+
+        &:hover:not(.active) {
+          background-color: rgba(mat-color($primary, text), 0.2) !important;
+        }
+      }
+
+      .active {
+        color: mat-contrast($primary, 500) !important;
+      }
+    }
+
+    .center-dot {
+      background-color: mat-color($primary, text) !important;
+    }
+
+    .hand {
+      background-color: mat-color($primary, text) !important;
+
+      &::after {
+        background-color: mat-color($primary, text) !important;
       }
     }
   }

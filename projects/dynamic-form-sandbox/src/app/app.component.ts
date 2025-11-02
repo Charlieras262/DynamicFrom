@@ -26,7 +26,6 @@ export class AppComponent implements OnInit {
     this.formStructure.onlyScrollContent = true;
     this.formStructure.nodes = [
       new Input('name', 'Name').apply({
-        autoFocus: true,
         icon: 'person',
         maxCharCount: 100,
         hint: 'Enter your name',
@@ -95,7 +94,12 @@ export class AppComponent implements OnInit {
         minDate: new Date(),
         maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       }),
-      new DateTimePicker('appointment', 'Appointment', null, 'dd-MM-yyyy hh:mm a'),
+      new DateTimePicker('appointment', 'Appointment', null, 'dd/MM/yyyy hh:mm a').apply({
+        value: new Date(),
+        minDate: new Date(),
+        maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+        orientation: 'landscape',
+      }),
       new InputPassword('pass', 'Password'),
       new Switch('switch', 'Toggle Switch', false),
       new InputNumber('idNumber', 'Number').apply({

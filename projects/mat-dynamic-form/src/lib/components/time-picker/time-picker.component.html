@@ -1,0 +1,72 @@
+<form [formGroup]="internalFormGroup" class="mdf-overlay-popup" [style]="'height: ' + getHeight()">
+  <div class="mdf-time-picker{{node.orientation === 'landscape' ? ' landscape' : ''}}">
+    <mat-hint class="mdf-hint">{{getLabel()}}</mat-hint>
+    <div class="mdf-time-body">
+      <div class="mdf-time-section hour">
+        <input type="number" formControlName="hours" (focus)="activePart = 'hour'" min="1" [max]="12"
+          class="mdf-time-input" [class.active]="activePart === 'hour'" (input)="justNumbers($event, 'H')"
+          (change)="normalizeTime()" />
+      </div>
+      <span class="colon">:</span>
+      <div class="mdf-time-section minute">
+        <input type="number" formControlName="minutes" (focus)="activePart = 'minute';" min="0" max="59"
+          class="mdf-time-input" [class.active]="activePart === 'minute'" (input)="justNumbers($event, 'M')"
+          (change)="normalizeTime()" />
+      </div>
+      <div class="mdf-ampm">
+        <button class="mdf-am" [class.selected]="internalFormGroup.value.meridiem === 'AM'" (click)="setAMPM(true)"
+          matRipple>
+          AM
+        </button>
+        <button class="mdf-pm" [class.selected]="internalFormGroup.value.meridiem === 'PM'" (click)="setAMPM(false)"
+          matRipple>
+          PM
+        </button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="showClockPicker">
+      <div class="mdf-time-clock" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
+        (mouseup)="onMouseUp()" [class.dragging]="isDragging" @fadeTransform>
+        <div class="clock-face"></div>
+
+        <ng-container *ngIf="activePart === 'hour'">
+          <div class="hand" [ngStyle]="{'transform': getHandTransform()}"></div>
+          <div class="center-dot"></div>
+
+          <div class="numbers hour" @fadeScale (@fadeScale.done)="animating = false"
+            (@fadeScale.start)="animating = true" [class.z-index-top]="animating">
+            <span matRipple *ngFor="let hour of hours" [style.--i]="hour" [class.active]="getCurrentHour() === hour"
+              (click)="selectHour(hour)">
+              {{ hour }}
+            </span>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="activePart === 'minute';">
+          <div class="hand" [ngStyle]="{'transform': getHandTransform()}"></div>
+          <div class="center-dot"></div>
+
+          <div class="numbers minute" @fadeScale (@fadeScale.done)="animating = false"
+            (@fadeScale.start)="animating = true" [class.z-index-top]="animating">
+            <span matRipple *ngFor="let minute of minutes" [style.--i]="minute" [class.hidden]="minute % 5 !== 0"
+              [class.active]="getCurrentMinute() === minute" (click)="$event.preventDefault(); selectMinute(minute)">
+              {{ minute }}
+            </span>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+  <div class="mdf-overlay-footer">
+    <button mat-icon-button class="mdf-clock-icon" (click)="showClock()" type="button">
+      <mat-icon style="margin-top: -2px; align-items: start;">{{!showClockPicker ? 'schedule' : 'keyboard'}}</mat-icon>
+    </button>
+    <button mat-button (click)="onCloseRequest.emit('cancel')" color="primary">
+      {{node.cancelLabel}}
+    </button>
+    <button mat-button color="primary" (click)="confirm()" [disabled]="internalFormGroup.invalid" class="p-1">
+      {{node.acceptLabel}}
+    </button>
+  </div>
+</form>
