@@ -7,7 +7,7 @@
       "projectType": "library",
       "root": "projects/mat-dynamic-form",
       "sourceRoot": "projects/mat-dynamic-form/src",
-      "prefix": "mat",
+      "prefix": "mdf",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",

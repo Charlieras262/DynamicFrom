@@ -3,7 +3,7 @@
 
   <input id="{{node.id}}" matInput [formControl]="internalControl" (change)="processChange($event)" />
 
-  <button id="{{node.id}}TodayIcon" mat-icon-button matSuffix (click)="showDatePicker()"
+  <button id="{{node.id}}TodayIcon" mat-icon-button matSuffix (click)="showDatePicker('date')"
     [attr.aria-label]="node.placeholder" type="button">
     <mat-icon>today</mat-icon>
   </button>
@@ -17,46 +17,18 @@
   </mat-hint>
 </mat-form-field>
 
+<!-- ng-container [ngTemplateOutlet]="calendarPanel"></ng-container-->
+
 <ng-template #calendarPanel>
-  <div id="{{node.id}}DateTimePicker" class="calendar-popup" (click)="$event.stopPropagation()">
-    <form [formGroup]="internalFormGroup">
-      <mat-calendar #matDFCalendar [selected]="selectedDate" (selectedChange)="onDateChange($event)"
-        [dateClass]="dateClass" [minDate]="node.minDate" [maxDate]="node.maxDate"></mat-calendar>
-      <mat-divider></mat-divider>
-      <div class="time-picker">
-        <div class="time-body">
-          <div class="time-section hour">
-            <input type="number" formControlName="hours" (focus)="activePart = 'hour'" min="1" [max]="12"
-              class="time-input" [class.active]="activePart === 'hour'" (input)="justNumbers($event, 'H')"
-              (change)="normalizeTime()" />
-          </div>
-          <span class="colon">:</span>
-          <div class="time-section minute">
-            <input type="number" formControlName="minutes" (focus)="activePart = 'minute'" min="0" max="59"
-              class="time-input" [class.active]="activePart === 'minute'" (input)="justNumbers($event, 'M')"
-              (change)="normalizeTime()" />
-          </div>
-          <div class="ampm">
-            <button class="am" [class.selected]="internalFormGroup.value.meridiem === 'AM'" (click)="setAMPM(true)"
-              matRipple>
-              AM
-            </button>
-            <button class="pm" [class.selected]="internalFormGroup.value.meridiem === 'PM'" (click)="setAMPM(false)"
-              matRipple>
-              PM
-            </button>
-          </div>
-        </div>
-      </div>
-      <mat-divider></mat-divider>
-      <div class="calendar-footer">
-        <button mat-button (click)="close()" color="primary">
-          {{node.cancelLabel}}
-        </button>
-        <button mat-button color="primary" (click)="confirm()" [disabled]="internalFormGroup.invalid">
-          {{node.acceptLabel}}
-        </button>
-      </div>
-    </form>
+  <div id="{{node.id}}DateTimePicker" class="mdf-overlay-popup" (click)="$event.stopPropagation()">
+    <mdf-calendar #matDFCalendar [selectedDate]="selectedDate" (dayClicked)="onDateChange($event)"
+      [dateClass]="dateClass" [minDate]="node.minDate" [maxDate]="node.maxDate">
+    </mdf-calendar>
   </div>
+</ng-template>
+
+<ng-template #timePanel>
+  <mat-time-picker [node]="node" [selectedDate]="selectedDate"
+    (selectedDateChange)="onTimeSelected($event)" (onCloseRequest)="close('time', $event)">
+  </mat-time-picker>
 </ng-template>

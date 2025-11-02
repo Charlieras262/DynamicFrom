@@ -1,12 +1,11 @@
 import { Component, ElementRef, Inject, Input, LOCALE_ID, OnInit, Optional, Self, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import { ControlValueAccessor, FormControl, FormGroup, NgControl, Validators } from '@angular/forms';
+import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { DateTimePicker } from '../../models/Node';
 import { DatePipe } from '@angular/common';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { isGreaterDate, isSameDate, to12HourFormat, to24HourFormat } from '../../utils/date-utils';
-import { MatCalendar } from '@angular/material/datepicker';
+import { CalendarComponent } from '../calendar/calendar.component';
 
 @Component({
   selector: 'mat-date-time-picker',
@@ -19,32 +18,19 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   @Input() node!: DateTimePicker;
   @Input() appearance: string = 'standard';
 
-  @ViewChild('matDFCalendar') calendar!: MatCalendar<Date>;
+  @ViewChild('matDFCalendar') calendar!: CalendarComponent;
   @ViewChild('calendarPanel') calendarPanel!: TemplateRef<any>;
+  @ViewChild('timePanel') timePanel!: TemplateRef<any>;
 
   control!: FormControl;
   readonly internalControl: FormControl = new FormControl();
-  readonly internalFormGroup: FormGroup;
 
-  activePart: 'hour' | 'minute' | null = null;
   selectedDate: Date | null = null;
 
   private onChangeFn: (value: any) => void = () => { };
   private onTouchedFn: () => void = () => { };
-  private overlayRef!: OverlayRef | null;
-  private today: Date = this.dateAdapter.createDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-
-  readonly dateClass = (date: Date) => {
-    if (this.selectedDate != null) return '';
-    if (
-      this.selectedDate === null &&
-      this.today &&
-      date.toDateString() === this.today.toDateString()
-    ) {
-      return 'mat-calendar-body-initial';
-    }
-    return '';
-  }
+  private calendarOverlayRef!: OverlayRef | null;
+  private timeOverlayRef!: OverlayRef | null;
 
   constructor(
     @Self() @Optional() private ngControl: NgControl,
@@ -59,13 +45,6 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
     }
-
-    this.internalFormGroup = new FormGroup({
-      date: new FormControl(null, Validators.required),
-      hours: new FormControl('12', [Validators.required, Validators.min(1), Validators.max(12)]),
-      minutes: new FormControl('00', [Validators.required, Validators.min(0), Validators.max(59)]),
-      meridiem: new FormControl('AM', Validators.required),
-    });
   }
 
   ngOnInit() {
@@ -74,15 +53,8 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
 
       if (this.control.value) {
         const date = new Date(this.control.value);
-        const _12Hour = to12HourFormat(date.getHours());
 
         this.internalControl.setValue(this.formatDateTime(date));
-        this.internalFormGroup.setValue({
-          date: date,
-          hours: _12Hour.hour12.toString().padStart(2, '0'),
-          minutes: date.getMinutes().toString().padStart(2, '0'),
-          meridiem: _12Hour.meridiem,
-        });
 
         this.selectedDate = date;
       }
@@ -114,127 +86,90 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
           this.control.updateValueAndValidity();
         }
       });
+    }
+  }
 
-      if (this.node.minDate) {
-        const hour12 = to12HourFormat(this.node.minDate.getHours());
-        this.today.setHours(
-          this.node?.minDate?.getHours() ?? 12,
-          this.node?.minDate?.getMinutes() ?? 0
-        );
+  showDatePicker(type: 'date' | 'time') {
+    const show = () => {
+      const positionStrategy = this.overlay.position()
+        .flexibleConnectedTo(this.elementRef.nativeElement)
+        .withFlexibleDimensions(true)
+        .withPush(true)
+        .withPositions([
+          {
+            originX: 'start',
+            originY: 'bottom',
+            overlayX: 'start',
+            overlayY: 'top',
+            offsetY: 8
+          },
+          {
+            originX: 'start',
+            originY: 'top',
+            overlayX: 'start',
+            overlayY: 'bottom',
+            offsetY: -8
+          }
+        ]);
 
-        this.internalFormGroup.patchValue({
-          hours: hour12.hour12.toString().padStart(2, '0'),
-          minutes: this.node.minDate.getMinutes().toString().padStart(2, '0'),
-          meridiem: hour12.meridiem
+      if (type === 'date') {
+        this.calendarOverlayRef = this.overlay.create({
+          positionStrategy,
+          scrollStrategy: this.overlay.scrollStrategies.close(),
+          hasBackdrop: true,
+          backdropClass: 'cdk-overlay-transparent-backdrop'
+        });
+      } else {
+        this.timeOverlayRef = this.overlay.create({
+          positionStrategy,
+          scrollStrategy: this.overlay.scrollStrategies.close(),
+          hasBackdrop: true,
+          backdropClass: 'cdk-overlay-transparent-backdrop'
         });
       }
-    }
-  }
 
-  showDatePicker() {
-    if (this.overlayRef) {
-      this.close();
-      return;
-    }
+      const portal = new TemplatePortal(type === 'date' ? this.calendarPanel : this.timePanel, this.viewContainerRef);
+      const overlayRef = type === 'date' ? this.calendarOverlayRef : this.timeOverlayRef;
 
-    const positionStrategy = this.overlay.position()
-      .flexibleConnectedTo(this.elementRef.nativeElement)
-      .withFlexibleDimensions(true)
-      .withPush(true)
-      .withPositions([
-        {
-          originX: 'start',
-          originY: 'bottom',
-          overlayX: 'start',
-          overlayY: 'top',
-          offsetY: 8
-        },
-        {
-          originX: 'start',
-          originY: 'top',
-          overlayX: 'start',
-          overlayY: 'bottom',
-          offsetY: -8
+      positionStrategy.positionChanges.subscribe(change => {
+        const overlayEl = overlayRef?.overlayElement;
+        if (!overlayEl) return;
+
+        overlayEl.classList.remove('from-top', 'from-bottom', 'enter', 'leave');
+
+        if (change.connectionPair.originY === 'bottom') {
+          overlayEl?.classList.add('from-top', 'enter');
+        } else {
+          overlayEl?.classList.add('from-bottom', 'enter');
         }
-      ]);
+      });
+      overlayRef.attach(portal);
+      overlayRef.backdropClick().subscribe(() => this.close(type, 'cancel'));
 
-    this.overlayRef = this.overlay.create({
-      positionStrategy,
-      scrollStrategy: this.overlay.scrollStrategies.close(),
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop'
-    });
+      setTimeout(() => {
+        if (type === 'date' && this.selectedDate) this.calendar.activeDate = this.selectedDate;
+      });
 
-    const portal = new TemplatePortal(this.calendarPanel, this.viewContainerRef);
+      document.getElementById(`${this.node.id}TodayIcon`).classList.add('active');
+    }
 
-    positionStrategy.positionChanges.subscribe(change => {
-      const overlayEl = this.overlayRef?.overlayElement;
-      const element = document.getElementById(`${this.node.id}DateTimePicker`);
-      if (!overlayEl) return;
+    if (this.calendarOverlayRef || this.timeOverlayRef) {
+      this.close();
+      return show();
+    }
 
-      overlayEl.classList.remove('from-top', 'from-bottom', 'enter', 'leave');
-
-      if (change.connectionPair.originY === 'bottom') {
-        element?.classList.add('from-top', 'enter');
-      } else {
-        element?.classList.add('from-bottom', 'enter');
-      }
-    });
-    this.overlayRef.attach(portal);
-    this.overlayRef.backdropClick().subscribe(() => this.close());
-
-    setTimeout(() => {
-      if (this.selectedDate) this.calendar.activeDate = this.selectedDate;
-    });
-
-    document.getElementById(`${this.node.id}TodayIcon`).classList.add('active');
-  }
-
-  close() {
-    const element = document.getElementById(`${this.node.id}DateTimePicker`);
-    element?.classList.remove('enter');
-    element?.classList.add('leave');
-
-    element?.addEventListener('animationend', () => {
-      this.overlayRef?.detach();
-      this.overlayRef?.dispose();
-      this.overlayRef = null;
-    }, { once: true });
-
-    document.getElementById(`${this.node.id}TodayIcon`).classList.remove('active');
+    show();
   }
 
   onDateChange(date: Date) {
     this.selectedDate = date;
-    this.calendar.updateTodaysDate();
 
-    this.selectedDate.setHours(
-      +to24HourFormat(+this.internalFormGroup.value.hours, this.internalFormGroup.value.meridiem),
-      +this.internalFormGroup.value.minutes
-    );
-
-    this.internalFormGroup.patchValue({
-      date: this.selectedDate
-    });
-
-    this.normalizeTime();
+    this.showDatePicker('time');
   }
 
-  setAMPM(am: boolean) {
-    if (this.normalizeTime(am ? 'AM' : 'PM'))
-      this.internalFormGroup.patchValue({
-        meridiem: am ? 'AM' : 'PM'
-      });
-  }
-
-  confirm() {
-    const date = new Date(this.selectedDate);
-    const _24Hour = +to24HourFormat(+this.internalFormGroup.value.hours, this.internalFormGroup.value.meridiem);
-
-    date.setHours(_24Hour, this.internalFormGroup.value.minutes);
-    this.internalControl.setValue(this.formatDateTime(date));
-    this.onChangeFn(date);
-    this.close();
+  onTimeSelected(selectedDate: Date) {
+    this.internalControl.setValue(this.formatDateTime(selectedDate));
+    this.onChangeFn(selectedDate);
   }
 
   processChange(event: any) {
@@ -250,28 +185,6 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     this.onTouchedFn();
   }
 
-  justNumbers(event: Event, type: 'H' | 'M') {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, '');
-    const valueNum = +value;
-
-    // Validate range
-    if (type === 'H') {
-      if (valueNum > 12) value = '12';
-      else if (valueNum === 0) value = '01';
-      else value = valueNum.toString();
-    } else {
-      if (valueNum > 59) value = '59';
-      else value = valueNum.toString();
-    }
-
-    input.value = value.padStart(2, '0');
-    this.internalFormGroup.patchValue({
-      [type === 'H' ? 'hours' : 'minutes']: input.value
-    });
-  }
-
-
   registerOnChange(fn: any): void {
     this.onChangeFn = fn;
   }
@@ -285,34 +198,32 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     this.internalControl.setValue(this.formatDateTime(_));
   }
 
-  private normalizeTime(newMeridiem: 'AM' | 'PM' = this.internalFormGroup.value.meridiem): boolean {
-    if (this.selectedDate) {
-      this.selectedDate.setHours(
-        +to24HourFormat(+this.internalFormGroup.value.hours, newMeridiem),
-        +this.internalFormGroup.value.minutes
-      );
+  private close(type: 'date' | 'time' | 'all' = 'all', result: 'confirm' | 'cancel' = 'confirm') {
+    if(result === 'cancel') {
+      this.selectedDate = this.control.value ? new Date(this.control.value) : null;
     }
-    if (this.node.minDate && isGreaterDate(this.node.minDate, this.selectedDate ?? new Date())) {
-      const minHour12 = to12HourFormat(this.node.minDate.getHours());
-      this.internalFormGroup.patchValue({
-        hours: minHour12.hour12.toString().padStart(2, '0'),
-        minutes: this.node?.minDate.getMinutes().toString().padStart(2, '0'),
-        meridiem: minHour12.meridiem
-      });
-      return false;
+    if(type === 'all') {
+      this.close('date');
+      this.close('time');
+      return;
     }
+    
+    const overlayRef = type === 'date' ? this.calendarOverlayRef : this.timeOverlayRef;
+    const element = overlayRef?.overlayElement;
+    element?.classList.remove('enter');
+    element?.classList.add('leave');
 
-    if (this.node.maxDate && isGreaterDate(this.selectedDate ?? new Date(), this.node.maxDate)) {
-      const maxHour12 = to12HourFormat(this.node.maxDate.getHours());
-      this.internalFormGroup.patchValue({
-        hours: maxHour12.hour12.toString().padStart(2, '0'),
-        minutes: this.node.maxDate.getMinutes().toString().padStart(2, '0'),
-        meridiem: maxHour12.meridiem
-      });
-      return false;
-    }
+    element?.addEventListener('animationend', () => {
+      overlayRef?.detach();
+      overlayRef?.dispose();
+      if (type === 'date') {
+        this.calendarOverlayRef = null;
+      } else {
+        this.timeOverlayRef = null;
+      }
+    }, { once: true });
 
-    return true;
+    document.getElementById(`${this.node.id}TodayIcon`).classList.remove('active');
   }
 
   private formatDateTime(date: Date): string {
