@@ -6,7 +6,7 @@ on:
 
 permissions:
   id-token: write    # ✅ Necesario para OIDC
-  contents: read     # Necesario para leer el código fuente
+  contents: read     # ✅ Permite leer código y metadatos del repo
 
 jobs:
   build:
@@ -14,13 +14,19 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]   # Recomendado mínimo para Angular + npm OIDC
+        node-version: [20.x]   # ✅ Compatible con npm moderno y Angular
 
     steps:
       # 1️⃣ Clona el repositorio
       - uses: actions/checkout@v4
 
-      # 2️⃣ Configura Node y habilita la autenticación OIDC con npm
+      - name: Verify npm OIDC setup
+        run: |
+          echo "🔍 Verificando autenticación OIDC..."
+          npm whoami || echo "⚠️ OIDC aún no configurado correctamente."
+
+
+      # 2️⃣ Configura Node.js y acceso a npm con OIDC
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -28,30 +34,35 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           always-auth: true
 
-      # 3️⃣ Instala dependencias y compila la librería
+      # 3️⃣ Actualiza npm a versión >= 11.5.0 (requerido para OIDC)
+      - name: Update npm to latest (OIDC support)
+        run: npm install -g npm@^11.5.0
+
+      # 4️⃣ Instala dependencias y compila la librería
       - run: npm ci
       - run: npm run build
       - run: npm run copy-assets
 
-      # 4️⃣ Instala jq y actualiza versión según el tag del release
+      # 5️⃣ Instala jq y actualiza la versión en package.json según el release tag
       - name: Install jq
-        run: sudo apt-get install jq
+        run: sudo apt-get install -y jq
       - name: Update version in package.json
         run: |
           VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
           jq ".version = \"$VERSION\"" dist/mat-dynamic-form/package.json > temp.json && mv temp.json dist/mat-dynamic-form/package.json
+          echo "📦 Versión actualizada a $VERSION"
 
-      # 5️⃣ Publica a npm usando OIDC (sin token)
+      # 6️⃣ Publica a npm usando OIDC (sin token)
       - name: Publish to npm using OIDC
         working-directory: dist/mat-dynamic-form
         run: |
-          echo "🚀 Publicando con OIDC (Trusted Publishing)..."
+          echo "🚀 Publicando con OIDC (Trusted Publisher)..."
           npm publish --provenance --access public
 
-      # 6️⃣ Mensaje final
+      # 7️⃣ Mensajes finales
       - name: Success message
         if: success()
         run: echo "✅ Publicación completada exitosamente con OIDC."
       - name: Failure message
         if: failure()
-        run: echo "❌ La publicación falló. Revisa los logs para más detalles
+        run: echo "❌ La publicación falló. Revisa los logs para más detalles."
