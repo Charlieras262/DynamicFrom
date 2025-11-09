@@ -30,12 +30,18 @@ export const to24HourFormat = (hour12: number, meridiem: 'AM' | 'PM'): number =>
   return hour24;
 };
 
-export const isSameDate = (date1: Date, date2: Date): boolean => {
+export const isSameDay = (date1: Date, date2: Date): boolean => {
+  return date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate();
+};
+
+export const isSameDate = (date1: Date, date2: Date, includeTime: { hour: boolean, minute: boolean } = { hour: true, minute: true }): boolean => {
   return date1.getFullYear() === date2.getFullYear() &&
     date1.getMonth() === date2.getMonth() &&
     date1.getDate() === date2.getDate() &&
-    date1.getHours() === date2.getHours() &&
-    date1.getMinutes() === date2.getMinutes();
+    (includeTime.hour ? date1.getHours() === date2.getHours() : true) &&
+    (includeTime.minute ? date1.getMinutes() === date2.getMinutes() : true);
 };
 
 export const isGreaterDate = (date1: Date, date2: Date): boolean => {

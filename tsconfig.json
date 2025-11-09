@@ -1,5 +1,5 @@
 {
-  "compileOnSave": false,
+  "compileOnSave": true,
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
@@ -17,7 +17,6 @@
     ],
     "paths": {
       "mat-dynamic-form": [
-        "dist/mat-dynamic-form/mat-dynamic-form",
         "dist/mat-dynamic-form"
       ]
     }

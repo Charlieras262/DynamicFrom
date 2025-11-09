@@ -1,0 +1,100 @@
+.mdf-overlay-popup {
+  background-color: var(--mat-sys-surface, #fff);
+  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 296px;
+  box-shadow: var(--mat-elevation-shadow-level8, 0px 4px 16px rgba(0, 0, 0, 0.24));
+  overflow: hidden;
+  position: relative;
+  transition: all 0.25s ease-out;
+
+  .mdf-overlay-footer {
+    padding: 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+}
+
+.mdf-from-top,
+.mdf-from-bottom {
+  animation-duration: 0.2s;
+  animation-fill-mode: forwards;
+}
+
+.mdf-from-top.mdf-enter {
+  animation-name: mdf-popup-from-top-enter;
+  transform-origin: top center;
+}
+
+.mdf-from-top.mdf-leave {
+  animation-name: mdf-popup-from-top-leave;
+  transform-origin: top center;
+}
+
+.mdf-from-bottom.mdf-enter {
+  animation-name: mdf-popup-from-bottom-enter;
+  transform-origin: bottom center;
+}
+
+.mdf-from-bottom.mdf-leave {
+  animation-name: mdf-popup-from-bottom-leave;
+  transform-origin: bottom center;
+}
+
+@keyframes mdf-popup-from-top-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mdf-popup-from-top-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes mdf-popup-from-bottom-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mdf-popup-from-bottom-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+mat-form-field {
+  mat-icon {
+    color: #808080;
+  }
+}

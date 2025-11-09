@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, Input, LOCALE_ID, OnInit, Optional, Self, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, Inject, Input, LOCALE_ID, OnInit, Optional, Self, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { DateTimePicker } from '../../models/Node';
 import { DatePipe } from '@angular/common';
@@ -11,12 +11,14 @@ import { CalendarComponent } from '../calendar/calendar.component';
   selector: 'mat-date-time-picker',
   templateUrl: './date-time-picker.component.html',
   styleUrls: ['./date-time-picker.component.scss'],
-  providers: [DatePipe]
+  providers: [DatePipe],
+  encapsulation: ViewEncapsulation.None
 })
 export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
 
   @Input() node!: DateTimePicker;
   @Input() appearance: string = 'standard';
+  @Input() timePickerOnly: boolean = false;
 
   @ViewChild('matDFCalendar') calendar!: CalendarComponent;
   @ViewChild('calendarPanel') calendarPanel!: TemplateRef<any>;
@@ -55,7 +57,11 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
         const date = new Date(this.control.value);
 
         this.internalControl.setValue(this.formatDateTime(date));
-
+        this.selectedDate = date;
+      } else {
+        const date = this.dateAdapter.createDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+        date.setHours(0, 0, 0, 0);
+        this.internalControl.setValue(this.formatDateTime(date));
         this.selectedDate = date;
       }
 
@@ -135,12 +141,12 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
         const overlayEl = overlayRef?.overlayElement;
         if (!overlayEl) return;
 
-        overlayEl.classList.remove('from-top', 'from-bottom', 'enter', 'leave');
+        overlayEl.classList.remove('mdf-from-top', 'mdf-from-bottom', 'mdf-enter', 'mdf-leave');
 
         if (change.connectionPair.originY === 'bottom') {
-          overlayEl?.classList.add('from-top', 'enter');
+          overlayEl?.classList.add('mdf-from-top', 'mdf-enter');
         } else {
-          overlayEl?.classList.add('from-bottom', 'enter');
+          overlayEl?.classList.add('mdf-from-bottom', 'mdf-enter');
         }
       });
       overlayRef.attach(portal);
@@ -185,6 +191,10 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     this.onTouchedFn();
   }
 
+  onHeightUpdated() {
+    this.timeOverlayRef?.updatePosition();
+  }
+
   registerOnChange(fn: any): void {
     this.onChangeFn = fn;
   }
@@ -199,19 +209,19 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   }
 
   private close(type: 'date' | 'time' | 'all' = 'all', result: 'confirm' | 'cancel' = 'confirm') {
-    if(result === 'cancel') {
+    if (result === 'cancel') {
       this.selectedDate = this.control.value ? new Date(this.control.value) : null;
     }
-    if(type === 'all') {
+    if (type === 'all') {
       this.close('date');
       this.close('time');
       return;
     }
-    
+
     const overlayRef = type === 'date' ? this.calendarOverlayRef : this.timeOverlayRef;
     const element = overlayRef?.overlayElement;
-    element?.classList.remove('enter');
-    element?.classList.add('leave');
+    element?.classList.remove('mdf-enter');
+    element?.classList.add('mdf-leave');
 
     element?.addEventListener('animationend', () => {
       overlayRef?.detach();

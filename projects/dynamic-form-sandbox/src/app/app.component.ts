@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber, AutoComplete, SelectableNode, DateRangePicker, DateTimePicker } from 'projects/mat-dynamic-form/src/public-api';
+import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, Switch, TextArea, InputNumber, AutoComplete, TimePicker, DateRangePicker, DateTimePicker } from 'mat-dynamic-form';
 import { InputComponent } from './input/input.component';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -88,7 +88,8 @@ export class AppComponent implements OnInit {
         selectedValue: 'n',
         action: { type: 'valueChange', onEvent: (param) => this.onHasPetValueChange(param) },
         hint: 'Do you have a pet?',
-        errorMessage: 'Error message'
+        errorMessage: 'Error message',
+        //validator: Validators.requiredTrue
       }),
       new DateRangePicker('dateRange', 'Date Range').apply({
         minDate: new Date(),
@@ -98,7 +99,14 @@ export class AppComponent implements OnInit {
         value: new Date(),
         minDate: new Date(),
         maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-        orientation: 'landscape',
+        orientation: 'portrait',
+      }),
+      new TimePicker('hour', 'Hour', null, 'hh:mm a').apply({
+        value: new Date(),
+        minDate: new Date(),
+        maxDate: new Date(new Date().setHours(new Date().getHours() + 1)),
+        orientation: 'portrait',
+        showClockPicker: true,
       }),
       new InputPassword('pass', 'Password'),
       new Switch('switch', 'Toggle Switch', false),
