@@ -1,11 +1,11 @@
-<mat-form-field [appearance]="appearance" class="col-sm-12 mat-dynamic-form-date-time-picker">
+<mat-form-field [appearance]="appearance" class="mat-dynamic-form-date-time-picker" style="width: 100% !important;">
   <mat-label>{{node.placeholder}}</mat-label>
 
   <input id="{{node.id}}" matInput [formControl]="internalControl" (change)="processChange($event)" />
 
-  <button id="{{node.id}}TodayIcon" mat-icon-button matSuffix (click)="showDatePicker('date')"
+  <button id="{{node.id}}TodayIcon" mat-icon-button matSuffix (click)="showDatePicker(timePickerOnly ? 'time' : 'date')"
     [attr.aria-label]="node.placeholder" type="button">
-    <mat-icon>today</mat-icon>
+    <mat-icon>{{timePickerOnly ? 'access_time' : 'today'}}</mat-icon>
   </button>
 
   <mat-error *ngIf="node.errorMessage && internalControl.invalid && internalControl.errors">
@@ -28,7 +28,7 @@
 </ng-template>
 
 <ng-template #timePanel>
-  <mat-time-picker [node]="node" [selectedDate]="selectedDate"
-    (selectedDateChange)="onTimeSelected($event)" (onCloseRequest)="close('time', $event)">
-  </mat-time-picker>
+  <mdf-time-picker [node]="node" [selectedDate]="selectedDate" (selectedDateChange)="onTimeSelected($event)"
+    (onCloseRequest)="close('time', $event)" [timePickerOnly]="timePickerOnly" (onHeightUpdated)="onHeightUpdated()">
+  </mdf-time-picker>
 </ng-template>

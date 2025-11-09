@@ -15,6 +15,9 @@
             "tsConfig": "projects/mat-dynamic-form/tsconfig.lib.json",
             "project": "projects/mat-dynamic-form/ng-package.json"
           },
+          "styles": [
+            "projects/mat-dynamic-form/src/styles.scss"
+          ],
           "configurations": {
             "production": {
               "tsConfig": "projects/mat-dynamic-form/tsconfig.lib.prod.json"
@@ -136,8 +139,7 @@
               "projects/dynamic-form-sandbox/src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "projects/dynamic-form-sandbox/src/styles.scss"
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
             ],
             "scripts": []
           }

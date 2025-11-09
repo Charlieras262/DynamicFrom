@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, Type, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { OptionChild } from './models/OptionChild';
 import { AdDirective } from './directive/append-component.directive';
@@ -161,6 +161,8 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
           Object.keys(node.properties).forEach(key => {
             componentRef.instance[key] = node.properties[key];
           });
+
+          this.addClassesToCustomNodeContainer(componentRef);
         }
       });
     });
@@ -177,5 +179,17 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
     content.style.maxHeight = `calc(${this.structure?.maxParentHeight} - ${titleHeight + buttonsHeight}px)`;
     content.style.overflowY = 'auto';
     content.style.overflowX = 'hidden';
+  }
+
+  private addClassesToCustomNodeContainer(componentRef: ComponentRef<Type<any>>) {
+    const element = componentRef?.location.nativeElement as HTMLElement;
+    if (element) {
+      for (let i = 0; i < element.children.length; i++) {
+        const child = element.children.item(i) as HTMLElement;
+        if (child) {
+          child.style.width = '100%';
+        }
+      }
+    }
   }
 }

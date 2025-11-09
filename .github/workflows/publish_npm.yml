@@ -1,43 +1,57 @@
-name: Publish NPM
+name: Publish NPM (OIDC)
 
 on:
   release:
     types: [published]
 
+permissions:
+  id-token: write    # ✅ Necesario para OIDC
+  contents: read     # Necesario para leer el código fuente
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [18.x]   # Recomendado mínimo para Angular + npm OIDC
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-        
-    - run: npm i @angular/cli -d
-    - run: npm i
-    - run: npm run build
-    - run: npm run copy-assets
-    - name: Install jq
-      run: sudo apt-get install jq
-    - name: Update version in package.json
-      run: |
-        VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
-        jq ".version = \"$VERSION\"" dist/mat-dynamic-form/package.json > temp.json && mv temp.json dist/mat-dynamic-form/package.json
-    - name: NPM Publish
-      uses: JS-DevTools/npm-publish@v1
-      with:
-        token: ${{ secrets.NODE_TOKEN }}
-        package: ./dist/mat-dynamic-form/package.json
-    - if: steps.publish.outputs.type != 'none'
-      run: |
-        echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
-        echo "Publish type: ${{ steps.publish.outputs.type }}"
-        echo "Process End"
+      # 1️⃣ Clona el repositorio
+      - uses: actions/checkout@v4
+
+      # 2️⃣ Configura Node y habilita la autenticación OIDC con npm
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+          always-auth: true
+
+      # 3️⃣ Instala dependencias y compila la librería
+      - run: npm ci
+      - run: npm run build
+      - run: npm run copy-assets
+
+      # 4️⃣ Instala jq y actualiza versión según el tag del release
+      - name: Install jq
+        run: sudo apt-get install jq
+      - name: Update version in package.json
+        run: |
+          VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
+          jq ".version = \"$VERSION\"" dist/mat-dynamic-form/package.json > temp.json && mv temp.json dist/mat-dynamic-form/package.json
+
+      # 5️⃣ Publica a npm usando OIDC (sin token)
+      - name: Publish to npm using OIDC
+        working-directory: dist/mat-dynamic-form
+        run: |
+          echo "🚀 Publicando con OIDC (Trusted Publishing)..."
+          npm publish --provenance --access public
+
+      # 6️⃣ Mensaje final
+      - name: Success message
+        if: success()
+        run: echo "✅ Publicación completada exitosamente con OIDC."
+      - name: Failure message
+        if: failure()
+        run: echo "❌ La publicación falló. Revisa los logs para más detalles

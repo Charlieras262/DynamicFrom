@@ -93,6 +93,10 @@
       .active {
         color: mat-contrast($primary, 500) !important;
       }
+
+      .disabled {
+        color: mat-color($foreground, disabled) !important;
+      }
     }
 
     .center-dot {
@@ -103,6 +107,10 @@
       background-color: mat-color($primary, text) !important;
 
       &::after {
+        background-color: mat-color($primary, text) !important;
+      }
+
+      &::before {
         background-color: mat-color($primary, text) !important;
       }
     }

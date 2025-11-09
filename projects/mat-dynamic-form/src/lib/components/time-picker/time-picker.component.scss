@@ -1,3 +1,24 @@
+.mdf-overlay-popup {
+  background-color: var(--mat-sys-surface, #fff);
+  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 296px;
+  box-shadow: var(--mat-elevation-shadow-level8, 0px 4px 16px rgba(0, 0, 0, 0.24));
+  overflow: hidden;
+  position: relative;
+  transition: all 0.25s ease-out;
+
+  .mdf-overlay-footer {
+    padding: 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+}
+
 .mdf-time-picker {
   background: var(--mat-surface, #fff);
   padding-top: 16px;
@@ -108,9 +129,6 @@
   }
 
   .mdf-time-clock {
-    $number-size: 40px;
-    $distance-from-center: 100px;
-
     position: relative;
     width: 256px;
     height: 256px;
@@ -124,7 +142,7 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      position: absolute;
+      position: relative;
     }
 
     &.dragging {
@@ -165,46 +183,44 @@
           transition: all 0.25s ease-in-out;
         }
       }
-
-
     }
 
     .numbers {
-      position: absolute;
+      position: relative;
       width: 100%;
       height: 100%;
 
       span {
         position: absolute;
-        top: calc(50% - #{($number-size / 2)});
-        left: calc(50% - #{($number-size / 2)});
+        top: calc(50% - 40px / 2) !important;
+        left: calc(50% - 40px / 2) !important;
         transform-origin: center;
         font-size: 13px;
         color: #111;
         border-radius: 50%;
-        width: $number-size;
-        height: $number-size;
-        line-height: $number-size;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
         text-align: center;
 
-        &:hover:not(.hidden) {
+        &:hover:not(.hidden):not(.disabled) {
           cursor: pointer;
         }
 
-        &:hover:not(.active) {
+        &:hover:not(.active):not(.disabled) {
           background-color: rgba(63, 81, 181, 0.168);
         }
       }
 
       &.hour {
         span {
-          transform: rotate(calc(30deg * var(--i) - 90deg)) translate($distance-from-center) rotate(calc(-30deg * var(--i) + 90deg));
+          transform: rotate(calc(30deg * var(--i) - 90deg)) translate(100px) rotate(calc(-30deg * var(--i) + 90deg));
         }
       }
 
       &.minute {
         span {
-          transform: rotate(calc(6deg * var(--i) - 90deg)) translate($distance-from-center) rotate(calc(-6deg * var(--i) + 90deg));
+          transform: rotate(calc(6deg * var(--i) - 90deg)) translate(100px) rotate(calc(-6deg * var(--i) + 90deg));
         }
       }
 
@@ -216,11 +232,16 @@
       .active {
         color: white;
         border-radius: 50%;
-        width: $number-size;
-        height: $number-size;
-        line-height: $number-size;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
         font-weight: bold;
         z-index: 3;
+      }
+
+      .disabled {
+        color: rgba(0, 0, 0, 0.26);
+        pointer-events: none;
       }
 
       &.z-index-top {
@@ -228,19 +249,10 @@
       }
     }
 
-    .center-dot {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      background-color: #3f51b5;
-      border-radius: 50%;
-      z-index: 3;
-    }
-
     .hand {
       position: absolute;
       width: 2px;
-      height: calc(#{$distance-from-center - $number-size / 2});
+      height: calc(100px - 40px / 2);
       background-color: #3f51b5;
       top: 50%;
       left: 50%;
@@ -250,15 +262,54 @@
       &::after {
         content: "";
         position: absolute;
-        bottom: 100%; // Position above the hand
+        bottom: 100%;
         left: 50%;
         transform: translateX(-50%);
         width: 40px;
         height: 40px;
         border-radius: 50%;
         background-color: #3f51b5;
-        z-index: inherit; // mismo que la manecilla
+        z-index: inherit;
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #3f51b5;
       }
     }
+  }
+}
+
+.mdf-overlay-footer {
+  .mdf-clock-icon {
+    color: #808080;
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+  }
+
+  .mdf-buttons {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+  }
+}
+
+.mdf-button {
+  display: inline-flex !important;
+  align-items: flex-end !important;
+  border-radius: 100px !important;
+
+  mat-icon {
+    font-size: 22px !important;
+    display: inline-flex !important;
+    align-items: flex-start !important;
   }
 }

@@ -1,19 +1,17 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
-
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatDynamicFormModule } from 'projects/mat-dynamic-form/src/public-api';
+import { MatDynamicFormModule } from 'mat-dynamic-form';
 import { InputComponent } from './input/input.component';
-import { MaterialModule } from 'projects/mat-dynamic-form/src/lib/material-module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
+import { MaterialModule } from 'projects/mat-dynamic-form/src/lib/material-module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    InputComponent
+    InputComponent,
   ],
   imports: [
     BrowserModule,
@@ -24,7 +22,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter } fro
     ReactiveFormsModule,
   ],
   providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'es-GT' },
+    //{ provide: MAT_DATE_LOCALE, useValue: 'es-GT' },
   ],
   bootstrap: [AppComponent]
 })

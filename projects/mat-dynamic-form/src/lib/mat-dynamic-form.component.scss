@@ -21,6 +21,22 @@ input.no-arrows {
   -moz-appearance: textfield;
 }
 
+
+.mdf-btn-form {
+
+  & .mat-button {
+    margin-top: 14px;
+  }
+
+  & .mat-raised-button {
+    margin-top: 8px;
+  }
+
+  & .mat-stroked-button {
+    margin-top: 12px;
+  }
+}
+
 .checkbox-size {
   height: 58px;
   justify-content: flex-start;
@@ -29,19 +45,25 @@ input.no-arrows {
   align-items: center;
 }
 
-$tablet-width: 320px;
-$desktop-width: 1024px;
+.multiline {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
 
-@media (min-width: #{$tablet-width}) {
-  .btn-form {
-    .mat-button {
-      margin-top: -15px;
-      margin-left: 15px;
-    }
+mat-form-field {
+  mat-icon {
+    color: #808080;
+  }
+}
 
-    .mat-stroked-button {
-      margin-left: 15px;
-      margin-bottom: 25px;
-    }
+.mdf-button {
+  display: inline-flex !important;
+  align-items: flex-end !important;
+  border-radius: 100px !important;
+
+  mat-icon {
+    font-size: 22px !important;
+    display: inline-flex !important;
+    align-items: flex-start !important;
   }
 }
