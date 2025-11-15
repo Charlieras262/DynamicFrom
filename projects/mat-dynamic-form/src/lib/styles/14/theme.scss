@@ -1,0 +1,21 @@
+@import '@angular/material';
+@import '../date_time_picker';
+@import '../upload_file';
+@import '../elevations';
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+@mixin mat-dynamic-form-theme($theme) {
+  
+  @include calendar-popup-theme($theme);
+  @include mat-upload-file-theme($theme);
+
+  .primary {
+    color: mat-color(map-get(mat-get-color-config($theme), primary), text) !important;
+  }
+
+  mat-form-field {
+    mat-icon {
+      color: mat-color(map-get(mat-get-color-config($theme), foreground), icon) !important;
+    }
+  }
+}
