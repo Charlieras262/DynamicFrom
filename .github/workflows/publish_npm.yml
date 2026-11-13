@@ -28,8 +28,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       # 3️⃣ Actualiza npm a versión >= 11.5.0 (requerido para OIDC)
-      - name: Update npm to latest (OIDC support)
-        run: npm install -g npm@latest
+      # npm@latest (12+) ya no soporta Node 20, por eso se fija la versión 11.
+      - name: Update npm to 11.x (OIDC support)
+        run: npm install -g npm@11
 
       # 4️⃣ Verifica configuración OIDC
       - name: Verify npm OIDC setup
