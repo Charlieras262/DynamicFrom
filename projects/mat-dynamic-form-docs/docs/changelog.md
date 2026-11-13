@@ -7,7 +7,9 @@ title: Changelog
 
 Older versions are listed in the [GitHub releases](https://github.com/Charlieras262/DynamicFrom/releases).
 
-## Unreleased
+## 1.7.1
+
+_2026-11-13_
 
 ### Features
 

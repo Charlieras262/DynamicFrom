@@ -1,4 +1,4 @@
-[![Node.js CI](https://github.com/Charlieras262/DynamicFrom/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/Charlieras262/DynamicFrom/actions/workflows/node.js.yml) [![Documentation](https://img.shields.io/badge/docs-1.7.0-3f51b5?logo=docusaurus&logoColor=white)](https://charlieras262.github.io/DynamicFrom/) [![npm](https://img.shields.io/npm/v/mat-dynamic-form?logo=npm)](https://www.npmjs.com/package/mat-dynamic-form) [![npm downloads](https://img.shields.io/npm/dm/mat-dynamic-form)](https://www.npmjs.com/package/mat-dynamic-form)
+[![Node.js CI](https://github.com/Charlieras262/DynamicFrom/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/Charlieras262/DynamicFrom/actions/workflows/node.js.yml) [![Documentation](https://img.shields.io/badge/docs-1.7.1-3f51b5?logo=docusaurus&logoColor=white)](https://charlieras262.github.io/DynamicFrom/) [![npm](https://img.shields.io/npm/v/mat-dynamic-form?logo=npm)](https://www.npmjs.com/package/mat-dynamic-form) [![npm downloads](https://img.shields.io/npm/dm/mat-dynamic-form)](https://www.npmjs.com/package/mat-dynamic-form)
 
 # Mat Dynamic Form
 
