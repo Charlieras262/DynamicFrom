@@ -7,6 +7,14 @@ title: Changelog
 
 Older versions are listed in the [GitHub releases](https://github.com/Charlieras262/DynamicFrom/releases).
 
+## Unreleased
+
+### Fixes
+
+- `@angular/forms`, `@angular/platform-browser` and `rxjs` (`^6.5.3 || ^7.0.0`) are declared as peer dependencies.
+  The library always used them; now package managers check them and size tools no longer count them as part of
+  the library.
+
 ## 1.7.0
 
 _2026-11-13_ · [Upgrade guide](./migration/upgrade-to-1.7.0.md)
