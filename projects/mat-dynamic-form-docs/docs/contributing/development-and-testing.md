@@ -74,6 +74,10 @@ npm run build  # production build, fails on broken links
 
 The docs need Node 20 or newer.
 
+Every push to `master` that changes `projects/mat-dynamic-form-docs/` publishes the site to
+[GitHub Pages](https://charlieras262.github.io/DynamicFrom/) through the **Deploy docs** workflow. It can also be
+run by hand from the Actions tab.
+
 ## Releasing
 
 Create a GitHub release with a `vX.Y.Z` tag. The **Publish NPM** workflow builds the library, runs the specs and
