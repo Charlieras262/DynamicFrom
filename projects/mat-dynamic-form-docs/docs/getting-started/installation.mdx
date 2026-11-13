@@ -1,0 +1,151 @@
+---
+sidebar_position: 1
+title: Installation
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Installation
+
+## 1. Install the packages
+
+Mat Dynamic Form needs Angular Material (versions 11 to 16 are supported).
+
+```bash
+ng add @angular/material
+npm install mat-dynamic-form
+```
+
+## 2. Import the module and an animations module
+
+Angular Material needs an animations module. **Since 1.7.0 the library does not import one for you**: your
+application imports it **once**, in its root, and decides whether animations are enabled.
+
+| Module | Use it when |
+| --- | --- |
+| `BrowserAnimationsModule` | You want Material animations (ripples, overlays, transitions). |
+| `NoopAnimationsModule` | You want to disable animations (tests, low-end devices, reduced motion). |
+
+<Tabs groupId="app-style">
+  <TabItem value="ngmodule" label="NgModule app" default>
+
+```ts title="app.module.ts"
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDynamicFormModule } from 'mat-dynamic-form';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule, // or NoopAnimationsModule: once, in the root module only
+    MatDynamicFormModule,
+  ],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+`MatDynamicFormModule` can also be imported in any feature or lazy-loaded module. Do **not** import
+`BrowserModule` or an animations module there: they belong to the root module only.
+
+  </TabItem>
+  <TabItem value="standalone" label="Standalone app (Angular 15+)">
+
+```ts title="main.ts"
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAnimations(), // or provideNoopAnimations()
+  ],
+});
+```
+
+```ts title="app.component.ts"
+import { Component } from '@angular/core';
+import { MatDynamicFormModule } from 'mat-dynamic-form';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [MatDynamicFormModule],
+  template: `<mat-dynamic-form [structure]="formStructure"></mat-dynamic-form>`,
+})
+export class AppComponent {
+  // formStructure = new FormStructure(...)
+}
+```
+
+  </TabItem>
+</Tabs>
+
+:::warning Forgot the animations module?
+Without an animations module Angular Material components throw an error such as
+`Found the synthetic property @transitionMessages. Please include either "BrowserAnimationsModule" or
+"NoopAnimationsModule" in your application.` Add one of the modules above to your root module.
+:::
+
+## 3. Include the theme
+
+The library ships a Sass mixin that styles the date-time picker, the file upload and the icons with your
+Angular Material theme. Pick the import that matches your Angular version.
+
+<Tabs groupId="angular-version">
+  <TabItem value="lt14" label="Angular 11 – 13" default>
+
+```scss title="styles.scss"
+@import '~@angular/material/theming';
+@import 'mat-dynamic-form/src/lib/styles/theme';
+
+@include mat-core();
+
+$app-primary: mat-palette($mat-indigo, 800);
+$app-accent: mat-palette($mat-amber, 500);
+$app-warn: mat-palette($mat-red, 500);
+
+$app-theme: mat-light-theme((
+  color: (primary: $app-primary, accent: $app-accent, warn: $app-warn)
+));
+
+@include angular-material-theme($app-theme);
+@include mat-dynamic-form-theme($app-theme);
+```
+
+  </TabItem>
+  <TabItem value="gte14" label="Angular 14 – 16">
+
+```scss title="styles.scss"
+@import 'mat-dynamic-form/src/lib/styles/14/theme';
+
+// ...your Angular Material theme ($app-theme)...
+
+@include mat-dynamic-form-theme($app-theme);
+```
+
+  </TabItem>
+</Tabs>
+
+The theme also includes Bootstrap's grid, which the form uses for its two-column layout.
+
+## 4. Copy the file upload icons
+
+The [`InputFile`](../guides/file-upload.md) node shows an icon for the selected file type. Add the library assets
+to your build in `angular.json`:
+
+```json title="angular.json"
+"assets": [
+  "src/favicon.ico",
+  "src/assets",
+  { "glob": "**/*", "input": "node_modules/mat-dynamic-form/assets", "output": "assets" }
+]
+```
+
+## Next
+
+Build [your first form](./first-form.md).

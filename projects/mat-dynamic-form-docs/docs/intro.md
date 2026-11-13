@@ -1,47 +1,40 @@
 ---
 sidebar_position: 1
+slug: /intro
+title: Introduction
 ---
 
-# Tutorial Intro
+# Mat Dynamic Form
 
-Let's discover **Docusaurus in less than 5 minutes**.
+**Mat Dynamic Form** is an Angular Material library that builds complete reactive forms from a single
+`FormStructure` object. You describe the fields as _nodes_ (inputs, dropdowns, date pickers, file uploads,
+buttons, your own components…) and the `<mat-dynamic-form>` component renders the Angular Material fields,
+creates the `FormGroup`, wires validators and runs your actions.
 
-## Getting Started
-
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
+```html
+<mat-dynamic-form [structure]="formStructure"></mat-dynamic-form>
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+## What you get
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+- **16 node types** ready to use: text, number, password, text area, checkbox, switch, radio group, dropdown,
+  autocomplete, date, date range, date-time, time, file upload, buttons and custom components.
+- **Reactive forms under the hood**: every node is a `FormControl` you can read, patch and validate through
+  the `FormStructure` API.
+- **Runtime changes**: add or remove nodes, enable or disable them, change validators and react to events while
+  the form is displayed.
+- **Actions**: run code on value changes, DOM events or button clicks, with access to the whole structure.
+- **Theming**: a Sass mixin that follows your Angular Material theme.
 
-## Start your site
+## Compatibility
 
-Run the development server:
+| mat-dynamic-form | Angular / Angular Material | Notes |
+| --- | --- | --- |
+| **1.7.x** | 11 – 16 | The app imports its own animations module. See [Upgrade to 1.7.0](./migration/upgrade-to-1.7.0.md). |
+| 1.6.x | 11 – 16 | Imported `BrowserAnimationsModule` itself. |
 
-```bash
-cd my-website
-npm run start
-```
+## Next steps
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+- [Install the library](./getting-started/installation.mdx) and set up animations, the theme and the assets.
+- Build [your first form](./getting-started/first-form.md).
+- Coming from 1.6.x? Read [Upgrade to 1.7.0](./migration/upgrade-to-1.7.0.md).

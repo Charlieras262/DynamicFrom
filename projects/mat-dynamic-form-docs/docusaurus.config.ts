@@ -4,32 +4,27 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+const repoUrl = 'https://github.com/Charlieras262/DynamicFrom';
+
 const config: Config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
-  favicon: 'img/favicon.ico',
+  title: 'Mat Dynamic Form',
+  tagline: 'Build complete Angular Material forms from a single FormStructure object.',
+  favicon: 'img/logo.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
   },
 
-  // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
-
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  // GitHub Pages defaults for this repository. Change url/baseUrl if the site is hosted elsewhere.
+  url: 'https://charlieras262.github.io',
+  baseUrl: '/DynamicFrom/',
+  organizationName: 'Charlieras262',
+  projectName: 'DynamicFrom',
+  trailingSlash: false,
 
   onBrokenLinks: 'throw',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -41,10 +36,12 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: `${repoUrl}/tree/master/projects/mat-dynamic-form-docs/`,
+          versions: {
+            current: {
+              label: '1.7.0',
+            },
+          },
         },
         blog: {
           showReadingTime: true,
@@ -52,11 +49,7 @@ const config: Config = {
             type: ['rss', 'atom'],
             xslt: true,
           },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
+          editUrl: `${repoUrl}/tree/master/projects/mat-dynamic-form-docs/`,
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -69,27 +62,40 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
+    announcementBar: {
+      id: 'release-1-7-0',
+      content:
+        'v1.7.0 is out: the library no longer imports BrowserAnimationsModule. <a href="/DynamicFrom/docs/migration/upgrade-to-1.7.0">Read the upgrade guide</a>.',
+      isCloseable: true,
+    },
     navbar: {
-      title: 'My Site',
+      title: 'Mat Dynamic Form',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Mat Dynamic Form logo',
         src: 'img/logo.svg',
       },
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'docsSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Docs',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        {to: '/blog', label: 'Releases', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          type: 'docsVersionDropdown',
+          position: 'right',
+        },
+        {
+          href: 'https://www.npmjs.com/package/mat-dynamic-form',
+          label: 'npm',
+          position: 'right',
+        },
+        {
+          href: repoUrl,
           label: 'GitHub',
           position: 'right',
         },
@@ -101,48 +107,33 @@ const config: Config = {
         {
           title: 'Docs',
           items: [
-            {
-              label: 'Tutorial',
-              to: '/docs/intro',
-            },
+            {label: 'Introduction', to: '/docs/intro'},
+            {label: 'Installation', to: '/docs/getting-started/installation'},
+            {label: 'Upgrade to 1.7.0', to: '/docs/migration/upgrade-to-1.7.0'},
           ],
         },
         {
-          title: 'Community',
+          title: 'Project',
           items: [
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-            },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
-            },
+            {label: 'GitHub', href: repoUrl},
+            {label: 'Issues', href: `${repoUrl}/issues`},
+            {label: 'npm', href: 'https://www.npmjs.com/package/mat-dynamic-form'},
           ],
         },
         {
           title: 'More',
           items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
-            },
+            {label: 'Releases', to: '/blog'},
+            {label: 'Changelog', to: '/docs/changelog'},
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © 2020-${new Date().getFullYear()} Carlos Ramos. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['bash', 'json', 'scss'],
     },
   } satisfies Preset.ThemeConfig,
 };
