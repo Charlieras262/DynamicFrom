@@ -14,21 +14,21 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]   # ✅ Compatible con npm moderno y Angular
+        node-version: [24.x]   # ✅ LTS activo; Node 20 llegó a fin de vida
 
     steps:
       # 1️⃣ Clona el repositorio
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # 2️⃣ Configura Node.js y acceso a npm con OIDC
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
 
       # 3️⃣ Actualiza npm a versión >= 11.5.0 (requerido para OIDC)
-      # npm@latest (12+) ya no soporta Node 20, por eso se fija la versión 11.
+      # Se fija la versión 11 para no depender de los cambios de engines de npm@latest.
       - name: Update npm to 11.x (OIDC support)
         run: npm install -g npm@11
 
@@ -41,6 +41,10 @@ jobs:
       # 5️⃣ Instala dependencias y compila la librería
       - run: npm ci
       - run: npm run build
+      # ✅ No se publica si algún spec falla (Karma con webpack 4 necesita el proveedor OpenSSL legacy en Node >= 17)
+      - run: npm run test:lib
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
       - run: npm run copy-assets
 
       # 6️⃣ Instala jq y actualiza la versión en package.json según el release tag
