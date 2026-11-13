@@ -4,6 +4,7 @@ import { Action, ActionEvent } from "./Action";
 import { ObjectBase } from "./base/ObjectBase";
 import { OptionChild } from "./OptionChild";
 import { Observable, BehaviorSubject } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { FileChange } from "../interfaces/FileChange.interface";
 
 export type Node = Input | Checkbox | RadioGroup | Dropdown | TextArea | DatePicker | InputFile | InputNumber | InputPassword
@@ -78,7 +79,7 @@ export class CustomNode<T> extends NodeBase {
     public properties?: { [key: string]: any };
 
     constructor(id, component, properties?, placeholder?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
-        super(id, placeholder, 'custom', singleLine, icon, errorMessage, validator, disabled, asyncValidator, action);
+        super(id, placeholder, 'custom', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.properties = properties;
         this.component = component;
     }
@@ -106,7 +107,7 @@ export class SelectableNode extends NodeBase {
      * @param action The action(s) to execute when an event occurs on the node.
      */
     protected constructor(id, placeholder, value, selectedValue, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action) {
-        super(id, placeholder, 'button', singleLine, icon, errorMessage, validator, disabled, asyncValidator, action);
+        super(id, placeholder, 'button', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.value = value
         this.selectedValue = selectedValue
     }
@@ -127,10 +128,7 @@ export class SelectableNode extends NodeBase {
     }
 
     private handleObservable(value: Observable<OptionChild[]>): OptionChild[] {
-        const obs = value.subscribe(res => {
-            this.onOptionLoaded(res)
-            obs.unsubscribe();
-        });
+        value.pipe(take(1)).subscribe(res => this.onOptionLoaded(res));
 
         return this._value;
     }
@@ -171,8 +169,7 @@ export class Input extends InputBaseNode {
     public minCharCount?: number;
 
     constructor(id, placeholder?, value?, maxCharCount?, singleLine?, icon?, errorMessage?, disabled?, readOnly?, validator?, asyncValidator?, action?) {
-        super(id, placeholder, 'input', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
-        this.value = value;
+        super(id, placeholder, 'input', value, singleLine, icon, errorMessage, disabled, readOnly, validator, asyncValidator, action);
         this.maxCharCount = maxCharCount;
     }
 
@@ -196,9 +193,8 @@ export class InputFile extends InputBaseNode {
     public onStatusChange?: (value: FileChange) => void;
 
     constructor(id, placeholder?, value?, accept?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
-        super(id, placeholder, 'file', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
+        super(id, placeholder, 'file', value, singleLine, icon, errorMessage, disabled, undefined, validator, asyncValidator, action);
         this.accept = accept;
-        this.value = value;
     }
 
     executeStatusChange(value: FileChange) {
@@ -258,7 +254,8 @@ export class AutoComplete extends SelectableNode {
         super(id, placeholder, value, selected, singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
         this.type = 'autocomplete';
         this.multiple = multiple ?? false;
-        super.value = value;
+        // Options resolved synchronously during super() ran before filteredOptions existed.
+        this.filteredOptions.next(this.getOptions() ?? []);
     }
 
     protected onOptionLoaded(options: OptionChild[]): void {
@@ -272,8 +269,7 @@ export class DatePicker extends InputBaseNode {
     public maxDate: Date;
 
     constructor(id, placeholder?, value?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?) {
-        super(id, placeholder, 'date', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
-        this.value = value;
+        super(id, placeholder, 'date', value, singleLine, icon, errorMessage, disabled, undefined, validator, asyncValidator, action);
         this.minDate = minDate;
         this.maxDate = maxDate;
     }
@@ -295,8 +291,7 @@ export class DateTimePicker extends InputBaseNode {
     public orientation?: 'portrait' | 'landscape';
 
     constructor(id, placeholder?, value?, dateFormat?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?, acceptLabel?, cancelLabel?, selectTimeLabel?, enterTimeLabel?, showClockPicker?, orientation?) {
-        super(id, placeholder, 'datetime', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
-        this.value = value;
+        super(id, placeholder, 'datetime', value, singleLine, icon, errorMessage, disabled, undefined, validator, asyncValidator, action);
         this.minDate = minDate;
         this.maxDate = maxDate;
         this.dateFormat = dateFormat;
@@ -323,7 +318,7 @@ export class DateRangePicker extends InputBaseNode {
     public maxDate: Date;
 
     constructor(id, placeholder?, startDate?, endDate?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?, minDate?, maxDate?) {
-        super(id, placeholder, 'daterange', singleLine, icon, errorMessage, disabled, validator, asyncValidator, action);
+        super(id, placeholder, 'daterange', undefined, singleLine, icon, errorMessage, disabled, undefined, validator, asyncValidator, action);
         this.startDate = startDate;
         this.endDate = endDate;
         this.minDate = minDate;

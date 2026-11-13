@@ -33,6 +33,15 @@ ng add @angular/material
 
 This is necesary to create angular material components.
 
+#### Animations (since v1.7.0)
+
+Starting with **v1.7.0** the library no longer imports `BrowserAnimationsModule`. Each application decides which animations module to use, importing it **once** in its root module (`AppModule`):
+
+- `BrowserAnimationsModule` from `@angular/platform-browser/animations` to enable animations.
+- `NoopAnimationsModule` from `@angular/platform-browser/animations` to disable them.
+
+This fixes the `BrowserModule has already been loaded` error when `MatDynamicFormModule` was imported in lazy-loaded or feature modules. If you are upgrading from 1.6.x and your app did not import an animations module, add one of the above.
+
 
 ## Usage
 
@@ -43,10 +52,16 @@ This is necesary to create angular material components.
 ```typescript
 
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDynamicFormModule } from 'mat-dynamic-form';
 
 @NgModule({
   imports: [
+    BrowserModule,
+    // Required by Angular Material. The library does not import it for you;
+    // use NoopAnimationsModule instead if you want to disable animations.
+    BrowserAnimationsModule,
     ...,
     MatDynamicFormModule
   ],

@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build --prod mat-dynamic-form",
     "test": "ng test",
+    "test:lib": "ng test mat-dynamic-form --watch=false --browsers=ChromeHeadlessCI",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "copy-assets": "cpx \"projects/mat-dynamic-form/src/assets/**/*\" dist/mat-dynamic-form/assets"

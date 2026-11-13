@@ -16,16 +16,7 @@ export class FormStructure extends ObjectBase {
     nodes: Node[];
     _nodeGrid: number = 2;
     set nodeGrid(value: number) {
-        if (value < 1) {
-            this._nodeGrid = 1;
-        } else {
-            this._nodeGrid = value;
-        }
-        if (value > 4) {
-            this._nodeGrid = 4;
-        } else {
-            this._nodeGrid = value;
-        }
+        this._nodeGrid = Math.min(4, Math.max(1, value));
     };
 
     get nodeGrid() {
@@ -89,7 +80,8 @@ export class FormStructure extends ObjectBase {
      * @returns {Node} Based on `nodeId` parameter.
      */
     getNodeById<T extends Node>(nodeId: string): T {
-        const node = this.nodes.find(node => node.id === nodeId) as T;
+        const node = this.nodes?.find(node => node.id === nodeId) as T;
+        if (!node) return node;
         if (node instanceof Dropdown || node instanceof RadioGroup) return node;
         const control = this.getControlById(nodeId);
         if (control) {
@@ -125,9 +117,7 @@ export class FormStructure extends ObjectBase {
      * This methods set the default value sent in form structure.
      */
     remapValues() {
-        this.nodes.map(node => {
-            this.createFormControl(node);
-        })
+        this.nodes?.forEach(node => this.createFormControl(node));
     }
 
     /**
@@ -398,15 +388,14 @@ export class FormStructure extends ObjectBase {
             actions.forEach(action => {
                 if (action?.type == 'valueChange') {
                     this.getControlById(node.id)?.valueChanges?.subscribe(value => {
-                        if (node.value != value) {
-                            /** TODO delete property in version 2.0.0 */
-                            action?.callback?.onEvent?.(node.id, value);
-                            action?.onEvent?.({ event: value, structure: this });
-                        };
+                        /** TODO delete property in version 2.0.0 */
+                        action?.callback?.onEvent?.(node.id, value);
+                        action?.onEvent?.({ event: value, structure: this });
                     })
                 } else {
-                    item?.addEventListener(action?.type?.toString(), event => {
-                        const value = this.getControlById(node.id).value;
+                    if (!action?.type) return;
+                    item?.addEventListener(action.type.toString(), event => {
+                        const value = this.getControlById(node.id)?.value;
                         if (node.value != value) {
                             /** TODO delete property in version 2.0.0 */
                             action?.callback?.onEvent?.(node.id, value);
@@ -532,9 +521,11 @@ export class FormStructure extends ObjectBase {
      * @returns The filtered options.
      */
     private _filter(options: OptionChild[], title?: string, value?: string): OptionChild[] {
-        return options.filter(option =>
-            option.title.toLowerCase().includes(title?.toLowerCase())
-            || option.value.toLowerCase().includes(value?.toLowerCase())
+        const titleFilter = title?.toLowerCase() ?? '';
+        const valueFilter = value?.toLowerCase() ?? '';
+        return (options ?? []).filter(option =>
+            option.title?.toLowerCase().includes(titleFilter)
+            || option.value?.toString().toLowerCase().includes(valueFilter)
         );
     }
 
@@ -547,7 +538,7 @@ export class FormStructure extends ObjectBase {
      * @param node The node instance to set the value.
      */
     private setAutoCompleteValue(node: Node) {
-        if (!(node instanceof AutoComplete)) return;
+        if (!(node instanceof AutoComplete) || node.selectedValue == null) return;
         new Observable<OptionChild[]>(observer => {
             let cancelled = false;
             let counter = 0;
@@ -565,10 +556,14 @@ export class FormStructure extends ObjectBase {
                 observer.complete();
             })().catch(err => observer.error(err));
             return () => { cancelled = true; };
-        }).subscribe(value => {
-            this.getControlById(node.id)?.setValue(
-                value.find(item => item.value.toLocaleLowerCase() == node.selectedValue.toLocaleLowerCase())
-            );
+        }).subscribe({
+            next: value => {
+                const selected = node.selectedValue?.toString().toLocaleLowerCase();
+                const option = value?.find(item => item.value?.toString().toLocaleLowerCase() == selected);
+                if (option) this.getControlById(node.id)?.setValue(option);
+            },
+            // The options never loaded (e.g. failed request): keep the control empty instead of throwing.
+            error: () => { }
         });
     }
 
