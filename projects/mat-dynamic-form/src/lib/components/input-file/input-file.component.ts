@@ -103,7 +103,7 @@ export class InputFileComponent implements OnInit, ControlValueAccessor, AfterVi
   }
 
   getAccept(): string {
-    return this.data.accept.length == 0 ? '*/*' : this.data.accept.map(item => '.' + item).join(',');
+    return !this.data.accept?.length ? '*/*' : this.data.accept.map(item => '.' + item).join(',');
   }
 
   downloadFile() {
@@ -123,8 +123,7 @@ export class InputFileComponent implements OnInit, ControlValueAccessor, AfterVi
   }
 
   getAcceptedTypes(): string {
-    if (!this.data.accept || this.data.accept.length == 0) {
-      this.data.accept = [];
+    if (!this.data.accept?.length) {
       return 'Todos los archivos';
     }
     const types = this.data.accept.slice(0, 4);
@@ -137,15 +136,17 @@ export class InputFileComponent implements OnInit, ControlValueAccessor, AfterVi
   }
 
   private handleInputFile(file: File) {
+    this.currentFile = file;
     try {
       this.currentFile = FileUtils.changeFileName(file, this.data.filename);
-    } catch (error) {}
+    } catch (error) { }
     this.fileState = 'preparing';
     this.onStatusChange.emit({ state: this.fileState });
-    const fileStatus = FileUtils.isValidFile(this.currentFile, this.data.accept, this.data.maxSize);
+    const fileStatus = FileUtils.isValidFile(this.currentFile, this.data.accept ?? [], this.data.maxSize);
     if (!fileStatus.isValid) {
-      this.fileState = 'error';
+      // setValue(null) resets the state through valueChanges, so the error state goes after it.
       this.getControl().setValue(null);
+      this.fileState = 'error';
       this.getControl().setErrors({ 'error': true });
       this.onStatusChange.emit({ state: 'error', error: fileStatus.error?.toString(), message: fileStatus.message });
       return;

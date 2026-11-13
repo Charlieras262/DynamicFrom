@@ -277,7 +277,6 @@
             </p>
             <p *ngSwitchDefault>
               <button id="{{node.id}}" mat-button color="{{node?.action?.style}}" class="mdf-button"
-                (click)="node.action?.callback?.onClick(node.id)" type="{{node.validateForm ? 'submit' : 'button'}}"
                 [disabled]="shouldDisable(node)" type="button">
                 <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
                 {{node.placeholder}}
@@ -311,14 +310,14 @@
         <span [ngSwitch]="structure.appearance">
           <p *ngSwitchCase="'outline'" class="mb-0">
             <button mat-stroked-button *ngFor="let action of structure.validateActions" id="{{action.id}}" type="button"
-              class="me-3 mdf-button" color="{{action.action.style}}" [disabled]="shouldDisable(action)">
+              class="me-3 mdf-button" color="{{action?.action?.style}}" [disabled]="shouldDisable(action)">
               <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>
               {{action.placeholder}}
             </button>
           </p>
           <p *ngSwitchCase="'fill'" class="mb-0">
             <button mat-raised-button *ngFor="let action of structure.validateActions" id="{{action.id}}" type="button"
-              class="me-3 mdf-button" color="{{action.action.style}}" [disabled]="shouldDisable(action)">
+              class="me-3 mdf-button" color="{{action?.action?.style}}" [disabled]="shouldDisable(action)">
               <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>
               {{action.placeholder}}
             </button>

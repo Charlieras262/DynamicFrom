@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 import { MatCalendar } from '@angular/material/datepicker';
 
@@ -7,7 +7,7 @@ import { MatCalendar } from '@angular/material/datepicker';
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss']
 })
-export class CalendarComponent implements AfterViewInit, OnInit {
+export class CalendarComponent implements AfterViewInit, OnInit, OnDestroy {
 
   @Input() minDate!: Date | null;
   @Input() maxDate!: Date | null;
@@ -17,6 +17,8 @@ export class CalendarComponent implements AfterViewInit, OnInit {
   @Output() dayClicked = new EventEmitter<Date | null>();
 
   @ViewChild(MatCalendar) calendar: MatCalendar<Date>;
+
+  private removeCaptureListener?: () => void;
 
   private today: Date = this.dateAdapter.createDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
 
@@ -59,6 +61,10 @@ export class CalendarComponent implements AfterViewInit, OnInit {
     this.setupDayClickHandler();
   }
 
+  ngOnDestroy() {
+    this.removeCaptureListener?.();
+  }
+
   onChange(date: Date | null) {
     this.dateChange.emit(date);
     this.selectedDate = date;
@@ -67,15 +73,24 @@ export class CalendarComponent implements AfterViewInit, OnInit {
   }
 
   setupDayClickHandler(): void {
-    this.renderer.listen(this.el.nativeElement, 'click', (event) => {
-      const cell = event.target.closest('.mat-calendar-body-cell');
+    const host: HTMLElement = this.el.nativeElement;
+    let dayCellClicked = false;
 
-      if (cell) {
-        const dateString = cell.getAttribute('aria-label');
-        if (dateString) {
-          this.handleDayClick(this.selectedDate);
-        }
-      }
+    // Capture phase: runs before MatCalendar handles the click, so the current view and the
+    // disabled state still describe the cell the user clicked (a month/year click switches the view).
+    const capture = (event: MouseEvent) => {
+      const cell = (event.target as HTMLElement).closest('.mat-calendar-body-cell');
+      dayCellClicked = !!cell
+        && this.calendar?.currentView === 'month'
+        && !cell.classList.contains('mat-calendar-body-disabled');
+    };
+    host.addEventListener('click', capture, true);
+    this.removeCaptureListener = () => host.removeEventListener('click', capture, true);
+
+    this.renderer.listen(host, 'click', () => {
+      if (!dayCellClicked) return;
+      dayCellClicked = false;
+      this.handleDayClick(this.selectedDate);
     });
   }
 

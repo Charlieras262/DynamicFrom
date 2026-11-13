@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit, QueryList, Type, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnDestroy, OnInit, QueryList, Type, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { OptionChild } from './models/OptionChild';
 import { AdDirective } from './directive/append-component.directive';
@@ -10,12 +10,14 @@ import { Node, CustomNode, InputNumber, Button } from './models/Node';
   templateUrl: 'mat-dynamic-form.component.html',
   styleUrls: ['mat-dynamic-form.component.scss'],
 })
-export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
+export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit, OnDestroy {
 
   @Input('structure') structure!: FormStructure;
   formGroup!: FormGroup;
   hide = true;
   differ: KeyValueDiffer<Node[], any>;
+
+  private readonly onResize = () => this.addInsets();
 
   @ViewChildren(AdDirective)
   set containers(value: QueryList<AdDirective>) {
@@ -35,7 +37,11 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
     this.structure.setFromGroup(this.formGroup);
     this.structure.validateActions?.forEach(node => this.structure.addNodeEvent(node));
     setTimeout(() => this.addInsets())
-    window.addEventListener("resize", _ => this.addInsets());
+    window.addEventListener('resize', this.onResize);
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.onResize);
   }
 
   ngDoCheck() {
@@ -51,7 +57,8 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
   ngAfterViewInit(): void {
     // Request focus to first element with autoFocus
     setTimeout(() => {
-      const autoFocusNode = this.structure.nodes.find(node => node.autoFocus) ?? this.structure.nodes[0];
+      const nodes = this.structure.nodes ?? [];
+      const autoFocusNode = nodes.find(node => node.autoFocus) ?? nodes[0];
       if (autoFocusNode) {
         const element = document.getElementById(autoFocusNode.id);
         element?.focus();
@@ -130,18 +137,16 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
     return option?.title ?? '';
   }
 
+  /**
+   * Runs the sync validators of disabled controls without enabling them. Mutating the controls here
+   * (enable/markAsTouched/disable) runs during change detection and throws ExpressionChangedAfterItHasBeenChecked.
+   */
   private hasError(): boolean {
-    let valid = false;
-    this.structure.nodes.forEach(node => {
+    return (this.structure.nodes ?? []).some(node => {
+      if (!node.disabled) return false;
       const control = this.structure.getControlById(node.id);
-      if (!node.disabled) return;
-      control?.enable();
-      control?.markAsTouched();
-      control?.updateValueAndValidity();
-      valid ||= control?.invalid;
-      control?.disable();
+      return !!control?.validator?.(control);
     });
-    return valid;
   }
 
   private createCustomNodes(containers: QueryList<AdDirective>) {

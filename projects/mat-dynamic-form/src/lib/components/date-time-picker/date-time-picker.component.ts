@@ -7,6 +7,8 @@ import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { CalendarComponent } from '../calendar/calendar.component';
 
+const CLOSE_ANIMATION_FALLBACK_MS = 300;
+
 @Component({
   selector: 'mat-date-time-picker',
   templateUrl: './date-time-picker.component.html',
@@ -59,10 +61,9 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
         this.internalControl.setValue(this.formatDateTime(date));
         this.selectedDate = date;
       } else {
-        const date = this.dateAdapter.createDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-        date.setHours(0, 0, 0, 0);
-        this.internalControl.setValue(this.formatDateTime(date));
-        this.selectedDate = date;
+        // Nothing chosen yet: keep the input empty and start the pickers on today.
+        this.internalControl.setValue('');
+        this.selectedDate = this.defaultDate();
       }
 
       this.control.statusChanges.subscribe(status => {
@@ -156,7 +157,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
         if (type === 'date' && this.selectedDate) this.calendar.activeDate = this.selectedDate;
       });
 
-      document.getElementById(`${this.node.id}TodayIcon`).classList.add('active');
+      document.getElementById(`${this.node.id}TodayIcon`)?.classList.add('active');
     }
 
     if (this.calendarOverlayRef || this.timeOverlayRef) {
@@ -168,7 +169,11 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   }
 
   onDateChange(date: Date) {
-    this.selectedDate = date;
+    // The calendar returns the day at 00:00: keep the time already chosen.
+    const previous = this.selectedDate;
+    const merged = new Date(date);
+    if (previous) merged.setHours(previous.getHours(), previous.getMinutes(), 0, 0);
+    this.selectedDate = merged;
 
     this.showDatePicker('time');
   }
@@ -180,13 +185,23 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
 
   processChange(event: any) {
     const input = event.target as HTMLInputElement;
-    const newValue = input.value ? new Date(input.value) : null;
 
-    if (!newValue.getDate()) {
+    if (!input.value) {
+      this.setErrorState(false);
+      this.selectedDate = this.defaultDate();
+      this.onChangeFn(null);
+      this.onTouchedFn();
+      return;
+    }
+
+    const newValue = new Date(input.value);
+
+    if (isNaN(newValue.getTime())) {
       this.setErrorState(true);
       return;
     }
 
+    this.selectedDate = newValue;
     this.onChangeFn(newValue);
     this.onTouchedFn();
   }
@@ -203,14 +218,20 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     this.onTouchedFn = fn;
   }
 
-  writeValue(_: any): void {
-    if (_?.toString()?.length <= 0) return;
-    this.internalControl.setValue(this.formatDateTime(_));
+  writeValue(value: any): void {
+    if (value == null || value === '') {
+      this.internalControl.setValue('', { emitEvent: false });
+      this.selectedDate = this.defaultDate();
+      return;
+    }
+    const date = new Date(value);
+    this.internalControl.setValue(this.formatDateTime(date), { emitEvent: false });
+    this.selectedDate = date;
   }
 
   private close(type: 'date' | 'time' | 'all' = 'all', result: 'confirm' | 'cancel' = 'confirm') {
     if (result === 'cancel') {
-      this.selectedDate = this.control.value ? new Date(this.control.value) : null;
+      this.selectedDate = this.control?.value ? new Date(this.control.value) : this.defaultDate();
     }
     if (type === 'all') {
       this.close('date');
@@ -219,25 +240,48 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     }
 
     const overlayRef = type === 'date' ? this.calendarOverlayRef : this.timeOverlayRef;
-    const element = overlayRef?.overlayElement;
+    if (!overlayRef) return;
+
+    if (type === 'date') {
+      this.calendarOverlayRef = null;
+    } else {
+      this.timeOverlayRef = null;
+    }
+
+    const element = overlayRef.overlayElement;
     element?.classList.remove('mdf-enter');
     element?.classList.add('mdf-leave');
 
-    element?.addEventListener('animationend', () => {
-      overlayRef?.detach();
-      overlayRef?.dispose();
-      if (type === 'date') {
-        this.calendarOverlayRef = null;
-      } else {
-        this.timeOverlayRef = null;
-      }
-    }, { once: true });
+    let disposed = false;
+    const dispose = () => {
+      if (disposed) return;
+      disposed = true;
+      overlayRef.detach();
+      overlayRef.dispose();
+    };
 
-    document.getElementById(`${this.node.id}TodayIcon`).classList.remove('active');
+    element?.addEventListener('animationend', dispose, { once: true });
+    // Fallback when the leave animation does not run (reduced motion, styles not loaded, ...).
+    setTimeout(dispose, CLOSE_ANIMATION_FALLBACK_MS);
+
+    document.getElementById(`${this.node.id}TodayIcon`)?.classList.remove('active');
   }
 
   private formatDateTime(date: Date): string {
-    return this.node.dateFormat ? this.datePipe.transform(date, this.node.dateFormat, this.locale) : this.dateAdapter.format(date, this.dateFormats.display.dateTimeInput);
+    if (this.node.dateFormat) return this.datePipe.transform(date, this.node.dateFormat, this.locale);
+
+    const dateTimeInput = this.dateFormats?.display?.dateTimeInput;
+    if (dateTimeInput) return this.dateAdapter.format(date, dateTimeInput);
+
+    // MAT_NATIVE_DATE_FORMATS has no dateTimeInput: fall back to a locale format that keeps the time.
+    return this.datePipe.transform(date, this.timePickerOnly ? 'shortTime' : 'short', this.locale);
+  }
+
+  private defaultDate(): Date {
+    const today = new Date();
+    const date = this.dateAdapter.createDate(today.getFullYear(), today.getMonth(), today.getDate());
+    date.setHours(0, 0, 0, 0);
+    return date;
   }
 
   private setErrorState(hasError: boolean) {

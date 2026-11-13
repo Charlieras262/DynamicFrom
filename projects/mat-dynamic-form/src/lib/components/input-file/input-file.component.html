@@ -5,9 +5,9 @@
         <img src="assets/img/{{getFileIcon()}}" onerror="this.error=null;this.src='assets/img/file.png'"
           class="upload-icon-size me-2">
       </div>
-      <button mat-icon-button class="close" *ngIf="['uploaded', 'error', 'valid'].includes(getState())">
-        <mat-icon (click)="removeFile()" [title]="data.removeHint ? data.removeHint : 'Remove file'" color="warn">
-          close</mat-icon>
+      <button mat-icon-button type="button" class="close" *ngIf="['uploaded', 'error', 'valid'].includes(getState())"
+        (click)="removeFile()" [title]="data.removeHint ? data.removeHint : 'Remove file'">
+        <mat-icon color="warn">close</mat-icon>
       </button>
       <div class="info" mat-line>
         <div class="cell">
@@ -16,18 +16,15 @@
           </div>
         </div>
         <div mat-line class="buttons">
-          <button id="retry" type="button" class="btn-container" *ngIf="getState() == 'error'">
-            <mat-icon (click)="saveFile()" [title]="data.retryHint ? data.retryHint : 'Retry loading file'">
-              refresh
-            </mat-icon>
-            <span [title]="data.downloadHint ? data.downloadHint : 'Download current file'"
-              (click)="downloadFile()">{{currentFile?.name}}</span>
+          <button id="retry" type="button" class="btn-container" *ngIf="getState() == 'error'" (click)="file.click()"
+            [title]="data.retryHint ? data.retryHint : 'Retry loading file'">
+            <mat-icon>refresh</mat-icon>
+            <span>{{currentFile?.name}}</span>
           </button>
-          <button type="button" class="btn-container" *ngIf="['valid'].includes(getState())">
+          <button type="button" class="btn-container" *ngIf="['valid'].includes(getState())" (click)="downloadFile()"
+            [title]="data.downloadHint ? data.downloadHint : 'Download current file'">
             <mat-icon>file_download</mat-icon>
-            <span [title]="data.downloadHint ? data.downloadHint : 'Download current file'" (click)="downloadFile()">
-              {{currentFile?.name}}
-            </span>
+            <span>{{currentFile?.name}}</span>
           </button>
           <button type="button" class="btn-container" *ngIf="['uploading', 'preparing'].includes(getState())">
             <mat-spinner diameter="15">

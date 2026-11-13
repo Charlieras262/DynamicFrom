@@ -49,7 +49,7 @@ export class TimePickerComponent implements OnInit {
 
     this.internalFormGroup.setValue({
       hours: _12Hour.hour12.toString().padStart(2, '0'),
-      minutes: this.selectedDate?.getMinutes().toString().padStart(2, '0'),
+      minutes: (this.selectedDate?.getMinutes() ?? 0).toString().padStart(2, '0'),
       meridiem: _12Hour.meridiem,
     });
 
@@ -58,8 +58,6 @@ export class TimePickerComponent implements OnInit {
     this.showClockPicker = this.node.showClockPicker ?? false;
 
     this.recalculateHeight();
-
-    this.validateTimePickerOnly();
   }
 
   justNumbers(event: Event, type: 'H' | 'M') {
@@ -246,7 +244,7 @@ export class TimePickerComponent implements OnInit {
   }
 
   isInvalidHour(hour: number): boolean {
-    if (!this.node?.minDate && !this.node?.maxDate) return false;
+    if (!this.selectedDate || (!this.node?.minDate && !this.node?.maxDate)) return false;
 
     const _24Hour = to24HourFormat(hour, this.internalFormGroup.value.meridiem);
     const date = this.selectedDate;
@@ -293,21 +291,21 @@ export class TimePickerComponent implements OnInit {
 
 
   isInvalidMeridiem(meridiem: 'AM' | 'PM'): boolean {
-    if (!this.node?.minDate && !this.node?.maxDate) return false;
+    if (!this.selectedDate || (!this.node?.minDate && !this.node?.maxDate)) return false;
 
-    const _24Hour = to24HourFormat(12, meridiem);
-    const date = this.selectedDate;
-    let invalid = false;
+    // AM covers 00:00-11:59 and PM covers 12:00-23:59.
+    const firstHour = meridiem === 'AM' ? 0 : 12;
+    const lastHour = meridiem === 'AM' ? 11 : 23;
 
-    if (this.node?.minDate && isSameDay(date, this.node.minDate)) {
-      if (_24Hour < this.node.minDate.getHours()) invalid = true;
+    if (this.node?.minDate && isSameDay(this.selectedDate, this.node.minDate)) {
+      if (lastHour < this.node.minDate.getHours()) return true;
     }
 
-    if (this.node?.maxDate && isSameDay(date, this.node.maxDate)) {
-      if (_24Hour > this.node.maxDate.getHours()) invalid = true;
+    if (this.node?.maxDate && isSameDay(this.selectedDate, this.node.maxDate)) {
+      if (firstHour > this.node.maxDate.getHours()) return true;
     }
 
-    return invalid;
+    return false;
   }
 
 
@@ -346,21 +344,5 @@ export class TimePickerComponent implements OnInit {
   private recalculateHeight(showClockPicker: boolean = this.showClockPicker) {
     const baseHeight = this.node.orientation === 'landscape' ? 200 : 202;
     this.height = showClockPicker ? baseHeight + 280 : baseHeight;
-  }
-
-  private validateTimePickerOnly() {
-    if (this.timePickerOnly) {
-      if (this.node.minDate) {
-        this.selectedDate.setDate(this.selectedDate.getDate());
-        this.selectedDate.setMonth(this.selectedDate.getMonth());
-        this.selectedDate.setFullYear(this.selectedDate.getFullYear());
-      }
-
-      if (this.node.maxDate) {
-        this.selectedDate.setDate(this.selectedDate.getDate());
-        this.selectedDate.setMonth(this.selectedDate.getMonth());
-        this.selectedDate.setFullYear(this.selectedDate.getFullYear());
-      }
-    }
   }
 }

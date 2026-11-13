@@ -22,7 +22,7 @@
 <ng-template #calendarPanel>
   <div id="{{node.id}}DateTimePicker" class="mdf-overlay-popup" (click)="$event.stopPropagation()">
     <mdf-calendar #matDFCalendar [selectedDate]="selectedDate" (dayClicked)="onDateChange($event)"
-      [dateClass]="dateClass" [minDate]="node.minDate" [maxDate]="node.maxDate">
+      [minDate]="node.minDate" [maxDate]="node.maxDate">
     </mdf-calendar>
   </div>
 </ng-template>

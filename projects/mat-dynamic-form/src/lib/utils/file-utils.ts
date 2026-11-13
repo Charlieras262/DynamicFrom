@@ -136,6 +136,8 @@ export class FileUtils {
             status: '400'
         };
 
+        expectedFileType = expectedFileType ?? [];
+
         if (expectedFileType.length != 0 && !expectedFileType.includes(this.getFileExtension(file.type))) return {
             isValid: false,
             error: 'badFileFormat',
@@ -167,7 +169,8 @@ export class FileUtils {
      */
     public static changeFileName(file: File, newName?: string): File {
         if (!newName) return file;
-        const fileName: string = `${newName}.${this.getFileExtension(file.type)}`;
+        const extension = this.getFileExtension(file.type) ?? file.name.split('.').pop();
+        const fileName: string = extension && extension !== file.name ? `${newName}.${extension}` : newName;
         return new File([file], fileName, { type: file.type });
     }
 
