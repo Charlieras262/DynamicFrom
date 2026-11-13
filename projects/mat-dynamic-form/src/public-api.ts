@@ -10,6 +10,7 @@ export * from './lib/exceptions/Exceptions';
 export * from './lib/interfaces/FormListener';
 
 export * from './lib/models/Action';
+export type { ApplyBlock } from './lib/models/base/ObjectBase';
 export * from './lib/models/DataSet';
 export * from './lib/models/FormStructure';
 export * from './lib/models/Node';

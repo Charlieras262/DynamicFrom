@@ -9,6 +9,12 @@ Older versions are listed in the [GitHub releases](https://github.com/Charlieras
 
 ## Unreleased
 
+### Features
+
+- `apply` accepts a block, like Kotlin's `apply { }`: `node.apply(n => { ... })`. The block receives the object
+  (also bound to `this` in `function` expressions) and `apply` still returns the same instance. The new
+  `ApplyBlock<T>` type lets you share blocks between nodes. See [The apply method](./getting-started/first-form.md#the-apply-method).
+
 ### Fixes
 
 - `@angular/forms`, `@angular/platform-browser` and `rxjs` (`^6.5.3 || ^7.0.0`) are declared as peer dependencies.

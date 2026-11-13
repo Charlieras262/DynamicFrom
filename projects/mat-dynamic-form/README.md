@@ -273,6 +273,25 @@ new TextArea('comments', 'Comments').apply({
 ```
 > This method can be used in all classes of the lib (like kotlin apply).
 
+Since 1.7.1 `apply` also accepts a block that receives the object (also bound to `this` in `function` expressions), for configuration that needs logic:
+
+```typescript
+
+new DatePicker('checkOut', 'Check-out').apply(picker => {
+	picker.minDate = new Date();
+	picker.maxDate = new Date(picker.minDate.getFullYear(), picker.minDate.getMonth() + 1, picker.minDate.getDate());
+});
+
+// Reusable blocks
+const required: ApplyBlock<Input> = input => {
+	input.validator = Validators.required;
+	input.errorMessage = 'This field is required';
+};
+
+new Input('email', 'Email').apply(required);
+
+```
+
 ## 🐳 Docker Support (for local development)
 
 You can run this library in a Docker container to avoid dependency conflicts (e.g., Angular 11 with Node 14) and isolate it from other Angular projects.

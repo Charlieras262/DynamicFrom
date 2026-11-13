@@ -82,7 +82,11 @@ What happens:
 ## The `apply` method
 
 Every class of the library (nodes, `FormStructure`, `OptionChild`…) has an `apply` method, similar to Kotlin's
-`apply`: it assigns the given properties and returns the same instance, so you can configure a node inline.
+`apply`: it configures the object and returns the same instance, so you can build a node inline.
+
+### With an object
+
+Assigns the given properties.
 
 ```ts
 new TextArea('comments', 'Comments').apply({
@@ -90,6 +94,58 @@ new TextArea('comments', 'Comments').apply({
   validator: Validators.maxLength(100),
   maxCharCount: 100,
 });
+```
+
+### With a block
+
+:::info New in 1.7.1
+`apply` also accepts a function.
+:::
+
+Pass a function and work with the object inside it. Use it when the configuration needs logic, method calls or
+values computed from other properties. The parameter is fully typed, and the return value is ignored.
+
+```ts
+new DatePicker('checkOut', 'Check-out').apply(picker => {
+  picker.minDate = new Date();
+  picker.maxDate = new Date(picker.minDate.getFullYear(), picker.minDate.getMonth() + 1, picker.minDate.getDate());
+  picker.hint = `Until ${picker.maxDate.toLocaleDateString()}`;
+});
+
+new Input('code', 'Code').apply(input => {
+  input.maxCharCount = 6;
+  if (this.isEditing) input.readonly();
+});
+```
+
+In an arrow function `this` keeps pointing to your component, as in the `this.isEditing` check above. With a
+`function` expression the object is also `this`, like the receiver of Kotlin's `apply { }`:
+
+```ts
+new Input('name', 'Name').apply(function () {
+  this.icon = 'person';
+  this.hint = 'Your full name';
+});
+```
+
+Both forms can be chained: `.apply({ icon: 'person' }).apply(input => ...)`.
+
+### Reusable blocks
+
+Type a block with `ApplyBlock<T>` to share the same configuration between nodes:
+
+```ts
+import { ApplyBlock, Input } from 'mat-dynamic-form';
+
+const required: ApplyBlock<Input> = input => {
+  input.validator = Validators.required;
+  input.errorMessage = 'This field is required';
+};
+
+this.formStructure.nodes = [
+  new Input('name', 'Name').apply(required),
+  new Input('email', 'Email').apply(required).apply({ icon: 'email' }),
+];
 ```
 
 :::tip
