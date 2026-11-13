@@ -1,9 +1,12 @@
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Charlieras262/DynamicFrom/Node.js%20CI) ![npm (tag)](https://img.shields.io/npm/v/mat-dynamic-form/latest) ![npm bundle size](https://img.shields.io/bundlephobia/min/mat-dynamic-form)  
+[![Node.js CI](https://github.com/Charlieras262/DynamicFrom/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/Charlieras262/DynamicFrom/actions/workflows/node.js.yml) [![Documentation](https://img.shields.io/badge/docs-1.7.0-3f51b5?logo=docusaurus&logoColor=white)](https://charlieras262.github.io/DynamicFrom/) [![npm](https://img.shields.io/npm/v/mat-dynamic-form?logo=npm)](https://www.npmjs.com/package/mat-dynamic-form) [![npm downloads](https://img.shields.io/npm/dm/mat-dynamic-form)](https://www.npmjs.com/package/mat-dynamic-form)
+
 # Mat Dynamic Form
 
   
 
 This is an Angular Material library that was created to make form designing easier and intuitive, you just need to send a json object to generate a fully functional form.
+
+📖 **Documentation:** https://charlieras262.github.io/DynamicFrom/
 
   
 
