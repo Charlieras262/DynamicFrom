@@ -39,7 +39,7 @@ const config: Config = {
           editUrl: `${repoUrl}/tree/master/projects/mat-dynamic-form-docs/`,
           versions: {
             current: {
-              label: '1.7.1',
+              label: '1.7.2',
             },
           },
         },
@@ -66,9 +66,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     announcementBar: {
-      id: 'release-1-7-1',
+      id: 'release-1-7-2',
       content:
-        'v1.7.1 is out: <code>apply</code> now accepts a block, like Kotlin. <a href="/DynamicFrom/docs/getting-started/first-form#the-apply-method">See how</a>. Coming from 1.6.x? <a href="/DynamicFrom/docs/migration/upgrade-to-1.7.0">Read the upgrade guide</a>.',
+        'v1.7.2 is out: works with moment and other date adapters, several forms per page, SSR and any Bootstrap. <a href="/DynamicFrom/docs/guides/app-compatibility">See app compatibility</a>.',
       isCloseable: true,
     },
     navbar: {
