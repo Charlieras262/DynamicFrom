@@ -1,4 +1,6 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnDestroy, OnInit, QueryList, Type, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, DoCheck, ElementRef, HostListener, Inject, Input, KeyValueDiffer, KeyValueDiffers, OnInit, PLATFORM_ID, QueryList, Type, ViewChildren } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { DATE_FALLBACK_PROVIDERS } from './utils/date-adapter-providers';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { OptionChild } from './models/OptionChild';
 import { AdDirective } from './directive/append-component.directive';
@@ -9,15 +11,16 @@ import { Node, CustomNode, InputNumber, Button } from './models/Node';
   selector: 'mat-dynamic-form',
   templateUrl: 'mat-dynamic-form.component.html',
   styleUrls: ['mat-dynamic-form.component.scss'],
+  // Uses the app's DateAdapter when it has one, the native one otherwise, without overriding the app's.
+  providers: [DATE_FALLBACK_PROVIDERS],
 })
-export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit, OnDestroy {
+export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
 
   @Input('structure') structure!: FormStructure;
   formGroup!: FormGroup;
   hide = true;
   differ: KeyValueDiffer<Node[], any>;
 
-  private readonly onResize = () => this.addInsets();
 
   @ViewChildren(AdDirective)
   set containers(value: QueryList<AdDirective>) {
@@ -27,7 +30,9 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit, 
   constructor(
     private _formBuilder: FormBuilder,
     private differs: KeyValueDiffers,
-    private resolver: ComponentFactoryResolver
+    private resolver: ComponentFactoryResolver,
+    private elementRef: ElementRef<HTMLElement>,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.differ = this.differs.find({}).create();
   }
@@ -35,13 +40,16 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit, 
   ngOnInit(): void {
     this.formGroup = this._formBuilder.group({})
     this.structure.setFromGroup(this.formGroup);
+    // Element lookups stay inside this form (several forms on a page, Shadow DOM).
+    this.structure.setRootElement(this.elementRef.nativeElement);
     this.structure.validateActions?.forEach(node => this.structure.addNodeEvent(node));
     setTimeout(() => this.addInsets())
-    window.addEventListener('resize', this.onResize);
   }
 
-  ngOnDestroy(): void {
-    window.removeEventListener('resize', this.onResize);
+  // HostListener instead of window.addEventListener: removed on destroy and safe on the server (SSR).
+  @HostListener('window:resize')
+  onResize() {
+    this.addInsets();
   }
 
   ngDoCheck() {
@@ -59,9 +67,8 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit, 
     setTimeout(() => {
       const nodes = this.structure.nodes ?? [];
       const autoFocusNode = nodes.find(node => node.autoFocus) ?? nodes[0];
-      if (autoFocusNode) {
-        const element = document.getElementById(autoFocusNode.id);
-        element?.focus();
+      if (autoFocusNode && isPlatformBrowser(this.platformId)) {
+        this.structure.getNodeElement(autoFocusNode.id)?.focus();
       }
     });
   }
@@ -75,10 +82,11 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit, 
   }
 
   input(event: Event, node: InputNumber) {
-    const input = node.getNativeElement() as HTMLInputElement;
+    const input = event.target as HTMLInputElement;
     const decimalCount = node.decimalCount ?? 2;
     const regex = new RegExp(`^-?([0-9]+)(\\.[0-9]{0,${decimalCount == 0 ? '' : decimalCount}})?`, 'gi');
-    const test = regex.exec(input.value);
+    // Locales that write decimals with a comma (1,5): store them with a dot.
+    const test = regex.exec(input.value.replace(/,/g, '.'));
     const control = this.structure.getControlById(node.id);
 
     if (!(event instanceof InputEvent) || event.inputType == 'deleteContentBackward') return;
@@ -112,7 +120,7 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit, 
     this.input(event, node);
     const decimalCount = node.decimalCount ?? 2;
     const regex = new RegExp(`^-?([0-9]+)(\\.[0-9]{0,${decimalCount == 0 ? '' : decimalCount}})?`, 'gi');
-    const input = node.getNativeElement() as HTMLInputElement;
+    const input = event.target as HTMLInputElement;
 
     if (input.value.length > 0) {
       const test = regex.exec(input.value);
@@ -175,9 +183,10 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit, 
 
   private addInsets() {
     if (!this.structure.onlyScrollContent) return;
-    const titleHeight = document.getElementById('mdf_title')?.clientHeight ?? 0;
-    const buttonsHeight = document.getElementById('mdf_buttons')?.clientHeight ?? 0;
-    const content = document.getElementById('mdf_content');
+    const host = this.elementRef.nativeElement;
+    const titleHeight = host.querySelector<HTMLElement>('#mdf_title')?.clientHeight ?? 0;
+    const buttonsHeight = host.querySelector<HTMLElement>('#mdf_buttons')?.clientHeight ?? 0;
+    const content = host.querySelector<HTMLElement>('#mdf_content');
 
     if (!content) return;
 

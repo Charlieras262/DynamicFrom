@@ -5,7 +5,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,6 +23,9 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
  * NoopAnimationsModule or HttpClientModule: those belong to the consuming application,
  * and re-importing them from a library breaks lazy-loaded modules
  * ("BrowserModule has already been loaded") and duplicates root providers.
+ *
+ * MatNativeDateModule is not imported either: its DateAdapter would replace the app's (moment, Luxon...).
+ * The components provide a fallback adapter instead (see DATE_FALLBACK_PROVIDERS).
  */
 @NgModule({
   exports: [
@@ -37,7 +40,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatNativeDateModule,
     MatProgressSpinnerModule,
     MatRadioModule,
     MatRippleModule,

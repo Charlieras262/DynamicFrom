@@ -62,3 +62,47 @@ mat-form-field {
     font-size: 22px !important;
   }
 }
+/*
+ * Layout utilities used by the template, scoped to this component (Bootstrap 5 names and values).
+ * The form must look the same with Bootstrap 5, Bootstrap 4 (no ms-/me- classes) or no Bootstrap at all,
+ * and these rules never leak to the rest of the app.
+ */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+
+  > * {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+// `.row > .col-*` so the column width wins over `.row > *` (encapsulation adds the same attribute to both).
+.row > .col-sm-12 {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 576px) {
+  .row > .col-sm-6 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+
+.d-flex { display: flex; }
+.ms-auto { margin-left: auto; }
+.me-3 { margin-right: 1rem; }
+.me-4 { margin-right: 1.5rem; }
+.mb-0 { margin-bottom: 0; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-5 { margin-top: 3rem; }
+.pt-3 { padding-top: 1rem; }

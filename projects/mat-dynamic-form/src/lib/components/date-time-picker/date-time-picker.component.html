@@ -3,7 +3,7 @@
 
   <input id="{{node.id}}" matInput [formControl]="internalControl" (change)="processChange($event)" />
 
-  <button id="{{node.id}}TodayIcon" mat-icon-button matSuffix (click)="showDatePicker(timePickerOnly ? 'time' : 'date')"
+  <button #todayIcon id="{{node.id}}TodayIcon" mat-icon-button matSuffix (click)="showDatePicker(timePickerOnly ? 'time' : 'date')"
     [attr.aria-label]="node.placeholder" type="button">
     <mat-icon>{{timePickerOnly ? 'access_time' : 'today'}}</mat-icon>
   </button>

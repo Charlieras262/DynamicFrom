@@ -6,7 +6,8 @@ import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { CalendarComponent } from '../calendar/calendar.component';
-import { toDate } from '../../utils/date-utils';
+import { parseDateWithFormat, toDate } from '../../utils/date-utils';
+import { DATE_FALLBACK_PROVIDERS } from '../../utils/date-adapter-providers';
 
 const CLOSE_ANIMATION_FALLBACK_MS = 300;
 
@@ -14,7 +15,7 @@ const CLOSE_ANIMATION_FALLBACK_MS = 300;
   selector: 'mat-date-time-picker',
   templateUrl: './date-time-picker.component.html',
   styleUrls: ['./date-time-picker.component.scss'],
-  providers: [DatePipe],
+  providers: [DatePipe, DATE_FALLBACK_PROVIDERS],
   encapsulation: ViewEncapsulation.None
 })
 export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
@@ -26,6 +27,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   @ViewChild('matDFCalendar') calendar!: CalendarComponent;
   @ViewChild('calendarPanel') calendarPanel!: TemplateRef<any>;
   @ViewChild('timePanel') timePanel!: TemplateRef<any>;
+  @ViewChild('todayIcon', { read: ElementRef }) todayIcon?: ElementRef<HTMLElement>;
 
   control!: FormControl;
   readonly internalControl: FormControl = new FormControl();
@@ -158,7 +160,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
         if (type === 'date' && this.selectedDate) this.calendar.activeDate = this.selectedDate;
       });
 
-      document.getElementById(`${this.node.id}TodayIcon`)?.classList.add('active');
+      this.todayIcon?.nativeElement.classList.add('active');
     }
 
     if (this.calendarOverlayRef || this.timeOverlayRef) {
@@ -195,9 +197,9 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
       return;
     }
 
-    const newValue = new Date(input.value);
+    const newValue = this.parseTyped(input.value);
 
-    if (isNaN(newValue.getTime())) {
+    if (!newValue) {
       this.setErrorState(true);
       return;
     }
@@ -270,7 +272,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     // Fallback when the leave animation does not run (reduced motion, styles not loaded, ...).
     setTimeout(dispose, CLOSE_ANIMATION_FALLBACK_MS);
 
-    document.getElementById(`${this.node.id}TodayIcon`)?.classList.remove('active');
+    this.todayIcon?.nativeElement.classList.remove('active');
   }
 
   private formatDateTime(date: Date): string {
@@ -282,6 +284,26 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
 
     // MAT_NATIVE_DATE_FORMATS has no dateTimeInput: fall back to a locale format that keeps the time.
     return this.datePipe.transform(date, this.timePickerOnly ? 'shortTime' : 'short', this.locale);
+  }
+
+  /**
+   * Reads typed text: first with the node's dateFormat (so 06/05/2025 means 6 May with dd/MM/yyyy), then with the
+   * app's MAT_DATE_FORMATS.parse.dateTimeInput through the DateAdapter, and finally as an ISO or browser date.
+   */
+  private parseTyped(text: string): Date | null {
+    const base = this.selectedDate ?? this.defaultDate();
+    if (this.node.dateFormat) {
+      const parsed = parseDateWithFormat(text, this.node.dateFormat, base);
+      if (parsed) return parsed;
+    }
+
+    const dateTimeInput = this.dateFormats?.parse?.dateTimeInput;
+    if (dateTimeInput) {
+      const parsed = toDate(this.dateAdapter.parse(text, dateTimeInput));
+      if (parsed) return parsed;
+    }
+
+    return toDate(text);
   }
 
   /** Today at 00:00. Internal dates are always JavaScript Date, whatever DateAdapter the app uses. */

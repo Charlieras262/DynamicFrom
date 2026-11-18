@@ -30,8 +30,11 @@ creates the `FormGroup`, wires validators and runs your actions.
 
 | mat-dynamic-form | Angular / Angular Material | Notes |
 | --- | --- | --- |
-| **1.7.x** | 11 – 16 | The app imports its own animations module. See [Upgrade to 1.7.0](./migration/upgrade-to-1.7.0.md). 1.7.1 adds `apply` with a block. |
-| 1.6.x | 11 – 16 | Imported `BrowserAnimationsModule` itself. |
+| **1.7.x** | 11 – 15 | The app imports its own animations module. See [Upgrade to 1.7.0](./migration/upgrade-to-1.7.0.md). 1.7.1 adds `apply` with a block. |
+| 1.6.x | 11 – 15 | Imported `BrowserAnimationsModule` itself. |
+
+Angular 16 cannot load the package yet (it is built in View Engine format). See
+[App compatibility](./guides/app-compatibility.md).
 
 ## Next steps
 

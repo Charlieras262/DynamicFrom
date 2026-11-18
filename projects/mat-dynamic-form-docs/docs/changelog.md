@@ -9,7 +9,38 @@ Older versions are listed in the [GitHub releases](https://github.com/Charlieras
 
 ## Unreleased
 
+### Behavior changes
+
+- `peerDependencies` now declare Angular **11 to 15** (`>=11.0.0 <16.0.0`). The package is built in View Engine
+  format, which Angular 16 cannot load because it removed `ngcc`; the old range (`<17`) let npm install it on
+  Angular 16, where it failed. Angular 16 apps now get a peer dependency warning at install time.
+
+- The library no longer registers `MatNativeDateModule` for the whole app. It used to replace the `DateAdapter`
+  your app configured (for example moment) depending on the import order. The form now uses your adapter, or the
+  native one only for its own fields. If your app has other Material datepickers and no date adapter, import
+  `MatNativeDateModule` (or another adapter) in your app.
+
+### Features
+
+- `FormStructure.getNodeElement(id)` returns the element of a node inside its own form. `Node.getNativeElement()`
+  is deprecated.
+- Configurable texts: `InputFile.selectLabel` and `allFilesLabel`, `DateRangePicker.startPlaceholder` and
+  `endPlaceholder` (defaults unchanged).
+
 ### Fixes
+
+- Several forms on one page with the same node ids, or a form inside a Shadow DOM: events, autofocus, scroll
+  sizing, `InputNumber`, file inputs and the date-time picker icon acted on the first matching element of the
+  whole document. Lookups now stay inside each form.
+- Server-side rendering: the form no longer uses `window` while rendering.
+- Typed dates in `DateTimePicker` / `TimePicker` are read with the node's `dateFormat`: `06/05/2025` with
+  `dd/MM/yyyy` is 6 May, not 5 June; `02:15 PM` with `hh:mm a` works.
+- `InputNumber` accepts a comma as decimal separator.
+- Layout without Bootstrap 5: the templates used Bootstrap 5 classes (`ms-auto`, `me-3`…) while the package
+  installs Bootstrap 4, so the action buttons were not aligned or spaced, and without Bootstrap the native file
+  input was visible. The form now has its own scoped layout styles.
+- `InputFile` icon: the inline `onerror` handler (blocked by strict CSP) had a typo that requested the generic
+  icon in an endless loop when the assets were missing. It now falls back once and hides the image.
 
 - `DateTimePicker` and `TimePicker` work with any `DateAdapter`, such as `MomentDateAdapter`. With moment, the
   versions since the date-time picker was rewritten (1.6.x to 1.7.1) failed with `this.today.setHours is not a function` (calendar with `minDate`),

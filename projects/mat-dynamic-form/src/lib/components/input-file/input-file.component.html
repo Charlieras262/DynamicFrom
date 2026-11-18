@@ -1,9 +1,9 @@
 <form method="post" action="" enctype="multipart/form-data" class="mdf_upload_file">
-  <div id="{{controlName}}-parent" class="parent" [class.error]="getControl()?.hasError('error')" [title]="data.accept">
+  <div #parent id="{{controlName}}-parent" class="parent" [class.error]="getControl()?.hasError('error')" [title]="data.accept">
     <div class="d-flex flex-row p-0 mt-2 file-container">
       <div class="file-icon-container">
-        <img src="assets/img/{{getFileIcon()}}" onerror="this.error=null;this.src='assets/img/file.png'"
-          class="upload-icon-size me-2">
+        <img [src]="'assets/img/' + getFileIcon()" (error)="onIconError()"
+          [style.visibility]="iconHidden ? 'hidden' : null" class="upload-icon-size me-2" alt="">
       </div>
       <button mat-icon-button type="button" class="close" *ngIf="['uploaded', 'error', 'valid'].includes(getState())"
         (click)="removeFile()" [title]="data.removeHint ? data.removeHint : 'Remove file'">
@@ -32,7 +32,7 @@
             <span>{{currentFile?.name}}</span>
           </button>
           <button type="button" class="btn-container" (click)="file.click()" *ngIf="getState() == 'none'">
-            <mat-icon>file_upload</mat-icon> <span>Seleccionar</span>
+            <mat-icon>file_upload</mat-icon> <span>{{data.selectLabel || 'Seleccionar'}}</span>
           </button>
           <input #file [id]="'innerFile' + controlName" type="file" (change)="handleFile($event)" [accept]="getAccept()"
             class="d-none">

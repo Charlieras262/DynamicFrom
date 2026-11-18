@@ -73,7 +73,8 @@ new InputNumber('age', 'Age').apply({ min: 18, max: 99, decimalCount: 0 });
 | `max` | — | Values above are replaced by `max`. |
 | `decimalCount` | `2` | Maximum decimals. `0` allows integers only. |
 
-Letters are removed while typing and negative numbers are allowed. The value is stored as a **string**.
+Letters are removed while typing and negative numbers are allowed. A comma is accepted as decimal separator
+(`1,5` becomes `1.5`). The value is stored as a **string**.
 
 ## Choices
 

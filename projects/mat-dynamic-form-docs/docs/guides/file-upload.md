@@ -20,7 +20,8 @@ new InputFile('avatar', 'Profile picture').apply({
 
 :::info Icons
 The field shows an icon per file type. Copy the library assets into your build as explained in
-[Installation](../getting-started/installation.mdx#4-copy-the-file-upload-icons).
+[Installation](../getting-started/installation.mdx#4-copy-the-file-upload-icons). If they are missing, the field
+tries the generic icon once and then hides the image (it does not keep requesting it).
 :::
 
 ## Properties
@@ -32,6 +33,8 @@ The field shows an icon per file type. Copy the library assets into your build a
 | `filename` | Renames the selected file (the extension is kept). |
 | `dragLabel` | Text shown while dragging. Default `Drop files here`. |
 | `downloadHint` / `removeHint` / `retryHint` | Tooltips of the download, remove and retry buttons. |
+| `selectLabel` | Text of the select button. Default `Seleccionar`. |
+| `allFilesLabel` | Text shown instead of the extensions when `accept` is empty. Default `Todos los archivos`. |
 | `onStatusChange` | Callback with a `FileChange` every time the state changes. |
 
 ## Validation

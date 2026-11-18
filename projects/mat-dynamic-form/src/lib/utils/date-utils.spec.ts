@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { isGreaterDate, isLesserDate, isSameDate, isSameDay, to12HourFormat, to24HourFormat, toDate } from './date-utils';
+import { isGreaterDate, isLesserDate, isSameDate, isSameDay, parseDateWithFormat, to12HourFormat, to24HourFormat, toDate } from './date-utils';
 
 describe('date-utils', () => {
 
@@ -26,6 +26,39 @@ describe('date-utils', () => {
       expect(toDate({ toJSDate: () => new Date(expected) })).toEqual(expected);
       expect(toDate(expected.getTime())).toEqual(expected);
       expect(toDate(expected.toISOString())).toEqual(expected);
+    });
+  });
+
+  describe('parseDateWithFormat', () => {
+    const base = new Date(2026, 10, 18, 9, 45);
+
+    it('reads day-first and month-first dates with time', () => {
+      expect(parseDateWithFormat('06/05/2025 14:30', 'dd/MM/yyyy HH:mm', base)).toEqual(new Date(2025, 4, 6, 14, 30));
+      expect(parseDateWithFormat('05-06-2025 2:30 PM', 'MM-dd-yyyy h:mm a', base)).toEqual(new Date(2025, 4, 6, 14, 30));
+      expect(parseDateWithFormat('2025.5.6 23:59:58', 'yyyy.M.d HH:mm:ss', base)).toEqual(new Date(2025, 4, 6, 23, 59, 58));
+    });
+
+    it('converts 12-hour times with AM/PM in any case', () => {
+      expect(parseDateWithFormat('12:00 am', 'hh:mm a', base)).toEqual(new Date(2026, 10, 18, 0, 0));
+      expect(parseDateWithFormat('12:05 PM', 'hh:mm a', base)).toEqual(new Date(2026, 10, 18, 12, 5));
+      expect(parseDateWithFormat('02:15 pm', 'hh:mm a', base)).toEqual(new Date(2026, 10, 18, 14, 15));
+    });
+
+    it('takes the missing parts from the base date and two-digit years as 20xx', () => {
+      expect(parseDateWithFormat('14:30', 'HH:mm', base)).toEqual(new Date(2026, 10, 18, 14, 30));
+      expect(parseDateWithFormat('06/05/25', 'dd/MM/yy', base)).toEqual(new Date(2025, 4, 6, 0, 0));
+    });
+
+    it('returns null for text that does not match or an impossible date', () => {
+      expect(parseDateWithFormat('not a date', 'dd/MM/yyyy', base)).toBeNull();
+      expect(parseDateWithFormat('31/02/2025', 'dd/MM/yyyy', base)).toBeNull();
+      expect(parseDateWithFormat('25:00', 'HH:mm', base)).toBeNull();
+      expect(parseDateWithFormat('13:00 PM', 'hh:mm a', base)).toBeNull();
+    });
+
+    it('returns null for formats it cannot read (month or weekday names)', () => {
+      expect(parseDateWithFormat('6 May 2025', 'd MMM yyyy', base)).toBeNull();
+      expect(parseDateWithFormat('Tue 06/05/2025', 'EEE dd/MM/yyyy', base)).toBeNull();
     });
   });
 

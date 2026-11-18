@@ -57,8 +57,12 @@ class NodeBase extends ObjectBase {
         this.autoFocus = autoFocus;
     }
 
+    /**
+     * @deprecated Searches the whole document, so it can return an element of another form with the same id.
+     * Use {@link FormStructure.getNodeElement} instead.
+     */
     getNativeElement() {
-        return document.getElementById(this.id);
+        return typeof document !== 'undefined' ? document.getElementById(this.id) : null;
     }
 }
 
@@ -190,6 +194,10 @@ export class InputFile extends InputBaseNode {
     public downloadHint?: string;
     public removeHint?: string;
     public retryHint?: string;
+    /** Text of the select button. Default `Seleccionar`. */
+    public selectLabel?: string;
+    /** Text shown instead of the extensions when `accept` is empty. Default `Todos los archivos`. */
+    public allFilesLabel?: string;
     public onStatusChange?: (value: FileChange) => void;
 
     constructor(id, placeholder?, value?, accept?, singleLine?, icon?, errorMessage?, disabled?, validator?, asyncValidator?, action?) {
@@ -314,6 +322,10 @@ export class TimePicker extends DateTimePicker {
 export class DateRangePicker extends InputBaseNode {
     public startDate?: string
     public endDate?: string
+    /** Placeholder of the start input. Default `Fecha Inicio`. */
+    public startPlaceholder?: string;
+    /** Placeholder of the end input. Default `Fecha Fin`. */
+    public endPlaceholder?: string;
     public minDate: Date;
     public maxDate: Date;
 

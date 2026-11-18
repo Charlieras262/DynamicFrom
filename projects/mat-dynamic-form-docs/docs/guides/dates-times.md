@@ -19,6 +19,9 @@ providers: [
 ]
 ```
 
+The library never replaces the adapter your app configured, whatever the order of your module imports. When
+the app configures none, the form uses the native adapter only for its own fields.
+
 Every date node works with it (since 1.7.2):
 
 | Node | Accepts | Value of the control |
@@ -57,6 +60,7 @@ new DateRangePicker('vacation', 'Vacation').apply({ minDate: new Date() });
 | --- | --- |
 | `startDate` / `endDate` | Initial values. |
 | `minDate` / `maxDate` | Allowed range. |
+| `startPlaceholder` / `endPlaceholder` | Texts of the two inputs. Default `Fecha Inicio` / `Fecha Fin`. |
 
 ## DateTimePicker
 
@@ -85,8 +89,10 @@ Behavior:
 - An empty control shows an empty field; the calendar opens on today.
 - Changing the day keeps the time already chosen.
 - **Cancel** or a click outside the panel keeps the previous value.
-- Typed text is parsed with `new Date(text)`. Invalid text sets the `invalidDate` error; empty text sets the value
-  to `null`.
+- Typed text is read with the node's `dateFormat` first, so with `dd/MM/yyyy` the text `06/05/2025` is 6 May.
+  Formats with month or weekday names cannot be read back; then the picker tries
+  `MAT_DATE_FORMATS.parse.dateTimeInput` (if your app defines it) and finally an ISO date. Invalid text sets the
+  `invalidDate` error; empty text sets the value to `null`.
 
 ## TimePicker
 

@@ -242,8 +242,8 @@
             <mat-label>{{node.placeholder}}</mat-label>
             <mat-date-range-input [rangePicker]="rangePicker" formGroupName="{{node.id}}" [min]="node.minDate"
               [max]="node.maxDate">
-              <input matStartDate formControlName="start" placeholder="Fecha Inicio" />
-              <input matEndDate formControlName="end" placeholder="Fecha Fin" />
+              <input matStartDate formControlName="start" [placeholder]="node.startPlaceholder || 'Fecha Inicio'" />
+              <input matEndDate formControlName="end" [placeholder]="node.endPlaceholder || 'Fecha Fin'" />
             </mat-date-range-input>
             <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
             <mat-date-range-picker #rangePicker color="primary"></mat-date-range-picker>

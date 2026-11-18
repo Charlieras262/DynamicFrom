@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Optional, Output, Self } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Optional, Output, Self, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { FileChange, FileState } from '../../interfaces/FileChange.interface';
 import { FileUtils } from '../../utils/file-utils';
@@ -18,6 +18,14 @@ export class InputFileComponent implements OnInit, ControlValueAccessor, AfterVi
   }
 
   @Input("data") data?: InputFile;
+
+  // Elements of this component only: ids can repeat when several forms are on the page.
+  @ViewChild('parent') parentRef?: ElementRef<HTMLElement>;
+  @ViewChild('file') fileRef?: ElementRef<HTMLInputElement>;
+
+  /** The type icon failed to load (assets not copied): show the generic icon, then hide it. */
+  private iconErrors = 0;
+  iconHidden = false;
 
   fileType: string = 'upload';
   controlName: string = "file";
@@ -53,7 +61,7 @@ export class InputFileComponent implements OnInit, ControlValueAccessor, AfterVi
   }
 
   ngAfterViewInit() {
-    const parent = document.getElementById(`${this.controlName}-parent`);
+    const parent = this.parentRef?.nativeElement;
     if (!parent) return;
 
     this.addListener(parent, 'dragover dragenter', _ => parent.classList.add('dragover'));
@@ -64,7 +72,8 @@ export class InputFileComponent implements OnInit, ControlValueAccessor, AfterVi
     });
 
     parent.addEventListener('drop', (event) => {
-      const file = document.getElementById(`innerFile${this.controlName}`) as HTMLInputElement;
+      const file = this.fileRef?.nativeElement;
+      if (!file) return;
 
       file.files = event.dataTransfer?.files as FileList;
       this.getControl().setValue(file.files);
@@ -83,10 +92,8 @@ export class InputFileComponent implements OnInit, ControlValueAccessor, AfterVi
 
   removeFile() {
     this.getControl().setValue(null);
-    const input = document.querySelector(`#innerFile${this.controlName}`) as HTMLInputElement;
-
-    input.value = '';
-    input.files = null;
+    const input = this.fileRef?.nativeElement;
+    if (input) input.value = '';
 
     this.currentFile = undefined;
     this.fileState = 'none';
@@ -115,7 +122,8 @@ export class InputFileComponent implements OnInit, ControlValueAccessor, AfterVi
   setFile(file: File) {
     const files = FileUtils.createFileList([file]);
 
-    const innerFile = document.getElementById(`innerFile${this.controlName}`) as HTMLInputElement;
+    const innerFile = this.fileRef?.nativeElement;
+    if (!innerFile) return;
 
     innerFile.files = files as FileList;
     this.getControl().setValue(file);
@@ -124,15 +132,21 @@ export class InputFileComponent implements OnInit, ControlValueAccessor, AfterVi
 
   getAcceptedTypes(): string {
     if (!this.data.accept?.length) {
-      return 'Todos los archivos';
+      return this.data.allFilesLabel ?? 'Todos los archivos';
     }
     const types = this.data.accept.slice(0, 4);
     return types.map(item => item).join(', ');
   }
 
   getFileIcon(): string {
+    if (this.iconErrors > 0) return 'file.png';
     if (this.fileType == 'upload') return 'upload.png';
     return FileUtils.getFileIcon(this.fileType);
+  }
+
+  onIconError() {
+    this.iconErrors++;
+    if (this.iconErrors > 1) this.iconHidden = true;
   }
 
   private handleInputFile(file: File) {

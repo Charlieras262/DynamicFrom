@@ -30,6 +30,7 @@ export class FormStructure extends ObjectBase {
     validateEvenDisabled?: boolean = false;
 
     private formGroup?: FormGroup;
+    private rootElement?: HTMLElement;
 
     constructor(title?: string, nodes?, validateActions?: Button[]) {
         super();
@@ -50,6 +51,31 @@ export class FormStructure extends ObjectBase {
      */
     setFromGroup(formGroup: FormGroup): void {
         this.formGroup = formGroup
+    }
+
+    /**
+     * Sets the element that contains the rendered form. Element lookups (events, focus) are limited to it, so
+     * several forms with the same node ids can live on one page, also inside a Shadow DOM.
+     * Called by `<mat-dynamic-form>`; apps do not need to call it.
+     */
+    setRootElement(element: HTMLElement): void {
+        this.rootElement = element;
+    }
+
+    /**
+     * Returns the DOM element of a node inside this form, or null if it is not rendered.
+     *
+     * @param nodeId The identifier of the node.
+     */
+    getNodeElement(nodeId: string): HTMLElement | null {
+        if (this.rootElement) {
+            const elements = this.rootElement.querySelectorAll<HTMLElement>('[id]');
+            for (let i = 0; i < elements.length; i++) {
+                if (elements[i].id === nodeId) return elements[i];
+            }
+            return null;
+        }
+        return typeof document !== 'undefined' ? document.getElementById(nodeId) : null;
     }
 
     /**
@@ -372,7 +398,7 @@ export class FormStructure extends ObjectBase {
      */
     addNodeEvent(node: Node) {
         setTimeout(() => {
-            const item = document.getElementById(node.id);
+            const item = this.getNodeElement(node.id);
             const actions = node.action instanceof Array ? node.action : [node.action];
 
             if (node instanceof Button) {

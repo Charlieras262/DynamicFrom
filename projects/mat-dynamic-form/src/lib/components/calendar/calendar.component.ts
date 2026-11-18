@@ -1,11 +1,13 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 import { MatCalendar } from '@angular/material/datepicker';
+import { DATE_FALLBACK_PROVIDERS } from '../../utils/date-adapter-providers';
 
 @Component({
   selector: 'mdf-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.scss']
+  styleUrls: ['./calendar.component.scss'],
+  providers: [DATE_FALLBACK_PROVIDERS],
 })
 /**
  * Calendar of the date-time picker. Works with whatever DateAdapter the app provides (native Date, moment, ...):

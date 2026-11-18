@@ -194,3 +194,10 @@
     max-width: 100%;
   }
 }
+/* Layout utilities used by the template, scoped to this component (works with or without Bootstrap). */
+.d-flex { display: flex; }
+.flex-row { flex-direction: row; }
+.d-none { display: none !important; }
+.p-0 { padding: 0; }
+.mt-2 { margin-top: 0.5rem; }
+.me-2 { margin-right: 0.5rem; }
