@@ -25,6 +25,10 @@ describe('package.json', () => {
     });
   });
 
+  it('supports Angular 11 to 15 only (the View Engine build needs ngcc, removed in Angular 16)', () => {
+    expect(pkg.peerDependencies['@angular/core']).toBe('>=11.0.0 <16.0.0');
+  });
+
   it('uses the same supported range for every Angular peer dependency', () => {
     const coreRange = pkg.peerDependencies['@angular/core'];
     ANGULAR_PEERS.forEach(name => {
