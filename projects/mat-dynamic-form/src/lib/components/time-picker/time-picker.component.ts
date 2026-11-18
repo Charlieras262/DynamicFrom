@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { isSameDay, to12HourFormat, to24HourFormat } from '../../utils/date-utils';
+import { isSameDay, to12HourFormat, to24HourFormat, toDate } from '../../utils/date-utils';
 import { DateTimePicker, TimePicker } from '../../models/Node';
 import { fadeScaleAnimation, fadeTransform } from '../../animations/clock.animation';
 
@@ -44,7 +44,18 @@ export class TimePickerComponent implements OnInit {
     });
   }
 
+  /** The node limits as JavaScript Date: apps may pass moment or other date objects. */
+  private get minLimit(): Date | null {
+    return toDate(this.node?.minDate);
+  }
+
+  private get maxLimit(): Date | null {
+    return toDate(this.node?.maxDate);
+  }
+
   ngOnInit() {
+    this.selectedDate = toDate(this.selectedDate);
+
     const _12Hour = to12HourFormat(this.selectedDate?.getHours() ?? 0);
 
     this.internalFormGroup.setValue({
@@ -115,8 +126,8 @@ export class TimePickerComponent implements OnInit {
     );
 
     // Normalize against minDate and maxDate
-    const minDate = this.node.minDate ?? null;
-    const maxDate = this.node.maxDate ?? null;
+    const minDate = this.minLimit;
+    const maxDate = this.maxLimit;
 
     if (minDate && newDate < minDate) {
       this.selectedDate = new Date(minDate);
@@ -244,22 +255,22 @@ export class TimePickerComponent implements OnInit {
   }
 
   isInvalidHour(hour: number): boolean {
-    if (!this.selectedDate || (!this.node?.minDate && !this.node?.maxDate)) return false;
+    if (!this.selectedDate || (!this.minLimit && !this.maxLimit)) return false;
 
     const _24Hour = to24HourFormat(hour, this.internalFormGroup.value.meridiem);
     const date = this.selectedDate;
     let invalid = false;
 
     // If minimum exists and the day matches the minimum
-    if (this.node?.minDate && isSameDay(date, this.node.minDate)) {
-      if (_24Hour < this.node.minDate.getHours()) {
+    if (this.minLimit && isSameDay(date, this.minLimit)) {
+      if (_24Hour < this.minLimit.getHours()) {
         invalid = true;
       }
     }
 
     // If maximum exists and the day matches the maximum
-    if (this.node?.maxDate && isSameDay(date, this.node.maxDate)) {
-      if (_24Hour > this.node.maxDate.getHours()) {
+    if (this.maxLimit && isSameDay(date, this.maxLimit)) {
+      if (_24Hour > this.maxLimit.getHours()) {
         invalid = true;
       }
     }
@@ -271,18 +282,18 @@ export class TimePickerComponent implements OnInit {
     if (!this.selectedDate) return false;
 
     // In case just minDate is defined
-    if (this.node?.minDate && isSameDay(this.selectedDate, this.node.minDate)) {
+    if (this.minLimit && isSameDay(this.selectedDate, this.minLimit)) {
       // si es la misma hora mínima, no dejar seleccionar minutos menores
-      if (this.selectedDate.getHours() === this.node.minDate.getHours()) {
-        return minute < this.node.minDate.getMinutes();
+      if (this.selectedDate.getHours() === this.minLimit.getHours()) {
+        return minute < this.minLimit.getMinutes();
       }
     }
 
     // In case just maxDate is defined
-    if (this.node?.maxDate && isSameDay(this.selectedDate, this.node.maxDate)) {
+    if (this.maxLimit && isSameDay(this.selectedDate, this.maxLimit)) {
       // si es la misma hora máxima, no dejar seleccionar minutos mayores
-      if (this.selectedDate.getHours() === this.node.maxDate.getHours()) {
-        return minute > this.node.maxDate.getMinutes();
+      if (this.selectedDate.getHours() === this.maxLimit.getHours()) {
+        return minute > this.maxLimit.getMinutes();
       }
     }
 
@@ -291,18 +302,18 @@ export class TimePickerComponent implements OnInit {
 
 
   isInvalidMeridiem(meridiem: 'AM' | 'PM'): boolean {
-    if (!this.selectedDate || (!this.node?.minDate && !this.node?.maxDate)) return false;
+    if (!this.selectedDate || (!this.minLimit && !this.maxLimit)) return false;
 
     // AM covers 00:00-11:59 and PM covers 12:00-23:59.
     const firstHour = meridiem === 'AM' ? 0 : 12;
     const lastHour = meridiem === 'AM' ? 11 : 23;
 
-    if (this.node?.minDate && isSameDay(this.selectedDate, this.node.minDate)) {
-      if (lastHour < this.node.minDate.getHours()) return true;
+    if (this.minLimit && isSameDay(this.selectedDate, this.minLimit)) {
+      if (lastHour < this.minLimit.getHours()) return true;
     }
 
-    if (this.node?.maxDate && isSameDay(this.selectedDate, this.node.maxDate)) {
-      if (firstHour > this.node.maxDate.getHours()) return true;
+    if (this.maxLimit && isSameDay(this.selectedDate, this.maxLimit)) {
+      if (firstHour > this.maxLimit.getHours()) return true;
     }
 
     return false;

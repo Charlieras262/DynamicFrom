@@ -255,17 +255,17 @@ describe('FormStructure', () => {
 
     it('fires button click actions once per click', fakeAsync(() => {
       const button = document.createElement('button');
-      button.id = 'go';
+      button.id = 'fs-click-node';
       button.setAttribute('data-test-node', '');
       document.body.appendChild(button);
       const onEvent = jasmine.createSpy('onEvent');
       const onClick = jasmine.createSpy('onClick');
-      build([new Button('go', 'Go', { onEvent, callback: { onClick, onEvent: () => { } } })]);
+      build([new Button('fs-click-node', 'Go', { onEvent, callback: { onClick, onEvent: () => { } } })]);
       tick();
 
       button.click();
       expect(onEvent).toHaveBeenCalledTimes(1);
-      expect(onClick).toHaveBeenCalledOnceWith('go');
+      expect(onClick).toHaveBeenCalledOnceWith('fs-click-node');
     }));
   });
 

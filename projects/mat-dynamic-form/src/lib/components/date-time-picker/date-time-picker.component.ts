@@ -6,6 +6,7 @@ import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { CalendarComponent } from '../calendar/calendar.component';
+import { toDate } from '../../utils/date-utils';
 
 const CLOSE_ANIMATION_FALLBACK_MS = 300;
 
@@ -56,7 +57,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
       this.control = this.ngControl.control as FormControl;
 
       if (this.control.value) {
-        const date = new Date(this.control.value);
+        const date = toDate(this.control.value) ?? this.defaultDate();
 
         this.internalControl.setValue(this.formatDateTime(date));
         this.selectedDate = date;
@@ -168,10 +169,10 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     show();
   }
 
-  onDateChange(date: Date) {
-    // The calendar returns the day at 00:00: keep the time already chosen.
+  onDateChange(date: unknown) {
+    // The calendar emits the adapter's date type (Date, moment, ...) at 00:00: keep the time already chosen.
     const previous = this.selectedDate;
-    const merged = new Date(date);
+    const merged = toDate(date) ?? this.defaultDate();
     if (previous) merged.setHours(previous.getHours(), previous.getMinutes(), 0, 0);
     this.selectedDate = merged;
 
@@ -224,14 +225,19 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
       this.selectedDate = this.defaultDate();
       return;
     }
-    const date = new Date(value);
+    const date = toDate(value);
+    if (!date) {
+      this.internalControl.setValue('', { emitEvent: false });
+      this.selectedDate = this.defaultDate();
+      return;
+    }
     this.internalControl.setValue(this.formatDateTime(date), { emitEvent: false });
     this.selectedDate = date;
   }
 
   private close(type: 'date' | 'time' | 'all' = 'all', result: 'confirm' | 'cancel' = 'confirm') {
     if (result === 'cancel') {
-      this.selectedDate = this.control?.value ? new Date(this.control.value) : this.defaultDate();
+      this.selectedDate = toDate(this.control?.value) ?? this.defaultDate();
     }
     if (type === 'all') {
       this.close('date');
@@ -271,17 +277,17 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     if (this.node.dateFormat) return this.datePipe.transform(date, this.node.dateFormat, this.locale);
 
     const dateTimeInput = this.dateFormats?.display?.dateTimeInput;
-    if (dateTimeInput) return this.dateAdapter.format(date, dateTimeInput);
+    // The adapter may not work with Date objects (e.g. MomentDateAdapter): convert to its type first.
+    if (dateTimeInput) return this.dateAdapter.format(this.dateAdapter.deserialize(date), dateTimeInput);
 
     // MAT_NATIVE_DATE_FORMATS has no dateTimeInput: fall back to a locale format that keeps the time.
     return this.datePipe.transform(date, this.timePickerOnly ? 'shortTime' : 'short', this.locale);
   }
 
+  /** Today at 00:00. Internal dates are always JavaScript Date, whatever DateAdapter the app uses. */
   private defaultDate(): Date {
     const today = new Date();
-    const date = this.dateAdapter.createDate(today.getFullYear(), today.getMonth(), today.getDate());
-    date.setHours(0, 0, 0, 0);
-    return date;
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
   }
 
   private setErrorState(hasError: boolean) {

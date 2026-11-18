@@ -8,6 +8,27 @@ title: Dates and times
 The library uses Angular Material's datepicker and includes `MatNativeDateModule`, so dates are JavaScript
 `Date` objects and no extra date adapter is required.
 
+## Using moment or another DateAdapter
+
+Apps can provide their own `DateAdapter`, for example moment:
+
+```ts
+providers: [
+  { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+  { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
+]
+```
+
+Every date node works with it (since 1.7.2):
+
+| Node | Accepts | Value of the control |
+| --- | --- | --- |
+| `DatePicker`, `DateRangePicker` | The adapter's dates (moment…) | The adapter's dates, as Angular Material does. |
+| `DateTimePicker`, `TimePicker` | `Date`, moment, Luxon, Day.js, ISO strings or timestamps, for the value and for `minDate` / `maxDate` | Always a JavaScript `Date`. Convert it with `moment(value)` if you need a moment. |
+
+The date-time picker uses the adapter only to draw the calendar and, if you define
+`MAT_DATE_FORMATS.display.dateTimeInput`, to format the text. Hours and minutes are handled with JavaScript `Date`.
+
 ## DatePicker
 
 ```ts

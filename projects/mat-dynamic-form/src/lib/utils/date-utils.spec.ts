@@ -1,6 +1,33 @@
-import { isGreaterDate, isLesserDate, isSameDate, isSameDay, to12HourFormat, to24HourFormat } from './date-utils';
+import * as moment from 'moment';
+import { isGreaterDate, isLesserDate, isSameDate, isSameDay, to12HourFormat, to24HourFormat, toDate } from './date-utils';
 
 describe('date-utils', () => {
+
+  describe('toDate', () => {
+    it('returns null for empty or invalid values', () => {
+      expect(toDate(null)).toBeNull();
+      expect(toDate(undefined)).toBeNull();
+      expect(toDate('')).toBeNull();
+      expect(toDate('not a date')).toBeNull();
+      expect(toDate(new Date('invalid'))).toBeNull();
+      expect(toDate(moment.invalid())).toBeNull();
+    });
+
+    it('copies JavaScript dates', () => {
+      const original = new Date(2025, 4, 6, 14, 30);
+      const copy = toDate(original);
+      expect(copy).toEqual(original);
+      expect(copy).not.toBe(original);
+    });
+
+    it('converts moment, Luxon-like objects, strings and timestamps', () => {
+      const expected = new Date(2025, 4, 6, 14, 30);
+      expect(toDate(moment([2025, 4, 6, 14, 30]))).toEqual(expected);
+      expect(toDate({ toJSDate: () => new Date(expected) })).toEqual(expected);
+      expect(toDate(expected.getTime())).toEqual(expected);
+      expect(toDate(expected.toISOString())).toEqual(expected);
+    });
+  });
 
   it('to12HourFormat converts every hour of the day', () => {
     expect(to12HourFormat(0)).toEqual({ hour12: 12, meridiem: 'AM' });

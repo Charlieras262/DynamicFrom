@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 import { MatCalendar } from '@angular/material/datepicker';
 
@@ -7,55 +7,46 @@ import { MatCalendar } from '@angular/material/datepicker';
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss']
 })
-export class CalendarComponent implements AfterViewInit, OnInit, OnDestroy {
+/**
+ * Calendar of the date-time picker. Works with whatever DateAdapter the app provides (native Date, moment, ...):
+ * dates are only read and compared through the adapter. Inputs accept any value the adapter can deserialize
+ * (for example a JavaScript Date), and the outputs emit the adapter's date type.
+ */
+export class CalendarComponent<D = any> implements AfterViewInit, OnDestroy {
 
-  @Input() minDate!: Date | null;
-  @Input() maxDate!: Date | null;
-  @Input() selectedDate: Date | null = null;
+  @Input() minDate!: D | Date | null;
+  @Input() maxDate!: D | Date | null;
+  @Input() selectedDate: D | Date | null = null;
 
-  @Output() dateChange = new EventEmitter<Date | null>();
-  @Output() dayClicked = new EventEmitter<Date | null>();
+  @Output() dateChange = new EventEmitter<D | null>();
+  @Output() dayClicked = new EventEmitter<D | null>();
 
-  @ViewChild(MatCalendar) calendar: MatCalendar<Date>;
+  @ViewChild(MatCalendar) calendar: MatCalendar<D>;
 
   private removeCaptureListener?: () => void;
 
-  private today: Date = this.dateAdapter.createDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+  private readonly today: D = this.dateAdapter.today();
 
-  set activeDate(date: Date) {
-    this.calendar.activeDate = date;
+  set activeDate(date: D | Date) {
+    // MatCalendar.activeDate does not deserialize: convert to the adapter's type first.
+    const value = this.dateAdapter.deserialize(date);
+    if (value && this.dateAdapter.isValid(value)) this.calendar.activeDate = value;
   }
 
-  get activeDate(): Date {
+  get activeDate(): D | Date {
     return this.calendar.activeDate;
   }
 
-  readonly dateClass = (date: Date) => {
+  readonly dateClass = (date: D) => {
     if (this.selectedDate != null) return '';
-    if (
-      this.selectedDate === null &&
-      this.today &&
-      date.toDateString() === this.today.toDateString()
-    ) {
-      return 'mat-calendar-body-initial';
-    }
-    return '';
+    return this.dateAdapter.sameDate(date, this.today) ? 'mat-calendar-body-initial' : '';
   }
 
   constructor(
     private renderer: Renderer2,
     private el: ElementRef,
-    private dateAdapter: DateAdapter<Date>
+    private dateAdapter: DateAdapter<D>
   ) { }
-
-  ngOnInit() {
-    if (this.minDate) {
-      this.today.setHours(
-        this.minDate?.getHours() ?? 12,
-        this.minDate?.getMinutes() ?? 0
-      );
-    }
-  }
 
   ngAfterViewInit() {
     this.setupDayClickHandler();
@@ -65,7 +56,7 @@ export class CalendarComponent implements AfterViewInit, OnInit, OnDestroy {
     this.removeCaptureListener?.();
   }
 
-  onChange(date: Date | null) {
+  onChange(date: D | null) {
     this.dateChange.emit(date);
     this.selectedDate = date;
 
@@ -94,7 +85,7 @@ export class CalendarComponent implements AfterViewInit, OnInit, OnDestroy {
     });
   }
 
-  handleDayClick(date: Date | null): void {
-    this.dayClicked.emit(date);
+  handleDayClick(date: D | Date | null): void {
+    this.dayClicked.emit(date == null ? null : this.dateAdapter.deserialize(date));
   }
 }

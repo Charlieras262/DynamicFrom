@@ -7,6 +7,17 @@ title: Changelog
 
 Older versions are listed in the [GitHub releases](https://github.com/Charlieras262/DynamicFrom/releases).
 
+## Unreleased
+
+### Fixes
+
+- `DateTimePicker` and `TimePicker` work with any `DateAdapter`, such as `MomentDateAdapter`. With moment, the
+  versions since the date-time picker was rewritten (1.6.x to 1.7.1) failed with `this.today.setHours is not a function` (calendar with `minDate`),
+  `date.toDateString is not a function` (drawing the days), `date.setHours is not a function` (opening an empty
+  picker) or `date.clone is not a function` (formatting with `dateTimeInput`). The calendar now compares dates
+  with the adapter, and values, `minDate` and `maxDate` may be `Date`, moment, Luxon, Day.js, ISO strings or
+  timestamps. See [Using moment or another DateAdapter](./guides/dates-times.md#using-moment-or-another-dateadapter).
+
 ## 1.7.1
 
 _2026-11-13_

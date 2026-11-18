@@ -1,3 +1,21 @@
+/**
+ * Converts any date value the app may use (JavaScript Date, moment, Luxon, Day.js, ISO string or timestamp) to a
+ * new JavaScript Date. Returns null for empty or invalid values.
+ *
+ * The date-time components work with JavaScript Date internally, whatever DateAdapter the app provides.
+ */
+export const toDate = (value: any): Date | null => {
+  if (value == null || value === '') return null;
+
+  let date: Date;
+  if (value instanceof Date) date = new Date(value.getTime());
+  else if (typeof value.toDate === 'function') date = value.toDate();          // moment, Day.js
+  else if (typeof value.toJSDate === 'function') date = value.toJSDate();      // Luxon
+  else date = new Date(typeof value === 'object' ? value.valueOf() : value);   // string, number, other objects
+
+  return date instanceof Date && !isNaN(date.getTime()) ? new Date(date.getTime()) : null;
+};
+
 export const to12HourFormat = (hour24: number): { hour12: number, meridiem: 'AM' | 'PM' } => {
   let meridiem: 'AM' | 'PM' = 'AM';
   let hour12 = hour24;
