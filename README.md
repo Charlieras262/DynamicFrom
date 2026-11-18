@@ -10,6 +10,14 @@ This is an Angular Material library that was created to make form designing easi
 
   
 
+## Compatibility
+
+| mat-dynamic-form | Angular / Angular Material |
+| --- | --- |
+| 1.7.x | 11 – 15 |
+
+Angular 16 and newer cannot load this version (it is built in View Engine format). It works with any Material `DateAdapter` (native, moment, Luxon…), several forms per page, Shadow DOM, SSR and with or without Bootstrap. See [App compatibility](https://charlieras262.github.io/DynamicFrom/docs/guides/app-compatibility).
+
 ## Installation
 
 ```
