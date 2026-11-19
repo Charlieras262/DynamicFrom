@@ -1,0 +1,14 @@
+// Angular 11 – 13 theme setup, as documented in the installation guide.
+@import '~@angular/material/theming';
+@import 'mat-dynamic-form/src/lib/styles/theme';
+
+@include mat-core();
+
+$app-theme: mat-light-theme((
+  color: (primary: mat-palette($mat-indigo, 800), accent: mat-palette($mat-amber, 500), warn: mat-palette($mat-red, 500))
+));
+
+@include angular-material-theme($app-theme);
+@include mat-dynamic-form-theme($app-theme);
+
+body { margin: 16px; font-family: Roboto, sans-serif; }

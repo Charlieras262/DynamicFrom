@@ -1,0 +1,14 @@
+// Angular 14 – 15 theme setup, as documented in the installation guide.
+@use '@angular/material' as mat;
+@import 'mat-dynamic-form/src/lib/styles/14/theme';
+
+@include mat.core();
+
+$app-theme: mat.define-light-theme((
+  color: (primary: mat.define-palette(mat.$indigo-palette, 800), accent: mat.define-palette(mat.$amber-palette, 500))
+));
+
+@include mat.all-component-themes($app-theme);
+@include mat-dynamic-form-theme($app-theme);
+
+body { margin: 16px; font-family: Roboto, sans-serif; }

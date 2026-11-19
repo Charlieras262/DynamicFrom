@@ -1,0 +1,50 @@
+# Installs the packed library in a fresh Angular app of every supported version (11-15), builds it and runs the
+# in-browser smoke scenario (tests/consumers) with the native and the moment DateAdapter.
+
+name: Consumer apps
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        angular: [11, 12, 13, 14, 15]
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # Node 14 is supported by every Angular version from 11 to 15.
+      - name: Setup Node.js 14
+        uses: actions/setup-node@v7
+        with:
+          node-version: 14.x
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm run copy-assets
+
+      - name: Angular ${{ matrix.angular }} app
+        env:
+          WORK: ${{ runner.temp }}/consumers
+          CHROME_BIN: /usr/bin/google-chrome
+        run: tests/consumers/run.sh ${{ matrix.angular }}
+
+      - name: Keep results and screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: angular-${{ matrix.angular }}
+          path: |
+            ${{ runner.temp }}/consumers/ng${{ matrix.angular }}/result-*.json
+            ${{ runner.temp }}/consumers/ng${{ matrix.angular }}/screenshot-*.png
+            ${{ runner.temp }}/consumers/ng${{ matrix.angular }}/build.log
+          if-no-files-found: ignore

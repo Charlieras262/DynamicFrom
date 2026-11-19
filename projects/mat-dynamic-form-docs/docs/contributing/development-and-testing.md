@@ -44,6 +44,20 @@ CHROME_BIN=/usr/bin/google-chrome-stable npm run test:lib
 
 Releases are published only if this suite passes.
 
+## Test in real apps (Angular 11 – 15)
+
+`tests/consumers/run.sh` creates a fresh app with `ng new` of each Angular version, installs the packed library
+like a user would, builds it and runs an in-browser scenario (all nodes, pickers, file upload, two forms with
+the same ids) with the native and the moment adapter.
+
+```bash
+npm run build && npm run copy-assets
+CHROME_BIN=/usr/bin/google-chrome-stable tests/consumers/run.sh 11 12 13 14 15
+```
+
+Use Node 14. Results and screenshots are written to `$WORK/ng<version>/` (default `/tmp/mdf-consumers`). The
+**Consumer apps** workflow runs it on every push and pull request.
+
 ## Build the library
 
 ```bash
