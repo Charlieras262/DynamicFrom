@@ -105,6 +105,12 @@ Without an animations module Angular Material components throw an error such as
 The library ships a Sass mixin that styles the date-time picker, the file upload and the icons with your
 Angular Material theme. Pick the import that matches your Angular version.
 
+:::warning Version 1.5.x has no theme
+The theme files (`src/lib/styles/theme.scss`) ship since **1.6.0**. With 1.5.x installed, this import fails with
+`SassError: Can't find stylesheet to import`. Check the installed version with `npm ls mat-dynamic-form` and either
+upgrade, or remove the import and the `@include` while you stay on 1.5.x.
+:::
+
 <Tabs groupId="angular-version">
   <TabItem value="lt14" label="Angular 11 – 13" default>
 

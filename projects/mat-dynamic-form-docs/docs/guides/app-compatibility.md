@@ -24,6 +24,7 @@ How the library behaves with the different ways an application can be set up. Ev
 | Angular 11 – 15 | ✅ | The package uses the View Engine format, compiled by `ngcc` on Angular 12 – 15. Every version is tested with a fresh app (`tests/consumers`). |
 | Angular Material 15 (MDC) | ✅ | `standard` and `legacy` appearances look like `fill`; use `fill` or `outline`. |
 | No Material Icons font | ⚠️ | Icons show as text. `ng add @angular/material` adds the font. |
+| Theme import with 1.5.x | ❌ | The theme files exist since 1.6.0: `Can't find stylesheet to import`. See [Installation](../getting-started/installation.mdx#3-include-the-theme). |
 | Angular 16+ | ❌ | Angular 16 removed `ngcc`, so it cannot load View Engine libraries. Since 1.7.2 the peer dependencies say so (`<16.0.0`) and npm warns at install time. |
 | Zoneless change detection | ❌ | The form relies on zone.js to update after its internal timers. |
 
