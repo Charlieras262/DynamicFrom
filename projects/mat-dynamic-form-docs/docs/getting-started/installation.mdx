@@ -18,6 +18,14 @@ ng add @angular/material
 npm install mat-dynamic-form
 ```
 
+The form uses Material icons (calendar, clock, show password, file buttons). `ng add @angular/material` adds the
+**Material Icons** font to `index.html`; if you install Material by hand, add it yourself, or the icons show as
+text such as `visibility_off`:
+
+```html title="index.html"
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+```
+
 ## 2. Import the module and an animations module
 
 Angular Material needs an animations module. **Since 1.7.0 the library does not import one for you**: your
@@ -132,7 +140,8 @@ $app-theme: mat-light-theme((
   </TabItem>
 </Tabs>
 
-The theme also includes Bootstrap's grid, which the form uses for its two-column layout.
+The theme also imports Bootstrap's CSS for backward compatibility. The form itself does not need it: its layout
+uses its own scoped styles since 1.7.2.
 
 ## 4. Copy the file upload icons
 

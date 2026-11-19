@@ -14,11 +14,11 @@
           (change)="normalizeTime()" />
       </div>
       <div class="mdf-ampm">
-        <button class="mdf-am" [class.selected]="internalFormGroup.value.meridiem === 'AM'" (click)="setAMPM(true)"
+        <button type="button" class="mdf-am" [class.selected]="internalFormGroup.value.meridiem === 'AM'" (click)="setAMPM(true)"
           matRipple>
           AM
         </button>
-        <button class="mdf-pm" [class.selected]="internalFormGroup.value.meridiem === 'PM'" (click)="setAMPM(false)"
+        <button type="button" class="mdf-pm" [class.selected]="internalFormGroup.value.meridiem === 'PM'" (click)="setAMPM(false)"
           matRipple>
           PM
         </button>
@@ -60,10 +60,10 @@
       <mat-icon style="margin-top: -2px; align-items: start;">{{!showClockPicker ? 'schedule' : 'keyboard'}}</mat-icon>
     </button>
     <div class="mdf-buttons">
-      <button mat-button (click)="onCloseRequest.emit('cancel')" color="primary">
+      <button type="button" mat-button (click)="onCloseRequest.emit('cancel')" color="primary">
         {{node.cancelLabel}}
       </button>
-      <button mat-button color="primary" (click)="confirm()" [disabled]="internalFormGroup.invalid">
+      <button type="button" mat-button color="primary" (click)="confirm()" [disabled]="internalFormGroup.invalid">
         {{node.acceptLabel}}
       </button>
     </div>

@@ -311,12 +311,13 @@ export class FormStructure extends ObjectBase {
         if (node instanceof DateRangePicker) return this.createDateRangePickerControl(node);
 
         const value = node instanceof Dropdown || node instanceof RadioGroup || node instanceof AutoComplete ? node.selectedValue : node.value;
-        this.setAutoCompleteValue(node);
 
-        if (this.formGroup?.contains(node.id)) {
+        if (this.hasControl(node.id)) {
             const control = this.getControlById(node.id);
             if (node.disabled) control.disable(); else control.enable();
-            return control.setValue(value ?? '');
+            control.setValue(value ?? '');
+            // After the control has its value: options given as an array resolve synchronously.
+            return this.setAutoCompleteValue(node);
         }
 
         const control = new FormControl({ value: value ?? '', disabled: node.disabled }, node.validator, node.asyncValidator);
@@ -325,6 +326,8 @@ export class FormStructure extends ObjectBase {
         this.formGroup?.addControl(node.id, control);
 
         this.addNodeEvent(node);
+        // After addControl: options given as an array resolve synchronously and need the control.
+        this.setAutoCompleteValue(node);
 
         if (node instanceof AutoComplete) {
             control.valueChanges.pipe(
@@ -511,9 +514,18 @@ export class FormStructure extends ObjectBase {
         control.setAsyncValidators(validators)
         const newValidator = control.asyncValidator;
 
-        control.setAsyncValidators([oldValidator, newValidator]);
+        // Angular 11 fails on null entries: keep only the validators that exist.
+        control.setAsyncValidators([oldValidator, newValidator].filter(validator => !!validator));
 
         control.updateValueAndValidity()
+    }
+
+    /**
+     * Whether the form group has a control with this id. Unlike `FormGroup.contains`, it is also true for
+     * disabled controls, so remapValues can enable them again instead of creating them twice.
+     */
+    private hasControl(id: string): boolean {
+        return !!this.formGroup?.controls[id];
     }
 
     /**
@@ -594,7 +606,7 @@ export class FormStructure extends ObjectBase {
     }
 
     private createDateRangePickerControl(node: DateRangePicker) {
-        if (this.formGroup?.contains(node.id)) {
+        if (this.hasControl(node.id)) {
             const group = this.getControlById(node.id) as FormGroup;
             if (node.disabled) group.disable(); else group.enable();
             return;

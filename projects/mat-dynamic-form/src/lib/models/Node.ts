@@ -211,6 +211,10 @@ export class InputFile extends InputBaseNode {
 }
 
 export class InputPassword extends Input {
+    /** Accessible name of the toggle while the password is hidden. Default `Show password`. */
+    public showPasswordLabel?: string;
+    /** Accessible name of the toggle while the password is shown. Default `Hide password`. */
+    public hidePasswordLabel?: string;
 
     constructor(id, placeholder?, value?, maxCharCount?, singleLine?, icon?, errorMessage?, disabled?, readOnly?, validator?, asyncValidator?, action?) {
         super(id, placeholder, value, maxCharCount, singleLine, icon, errorMessage, disabled, readOnly, validator, asyncValidator, action);

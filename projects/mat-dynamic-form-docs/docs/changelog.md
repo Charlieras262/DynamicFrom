@@ -7,6 +7,36 @@ title: Changelog
 
 Older versions are listed in the [GitHub releases](https://github.com/Charlieras262/DynamicFrom/releases).
 
+## Unreleased
+
+### Features
+
+- `InputPassword.showPasswordLabel` and `hidePasswordLabel`: accessible names of the show/hide toggle (default
+  `Show password` / `Hide password`).
+
+### Fixes
+
+- `AutoComplete` with options given as an **array** ignored `selectedValue`: the control kept the raw text
+  instead of the option. It only worked with a `Promise` or an `Observable`.
+- `remapValues()` could not enable a control again once it was disabled, and registered its event actions a
+  second time (actions ran twice).
+- `addAsyncValidators()` failed with `Cannot read properties of null (reading 'validate')` when the control had
+  no async validator yet.
+- The show/hide toggle of one `InputPassword` showed **every** password field of the form; each field now has
+  its own toggle. Its accessible name says what it will do (`Show password` while hidden).
+- Buttons of the password toggle and of the time panel (AM, PM, Cancel, OK) were submit buttons; they no longer
+  submit the surrounding form. The remove file button has an accessible name.
+
+### Documentation
+
+- The Material Icons font is required (added by `ng add @angular/material`).
+- Angular Material 15 has no `standard` or `legacy` appearance: use `fill` or `outline`.
+
+### Tooling
+
+- `tests/consumers`: installs the packed library in a fresh Angular 11, 12, 13, 14 and 15 app, builds it and
+  runs an in-browser scenario with the native and the moment adapter. Runs in CI (**Consumer apps** workflow).
+
 ## 1.7.2
 
 _2026-11-18_ · [App compatibility](./guides/app-compatibility.md)

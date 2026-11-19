@@ -167,7 +167,7 @@ describe('MatDynamicFormComponent', () => {
       const input = el<HTMLInputElement>('input#pass');
       expect(input.type).toBe('password');
 
-      el<HTMLButtonElement>('button[aria-label="Hide password"]').click();
+      el<HTMLButtonElement>('button[aria-label="Show password"]').click();
       fixture.detectChanges();
       expect(input.type).toBe('text');
       flush();

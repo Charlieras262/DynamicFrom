@@ -45,7 +45,8 @@ new Input('name', 'Name').apply({ icon: 'person', maxCharCount: 100, hint: 'Your
 
 ### InputPassword
 
-An `Input` with a show/hide button.
+An `Input` with a show/hide button. Each password field has its own toggle.
+`showPasswordLabel` / `hidePasswordLabel` set its accessible name (default `Show password` / `Hide password`).
 
 ```ts
 new InputPassword('password', 'Password').apply({ validator: Validators.minLength(8) });

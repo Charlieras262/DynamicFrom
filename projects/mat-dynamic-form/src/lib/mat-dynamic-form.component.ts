@@ -18,7 +18,8 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
 
   @Input('structure') structure!: FormStructure;
   formGroup!: FormGroup;
-  hide = true;
+  /** Ids of the password fields currently shown as text: each field has its own toggle. */
+  private visiblePasswords = new Set<string>();
   differ: KeyValueDiffer<Node[], any>;
 
 
@@ -71,6 +72,15 @@ export class MatDynamicFormComponent implements OnInit, DoCheck, AfterViewInit {
         this.structure.getNodeElement(autoFocusNode.id)?.focus();
       }
     });
+  }
+
+  isPasswordVisible(id: string): boolean {
+    return this.visiblePasswords.has(id);
+  }
+
+  togglePassword(id: string) {
+    if (this.visiblePasswords.has(id)) this.visiblePasswords.delete(id);
+    else this.visiblePasswords.add(id);
   }
 
   getControlLenght(id: string) {

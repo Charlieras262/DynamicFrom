@@ -21,7 +21,9 @@ How the library behaves with the different ways an application can be set up. Ev
 | Language other than Spanish | ✅ Since 1.7.2 | Set `selectLabel` / `allFilesLabel` (`InputFile`), `startPlaceholder` / `endPlaceholder` (`DateRangePicker`) and the picker labels. |
 | Strict Content Security Policy | ✅ Since 1.7.2 | No inline event handlers. HTML in labels and error messages is trusted as given: do not put user input in them. |
 | Assets not copied | ⚠️ | Works; the file type icon is hidden. See [Installation](../getting-started/installation.mdx#4-copy-the-file-upload-icons). |
-| Angular 11 – 15 | ✅ | The package uses the View Engine format, compiled by `ngcc` on Angular 12 – 15. |
+| Angular 11 – 15 | ✅ | The package uses the View Engine format, compiled by `ngcc` on Angular 12 – 15. Every version is tested with a fresh app (`tests/consumers`). |
+| Angular Material 15 (MDC) | ✅ | `standard` and `legacy` appearances look like `fill`; use `fill` or `outline`. |
+| No Material Icons font | ⚠️ | Icons show as text. `ng add @angular/material` adds the font. |
 | Angular 16+ | ❌ | Angular 16 removed `ngcc`, so it cannot load View Engine libraries. Since 1.7.2 the peer dependencies say so (`<16.0.0`) and npm warns at install time. |
 | Zoneless change detection | ❌ | The form relies on zone.js to update after its internal timers. |
 

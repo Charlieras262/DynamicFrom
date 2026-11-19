@@ -101,7 +101,7 @@ This is an example of a full sing up form.
 
 import { Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'projects/mat-dynamic-form/src/public-api';
+import { ActionEvent, Button, Checkbox, CustomNode, DatePicker, Dropdown, FormStructure, Input, InputFile, InputPassword, OptionChild, RadioGroup, TextArea } from 'mat-dynamic-form';
 import { InputComponent } from './input/input.component';
 
 @Component({
@@ -136,13 +136,13 @@ export class AppComponent implements OnInit {
       }),
       new Dropdown('cStatus', 'Civil Status', [
         new OptionChild('Single', 'SI',),
-        new OptionChild('Maried', 'MR')
+        new OptionChild('Married', 'MR')
       ]).apply({
         selectedValue: 'SI',
         disabled: true
       }),
       new InputFile('profPic', 'Profile Picture').apply({
-        accept: '.png, .jpg, .jpeg'
+        accept: ['png', 'jpg', 'jpeg']
       }),
       new RadioGroup('hasPet', 'Has Pet', [
         new OptionChild('Yes', 'y'),
@@ -161,7 +161,7 @@ export class AppComponent implements OnInit {
       new CustomNode<InputComponent>('custom2', InputComponent, { label: 'Custom 2', placeholder: 'Custom Placeholder 2' }),
       new Checkbox(
         'agreement',
-        `I have read and agree to the terms of DynamicForm License Agreement, <strong><a href='https://www.google.com'>Read the license here.<a </strong>`
+        `I have read and agree to the terms of DynamicForm License Agreement, <strong><a href='https://www.google.com'>Read the license here.</a></strong>`
       ).apply({
         singleLine: true,
         validator: Validators.requiredTrue

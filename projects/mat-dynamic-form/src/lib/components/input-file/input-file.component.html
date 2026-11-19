@@ -6,7 +6,8 @@
           [style.visibility]="iconHidden ? 'hidden' : null" class="upload-icon-size me-2" alt="">
       </div>
       <button mat-icon-button type="button" class="close" *ngIf="['uploaded', 'error', 'valid'].includes(getState())"
-        (click)="removeFile()" [title]="data.removeHint ? data.removeHint : 'Remove file'">
+        (click)="removeFile()" [title]="data.removeHint ? data.removeHint : 'Remove file'"
+        [attr.aria-label]="data.removeHint ? data.removeHint : 'Remove file'">
         <mat-icon color="warn">close</mat-icon>
       </button>
       <div class="info" mat-line>

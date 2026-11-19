@@ -270,6 +270,18 @@ describe('FormStructure', () => {
   });
 
   describe('AutoComplete', () => {
+    it('selects the option matching selectedValue when the options are an array', () => {
+      const structure = build([new AutoComplete('country', 'Country', countries(), 'mx')]);
+      expect(structure.getControlById('country').value).toEqual(jasmine.objectContaining({ value: 'MX' }));
+    });
+
+    it('selects the option again after reset and remapValues', () => {
+      const structure = build([new AutoComplete('country', 'Country', countries(), 'mx')]);
+      structure.reset();
+      structure.remapValues();
+      expect(structure.getControlById('country').value).toEqual(jasmine.objectContaining({ value: 'MX' }));
+    });
+
     it('selects the option matching selectedValue once options are loaded', fakeAsync(() => {
       const structure = build([new AutoComplete('country', 'Country', Promise.resolve(countries()), 'mx')]);
       tick(AUTO_COMPLETE_VALUE_DELAY * 2);
