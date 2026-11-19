@@ -1,6 +1,6 @@
 {
   "name": "mat-dynamic-form",
-  "version": "1.7.2",
+  "version": "1.8.0-rc.1",
   "peerDependencies": {
     "@angular/animations": ">=11.0.0 <16.0.0",
     "@angular/cdk": ">=11.0.0 <16.0.0",

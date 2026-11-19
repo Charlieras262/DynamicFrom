@@ -7,7 +7,10 @@ title: Changelog
 
 Older versions are listed in the [GitHub releases](https://github.com/Charlieras262/DynamicFrom/releases).
 
-## Unreleased
+## 1.8.0-rc.1
+
+_2026-11-18_ · Release candidate of the last 1.x release for Angular 11 – 15. Install it with
+`npm install mat-dynamic-form@next`; `npm install mat-dynamic-form` still installs 1.7.2.
 
 ### Features
 

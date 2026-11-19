@@ -39,7 +39,7 @@ const config: Config = {
           editUrl: `${repoUrl}/tree/master/projects/mat-dynamic-form-docs/`,
           versions: {
             current: {
-              label: '1.7.2',
+              label: '1.8.0-rc.1',
             },
           },
         },
